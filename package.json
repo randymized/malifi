@@ -1,0 +1,18 @@
+{
+    "name": "malifi"
+  , "version": "0.0.1"
+  , "description": "MAny LIttle FIles. A Connect layer where requests are routed to files in a directory whose structure reflects that of the URL. Malifi organizes all files that support a given page, such as code, template, css and supporting javascript together."
+  , "keywords": []
+  , "author": "Randy McLaughlin <8b629a9884@snkmail.com>"
+  , "dependencies": {
+      "connect": "git://github.com/senchalabs/connect.git",
+      "mime": ">= 0.0.1",
+      "formidable": "1.0.x",
+    }
+  , "devDependencies": {
+      "should": "*",
+      "mocha": "*"
+    }
+   , "main": "index"
+  , "engines": { "node": "0.6.x" }
+}
