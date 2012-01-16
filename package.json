@@ -5,7 +5,7 @@
   , "keywords": []
   , "author": "Randy McLaughlin <8b629a9884@snkmail.com>"
   , "dependencies": {
-      "connect": "git://github.com/senchalabs/connect.git",
+      "connect": : "1.8.5",
       "mime": ">= 0.0.1",
       "formidable": "1.0.x",
     }
