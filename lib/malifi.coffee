@@ -20,7 +20,7 @@ malifi= (root,options)->
   baseSiteStack= new SiteStack(normalize(join(__dirname,root)))
   
   return malifiMainHandler= (req, res, next)->
-    siteStack= baseSiteStack.forHost(req)
+    siteStack= baseSiteStack.getSite(req)
     options.parsedURL= parse(req.url)
     options.path = decodeURIComponent(options.parsedURL.pathname)
     if ~options.path.indexOf('\0')
