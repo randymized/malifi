@@ -6,6 +6,7 @@
   , "author": "Randy McLaughlin <8b629a9884@snkmail.com>"
   , "dependencies": {
       "connect": "1.8.5",
+      "coffee-script": "1",
       "mime": ">= 0.0.1",
       "formidable": "1.0.x"
     }
