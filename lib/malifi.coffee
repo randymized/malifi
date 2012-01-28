@@ -43,10 +43,18 @@ malifi= (root,options)->
         full: fullPath
         extension: path.extname(url.pathname)
         base: fullPath.replace(stripExtension,'$1')
+      my.meta= {} #todo: implement the meta file loader
       # catch any use of .. to back out of the site's root directory:
       unless fullPath.indexOf(my.pwd) == 0 
         return utils.forbidden(res)
     
+    # ignore non-GET requests?  TODO: check if handler exists for non-GET requests
+    if req.malifi.meta.getOnly? && 'GET' != req.method && 'HEAD' != req.method
+      next()
+    
+    #todo: presume index.html if */
+    #todo: disallow outside access to _* and/or *_ files 
+
     staticHandler(req,res,next)
       
 exports = module.exports = malifi
