@@ -13,6 +13,7 @@ normalize = path.normalize
 parse = require('url').parse
 SiteStack= require('./siteStack')
 RequestUtilities= require('./reqUtils')
+staticHandler= require('./staticHandler')
 stripExtension= /(.*)(?:\.[^/.]+)$/
 
 malifi= (root,options)->
@@ -46,11 +47,7 @@ malifi= (root,options)->
       unless fullPath.indexOf(my.pwd) == 0 
         return utils.forbidden(res)
     
-    fs.readFile req.malifi.path.full, (err,data)->
-      if err
-        return next()
-      res.setHeader 'Content-Type', 'text/plain'
-      res.end(data)
+    staticHandler(req,res,next)
       
 exports = module.exports = malifi
 
