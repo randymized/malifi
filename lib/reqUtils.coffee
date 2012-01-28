@@ -6,6 +6,6 @@ extractPortFromHost= /[^:]+:(.*)/
 
 module.exports = exports= class RequestUtilities
   constructor: (@req)->
-  hostname: () -> @hostname||= @req.headers.host.replace(extractHostFromHost,'$1')
-  port: () -> @port||= @req.headers.host.replace(extractPortFromHost,'$1')
+  hostname: -> @qhostname||= @req.headers.host.replace(extractHostFromHost,'$1')
+  port: -> @qport||= @req.headers.host.replace(extractPortFromHost,'$1')
 
