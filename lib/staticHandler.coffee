@@ -1,7 +1,6 @@
 fs = require('fs')
 
-exports= module.exports= (req,res,next)->
-  debugger
+exports= module.exports= staticHandler= (req,res,next)->
   fs.readFile req.malifi.path.full, (err,data)->
     if err
       return next()
