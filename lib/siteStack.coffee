@@ -3,13 +3,10 @@ fs = require('fs')
 path = require('path')
 join = path.join
 normalize = path.normalize
-placeholder= /@@/
-extractHostFromHost= /([^:]+).*/
-extractPortFromHost= /[^:]+:(.*)/
 
 module.exports = exports= class SiteStack
   constructor: (defaultSiteDir)->
-    @stack=[defaultSiteDir, normalize(join(__dirname,'../default-site'))]
+    @stack=[normalize(defaultSiteDir), normalize(join(__dirname,'../default-site'))]
     sitesFileName= join(defaultSiteDir,'sites.js')
     @sitemap= null
     try
