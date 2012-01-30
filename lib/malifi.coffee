@@ -27,29 +27,36 @@ malifi= (root,options)->
     siteStack= null
     do ->
       rqutils= new RequestUtilities(req)
-      req.malifi= my=
-        utils: rqutils
-      siteStack= baseSiteStack.getSite(req)
-      my.pwd= pwd= siteStack[0]
       parsedurl= parse(req.url)
       pathname= decodeURIComponent(parsedurl.pathname)
-      my.url= url=
-        parsed: parsedurl
-        pathname: pathname
       unless pathname.indexOf('\0')
         return utils.forbidden(res)
-      fullPath= join(pwd,url.pathname)
+      #Set some initial attributes of req.malifi.  More will be added after baseSiteStack.getSite() is invoked, but
+      #methods that it invokes may expect req.malifi to have as many attributes set as possible without knowing what
+      #the current site's directory is (which is what getSite() establishes).
+      req.malifi= my=
+        utils: rqutils
+        url:
+          parsed: parsedurl
+          pathname: pathname
+      siteStack= baseSiteStack.getSite(req)
+      #Now that we know the current site's directory, fill in the rest of the attributes
+      my.pwd= siteStack[0]
+      fullPath= join(my.pwd,pathname)
       my.path=
         full: fullPath
-        extension: path.extname(url.pathname)
+        extension: path.extname(my.url.pathname)
         base: fullPath.replace(stripExtension,'$1')
       my.meta= {} #todo: implement the meta file loader
-      # catch any use of .. to back out of the site's root directory:
-      unless fullPath.indexOf(my.pwd) == 0 
-        return utils.forbidden(res)
+
+    my= req.malifi
+
+    # catch any use of .. to back out of the site's root directory:
+    unless 0 == my.path.full.indexOf(my.pwd)
+      return utils.forbidden(res)
     
     # ignore non-GET requests?  TODO: check if handler exists for non-GET requests
-    if req.malifi.meta.getOnly? && 'GET' != req.method && 'HEAD' != req.method
+    if my.meta.getOnly? && 'GET' != req.method && 'HEAD' != req.method
       next()
     
     #todo: presume index.html if */
