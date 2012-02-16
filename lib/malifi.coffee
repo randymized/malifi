@@ -20,8 +20,7 @@ malifi= (root,options)->
   unless root?
     throw new Error('malifi site root path required')
   options?= {}
-  debugger
-  baseSiteStack= new SiteStack(normalize(join(__dirname,root)))
+  baseSiteStack= new SiteStack(normalize(root))
   
   return malifiMainHandler= (req, res, next)->
     siteStack= null
