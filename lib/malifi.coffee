@@ -13,9 +13,9 @@ normalize = path.normalize
 parse = require('url').parse
 SiteStack= require('./siteStack')
 RequestUtilities= require('./reqUtils')
-staticHandler= require('./staticHandler')
 stripExtension= /(.*)(?:\.[^/.]+)$/
 Meta= require('./meta')
+Action= require('./action')
 
 malifi= (root,options)->
   unless root?
@@ -50,21 +50,8 @@ malifi= (root,options)->
         base: fullPath.replace(stripExtension,'$1')
       my.meta= {} #todo: implement the meta file loader
 
-    my= req.malifi
+    new Action(req,res,next)
 
-    # catch any use of .. to back out of the site's root directory:
-    unless 0 == my.path.full.indexOf(my.pwd)
-      return utils.forbidden(res)
-    
-    # ignore non-GET requests?  TODO: check if handler exists for non-GET requests
-    if my.meta.getOnly? && 'GET' != req.method && 'HEAD' != req.method
-      next()
-    
-    #todo: presume index.html if */
-    #todo: disallow outside access to _* and/or *_ files 
-
-    staticHandler(req,res,next)
-      
 exports = module.exports = malifi
 
 exports.version = '0.0.1'
