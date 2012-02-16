@@ -3,21 +3,19 @@ fs = require('fs')
 path = require('path')
 join = path.join
 normalize = path.normalize
+utilities= require('./utilities')
+isFileSync= utilities.isFileSync
 
 module.exports = exports= class SiteStack
   constructor: (defaultSiteDir)->
     @stack=[normalize(defaultSiteDir), normalize(join(__dirname,'../base-site'))]
     sitesFileName= join(defaultSiteDir,'sites.js')
     @sitemap= null
-    try
-      stat= fs.statSync(sitesFileName)
-    catch e
-      if e.code == 'ENOENT' then return null
-      else throw e
-    @sitelookup= require(sitesFileName).bind(process)
+    return null unless isFileSync(sitesFileName)
+    @siteMapper= require(sitesFileName)
       
   getSite: (req) ->
-    siteStack= connect.utils.toArray @stack
-    if @sitelookup? && (hostSite= @sitelookup(req))
-      siteStack.unshift(normalize(join(@stack[0],hostSite)))
+    siteStack= @stack
+    if @siteMapper? && (hostSite= @siteMapper.lookup(req))
+      siteStack.unshift(normalize(hostSite))
     siteStack

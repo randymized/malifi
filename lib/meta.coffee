@@ -1,5 +1,6 @@
-fs = require('fs')
 connect = require('connect')
+utilities= require('./utilities')
+isFileSync= utilities.isFileSync
 
 merged= (base,dominant)->
   return base unless dominant
@@ -12,15 +13,9 @@ merged= (base,dominant)->
 defaultMetaName= (dir)->
   "#{dir}/_default.meta"
 
-isFile= (name)->
-  try
-    fs.statSync(name).isFile()
-  catch e
-    throw e unless e.code == 'ENOENT'
-    false
 
 load= (name,meta)->
-  if isFile(name+'.js') || isFile(name+'.coffee')|| isFile(name+'.json')
+  if isFileSync(name+'.js') || isFileSync(name+'.coffee')|| isFileSync(name+'.json')
     merged(meta,require(name))
   else
     meta
