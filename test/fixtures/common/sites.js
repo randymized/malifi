@@ -1,9 +1,12 @@
-var site= '../site'
+var site= __dirname+'/../site';
 var map= {
   localhost: site
  ,'127.0.0.1': site
 }
 
-module.exports= function(req) {
-  return map[req.malifi.utils.hostname()]
+exports= module.exports= {
+  lookup: function(req) {
+      return map[req.malifi.utils.hostname()]
+    }
+  ,paths: [site]
 }
