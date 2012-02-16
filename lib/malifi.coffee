@@ -15,13 +15,15 @@ SiteStack= require('./siteStack')
 RequestUtilities= require('./reqUtils')
 staticHandler= require('./staticHandler')
 stripExtension= /(.*)(?:\.[^/.]+)$/
+Meta= require('./meta')
 
 malifi= (root,options)->
   unless root?
     throw new Error('malifi site root path required')
   options?= {}
   baseSiteStack= new SiteStack(normalize(root))
-  
+  meta= new Meta(baseSiteStack.stack,options)
+
   return malifiMainHandler= (req, res, next)->
     siteStack= null
     do ->
