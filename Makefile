@@ -1,12 +1,11 @@
-TESTS = test/*.js
-REPORTER = dot
+TEST = node_modules/.bin/mocha
+TESTS ?= test/*.coffee
+#TEST_FLAGS= --debug
 
 test:
 	@NODE_ENV=test 
-	mocha \
-         --reporter $(REPORTER) \
-         --require should \
-         $(TESTS)
+	./$(TEST) \
+		$(TEST_FLAGS) $(TESTS)
 
 
 .PHONY: test
