@@ -6,7 +6,7 @@ normalize = path.normalize
 
 module.exports = exports= class SiteStack
   constructor: (defaultSiteDir)->
-    @stack=[normalize(defaultSiteDir), normalize(join(__dirname,'../default-site'))]
+    @stack=[normalize(defaultSiteDir), normalize(join(__dirname,'../base-site'))]
     sitesFileName= join(defaultSiteDir,'sites.js')
     @sitemap= null
     try
