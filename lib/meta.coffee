@@ -5,8 +5,9 @@ isFileSync= utilities.isFileSync
 merged= (base,dominant)->
   return base unless dominant
   return dominant unless base
-  r= Object.create(base)
-  r[key] = dominant[key] for key in dominant
+  r= {}
+  r[key] = base[key] for key of base
+  r[key] = dominant[key] for key of dominant
   return r
 
 
