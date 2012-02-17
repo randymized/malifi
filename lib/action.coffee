@@ -6,23 +6,50 @@ staticHandler= require('./static_handler')
 utilities= require('./utilities')
 
 exports = module.exports = class Action
-  constructor: (@req,@res,@next)->
-    debugger
-    @malifi= @req.malifi
+  constructor: (actions)->
+    @actions= actions
+  do: (req,res,next)->
+    malifi= req.malifi
+    meta= malifi.meta
+    return act.do(req,res,next,malifi,meta) for act in @actions when act.when(req,malifi,meta)
 
-    # catch any use of .. to back out of the site's root directory:
-    unless 0 == @malifi.path.full.indexOf(@malifi.pwd)
-      return utils.forbidden(@res)
+noBackoutAction= {
+  when: (req,malifi)->
+    0 < malifi.path.full.indexOf(malifi.pwd)
+  do: (req,res,next) ->
+    return utils.forbidden(res)
+}
 
-    # ignore non-GET requests?  TODO: check if handler exists for non-GET requests
-    if @malifi.meta.getOnly? && 'GET' != @req.method && 'HEAD' != @req.method
-      @next()
+# ignore non-GET requests?
+getOnlyAction= {
+  when: (req,malifi,meta)->
+    req.malifi.meta.getOnly? && 'GET' != req.method && 'HEAD' != req.method
+  do: (req,res,next) ->
+    @next()
+}
 
-    #todo: presume index.html if */
-    #todo: disallow outside access to _* and/or *_ files
+textAction= {
+  when: (req)->
+    '.txt' == req.malifi.path.extension
+  do: (req,res,next) ->
+    staticHandler(req,res,next)
+}
 
-    if '.txt' == @malifi.path.extension
-      staticHandler(@req,@res,@next)
-    else
-      #for now, assume that if it's not txt, it's a module
-      require(@malifi.path.full)(@req,@res,@next)
+justAModuleAction= {
+  when: (req)->
+    true
+  do: (req,res,next) ->
+    require(req.malifi.path.full)(req,res,next)
+}
+
+exports.defaultActions= [
+    noBackoutAction
+  , getOnlyAction
+  , textAction
+  , justAModuleAction
+]
+
+
+exports.actions= [
+  noBackoutAction
+]
