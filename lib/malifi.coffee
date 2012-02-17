@@ -7,15 +7,22 @@
 fs = require('fs')
 path = require('path')
 connect = require('connect')
-utils = connect.utils
+forbidden = connect.utils.forbidden
 join = path.join
 normalize = path.normalize
 parse = require('url').parse
 SiteStack= require('./siteStack')
-RequestUtilities= require('./reqUtils')
 stripExtension= /(.*)(?:\.[^/.]+)$/
 Meta= require('./meta')
 Action= require('./action')
+extractHostFromHost= /([^:]+).*/
+extractPortFromHost= /[^:]+:(.*)/
+
+class ParseHost
+  constructor: (req)->
+    @host= req.headers.host
+  hostname: -> @qhostname||= @host.replace(extractHostFromHost,'$1')
+  port: -> @qport||= @host.replace(extractPortFromHost,'$1')
 
 malifi= (root,options)->
   unless root?
@@ -27,16 +34,15 @@ malifi= (root,options)->
   return malifiMainHandler= (req, res, next)->
     siteStack= null
     do ->
-      rqutils= new RequestUtilities(req)
       parsedurl= parse(req.url)
       pathname= decodeURIComponent(parsedurl.pathname)
       unless pathname.indexOf('\0')
-        return utils.forbidden(res)
+        return forbidden(res)
       #Set some initial attributes of req.malifi.  More will be added after baseSiteStack.getSite() is invoked, but
       #methods that it invokes may expect req.malifi to have as many attributes set as possible without knowing what
       #the current site's directory is (which is what getSite() establishes).
       req.malifi= my=
-        utils: rqutils
+        host: new ParseHost(req)
         url:
           parsed: parsedurl
           pathname: pathname
