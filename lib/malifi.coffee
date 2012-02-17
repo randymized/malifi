@@ -48,7 +48,7 @@ malifi= (root,options)->
         full: fullPath
         extension: path.extname(my.url.pathname)
         base: fullPath.replace(stripExtension,'$1')
-      my.meta= {} #todo: implement the meta file loader
+      my.meta= meta.default #todo: implement the meta file loader
 
     new Action(req,res,next)
 
