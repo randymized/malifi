@@ -39,3 +39,5 @@ describe 'malifi server', ->
     get('/a.txt','this is a.txt', done)
   it 'should find /sub/b.txt', (done) ->
     get('/sub/b.txt','this is the content of sub/b.txt', done)
+  it 'should pick up correct site metadata', (done) ->
+    get('/metaTestString','common', done)
