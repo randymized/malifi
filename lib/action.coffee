@@ -2,7 +2,7 @@ fs = require('fs')
 path = require('path')
 connect = require('connect')
 utils = connect.utils
-staticHandler= require('./staticHandler')
+staticHandler= require('./static_handler')
 utilities= require('./utilities')
 
 exports = module.exports = class Action
