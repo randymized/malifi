@@ -1,6 +1,6 @@
 connect = require('connect')
 utilities= require('./utilities')
-isFileSync= utilities.isFileSync
+isModuleSync= utilities.isModuleSync
 
 merged= (base,dominant)->
   return base unless dominant
@@ -16,7 +16,7 @@ defaultMetaName= (dir)->
 
 
 load= (name,meta)->
-  if isFileSync(name+'.js') || isFileSync(name+'.coffee')|| isFileSync(name+'.json')
+  if isModuleSync(name)
     merged(meta,require(name))
   else
     meta
