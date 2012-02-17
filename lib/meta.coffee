@@ -26,8 +26,8 @@ load= (name,meta)->
     meta
 
 module.exports = class Meta
-  constructor: (dirs,options={})->
-    dirs = dirs.reverse()
+  constructor: (baseSiteStack,options={})->
+    dirs = baseSiteStack.stack.reverse()
     @base= require(defaultMetaName(dirs[0]))
     @optioned= merged(@base,options)
     @default= load(defaultMetaName(dirs[1]),@optioned)

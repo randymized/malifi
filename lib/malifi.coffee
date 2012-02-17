@@ -29,7 +29,7 @@ malifi= (root,options)->
     throw new Error('malifi site root path required')
   options?= {}
   baseSiteStack= new SiteStack(normalize(root))
-  meta= new Meta(baseSiteStack.stack,options)
+  meta= new Meta(baseSiteStack,options)
 
   return malifiMainHandler= (req, res, next)->
     siteStack= null
