@@ -17,7 +17,11 @@ defaultMetaName= (dir)->
 
 load= (name,meta)->
   if isModuleSync(name)
-    merged(meta,require(name))
+    content = require(name)
+    # A meta file module may be a function as well as an object.  If its a function,
+    # it will be invoked with the parent metadata as an argument and should return
+    # a metadata object.
+    merged(meta, content?(meta) ? content)
   else
     meta
 
