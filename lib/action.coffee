@@ -11,36 +11,39 @@ exports = module.exports = class Action
   do: (req,res,next)->
     malifi= req.malifi
     meta= malifi.meta
-    return act.do(req,res,next,malifi,meta) for act in @actions when act.when(req,malifi,meta)
+    runner= (actor)->
+      act= actor()
+      if act.when(req,malifi,meta)
+        act.do(req,res,next,malifi,meta)
+        return true
+      return false
 
-noBackoutAction= {
+    return for actor in @actions when runner(actor)
+
+noBackoutAction= () ->
   when: (req,malifi)->
     0 < malifi.path.full.indexOf(malifi.pwd)
   do: (req,res,next) ->
     return utils.forbidden(res)
-}
 
 # ignore non-GET requests?
-getOnlyAction= {
+getOnlyAction= () ->
   when: (req,malifi,meta)->
     req.malifi.meta.getOnly? && 'GET' != req.method && 'HEAD' != req.method
   do: (req,res,next) ->
     @next()
-}
 
-textAction= {
+textAction= () ->
   when: (req)->
     '.txt' == req.malifi.path.extension
   do: (req,res,next) ->
     staticHandler(req,res,next)
-}
 
-justAModuleAction= {
+justAModuleAction= () ->
   when: (req)->
     true
   do: (req,res,next) ->
     require(req.malifi.path.full)(req,res,next)
-}
 
 exports.defaultActions= [
     noBackoutAction
