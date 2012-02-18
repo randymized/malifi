@@ -19,15 +19,19 @@ get= (url, expected, test, done)->
     path: url
   req= http.get options, (res)->
     buf= ''
-    res.statusCode.should.equal(200)
-    res.setEncoding('utf8')
-    res.on 'data', (chunk)->
-      buf += chunk
-    res.on 'end', ()->
-      buf.should.equal(expected)
+    if typeof expected is 'number'
+      res.statusCode.should.equal(expected)
       done()
-    res.on 'error', (exception) ->
-      done(exception)
+    else
+      res.statusCode.should.equal(200)
+      res.setEncoding('utf8')
+      res.on 'data', (chunk)->
+        buf += chunk
+      res.on 'end', ()->
+        buf.should.equal(expected)
+        done()
+      res.on 'error', (exception) ->
+        done(exception)
 
 describe 'malifi server', ->
   before (cb) ->
@@ -41,3 +45,7 @@ describe 'malifi server', ->
     get('/sub/b.txt','this is the content of sub/b.txt', done)
   it 'should pick up correct site metadata', (done) ->
     get('/metaTestString','common', done)
+  it 'should be able to run a .js file', (done) ->
+    get('/aJSFile','Got JS', done)
+  it 'should 404 if a file is not present', (done) ->
+    get('/notHere',404, done)
