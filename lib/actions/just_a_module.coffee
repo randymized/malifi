@@ -1,3 +1,10 @@
-# assume that the path is that of a module and load and run that module
+isModule = require('../utilities').isModule
+
+# invoke the module at the given path if it is present
 module.exports= justAModuleAction= (pass,req,res,next,malifi,meta) ->
-    require(req.malifi.path.full)(req,res,next,malifi,meta)
+  path = req.malifi.path.full
+  isModule path, (found)->
+    if found
+      require(path)(req,res,next,malifi,meta)
+    else
+      pass()
