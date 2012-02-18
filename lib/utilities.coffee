@@ -1,9 +1,9 @@
 fs = require('fs')
 
-isFile= (name,cb)->
+isFile= (name,foundCB)->
   try
     fs.stat name, (err,stats)->
-      cb(!err && stats.isFile())
+      foundCB(!err && stats.isFile())
 
 isFileSync= (name)->
   try
@@ -14,12 +14,12 @@ isFileSync= (name)->
 
 moduleExtensions= ['.js','.coffee','.json']
 
-hasAnExtension= (name,extensions,cb)->
+hasAnExtension= (name,extensions,foundCB)->
   i= -1
   looper= (found)->
-    return cb(extensions[i]) if found
+    return foundCB(extensions[i]) if found
     i+= 1
-    return cb(false) unless i<extensions.length
+    return foundCB(false) unless i<extensions.length
     isFile(name+extensions[i],looper)
   looper(false) #initiate the process
 
@@ -33,8 +33,8 @@ module.exports=
 
   # Would adding the proper extension to the given name find a file whose extension
   # suggested that it could be a module?
-  isModule: (name,cb)->
-    hasAnExtension(name,moduleExtensions,cb)
+  isModule: (name,foundCB)->
+    hasAnExtension(name,moduleExtensions,foundCB)
   isModuleSync: (name)->
     return true for ext in moduleExtensions when isFileSync(name+ext)
     false
