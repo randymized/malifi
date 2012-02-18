@@ -66,7 +66,7 @@ malifi= (root,options)->
       next: next
       pathinfo: pathinfo
       meta: meta.default #todo: implement the meta file loader
-    action.call(actionobj,action.defaultActions)
+    action.call(actionobj)
 
 exports = module.exports = malifi
 
