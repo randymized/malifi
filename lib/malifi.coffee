@@ -21,8 +21,8 @@ extractPortFromHost= /[^:]+:(.*)/
 class ParseHost
   constructor: (req)->
     @host= req.headers.host
-  hostname: -> @qhostname||= @host.replace(extractHostFromHost,'$1')
-  port: -> @qport||= @host.replace(extractPortFromHost,'$1')
+  hostname: -> @_hostname||= @host.replace(extractHostFromHost,'$1')
+  port: -> @_port||= @host.replace(extractPortFromHost,'$1')
 
 malifi= (root,options)->
   unless root?
