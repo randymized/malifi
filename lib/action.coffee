@@ -3,13 +3,12 @@ utils = connect.utils
 
 exports = module.exports = action= (actions)->
   i= -1
-  actionobj= this
-  pass= ()->
+  pass= ()=>
     i+= 1
     if (actions.length > i)
-      actions[i].call(actionobj,pass)
+      actions[i].call(this,pass)
     else
-      actionobj.next()
+      @next()
   pass()
 
 exports.defaultActions= [
