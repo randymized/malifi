@@ -54,14 +54,13 @@ malifi= (root,options)->
         full: fullPath
         extension: path.extname(my.url.pathname)
         base: fullPath.replace(stripExtension,'$1')
-      my.meta= meta.default #todo: implement the meta file loader
 
     actionobj=
       req: req
       res: res
       next: next
       malifi: req.malifi
-      meta: req.malifi.meta
+      meta: meta.default #todo: implement the meta file loader
     action.call(actionobj,action.defaultActions)
 
 exports = module.exports = malifi
