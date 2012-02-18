@@ -14,7 +14,7 @@ parse = require('url').parse
 SiteStack= require('./site_stack')
 stripExtension= /(.*)(?:\.[^/.]+)$/
 Meta= require('./meta')
-Action= require('./action')
+action= require('./action')
 extractHostFromHost= /([^:]+).*/
 extractPortFromHost= /[^:]+:(.*)/
 
@@ -56,7 +56,7 @@ malifi= (root,options)->
         base: fullPath.replace(stripExtension,'$1')
       my.meta= meta.default #todo: implement the meta file loader
 
-    new Action(Action.defaultActions).run(req,res,next)
+    action(action.defaultActions,req,res,next)
 
 exports = module.exports = malifi
 
