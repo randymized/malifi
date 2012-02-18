@@ -12,24 +12,29 @@ isFileSync= (name)->
     throw e unless e.code == 'ENOENT'
     false
 
-extensions= ['.json','.coffee','.js']
+moduleExtensions= ['.js','.coffee','.json']
 
-isModule= (name,cb)->
-  i= extensions.length
+hasAnExtension= (name,extensions,cb)->
+  i= -1
   looper= (found)->
-    return cb(true) if found
-    return cb(false) unless i
-    i-= 1
+    return cb(extensions[i]) if found
+    i+= 1
+    return cb(false) unless i<extensions.length
     isFile(name+extensions[i],looper)
-  looper(false)
+  looper(false) #initiate the process
 
 module.exports=
   # is the given name that of a regular file?
   isFile: isFile
   isFileSync: isFileSync
 
+  # does a file with one of the given extensions exist?
+  hasAnExtension: hasAnExtension
+
   # Would adding the proper extension to the given name find a file whose extension
   # suggested that it could be a module?
-  isModule: isModule
+  isModule: (name,cb)->
+    hasAnExtension(name,moduleExtensions,cb)
   isModuleSync: (name)->
-    isFileSync(name+'.js') || isFileSync(name+'.coffee')|| isFileSync(name+'.json')
+    return true for ext in moduleExtensions when isFileSync(name+ext)
+    false
