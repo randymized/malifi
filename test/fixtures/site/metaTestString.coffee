@@ -1,3 +1,4 @@
-module.exports= (req,res)->
-  res.setHeader 'Content-Type','text/plain'
-  res.end(req.malifi.meta.test_string)
+module.exports= ()->
+  debugger
+  @res.setHeader 'Content-Type','text/plain'
+  @res.end(@meta.test_string)

@@ -1,4 +1,4 @@
-module.exports= function(req,res) {
-  res.setHeader('Content-Type','text/plain')
-  res.end('Got JS')
+module.exports= function() {
+  this.res.setHeader('Content-Type','text/plain')
+  this.res.end('Got JS')
 }
