@@ -33,33 +33,32 @@ malifi= (root,options)->
 
   return malifiMainHandler= (req, res, next)->
     siteStack= null
-    do ->
-      parsedurl= parse(req.url)
-      pathname= decodeURIComponent(parsedurl.pathname)
-      unless pathname.indexOf('\0')
-        return forbidden(res)
-      #Set some initial attributes of req.malifi.  More will be added after baseSiteStack.getSite() is invoked, but
-      #methods that it invokes may expect req.malifi to have as many attributes set as possible without knowing what
-      #the current site's directory is (which is what getSite() establishes).
-      req.malifi= my=
-        host: new ParseHost(req)
-        url:
-          parsed: parsedurl
-          pathname: pathname
-      siteStack= baseSiteStack.getSite(req)
-      #Now that we know the current site's directory, fill in the rest of the attributes
-      my.pwd= siteStack[0]
-      fullPath= join(my.pwd,pathname)
-      my.path=
-        full: fullPath
-        extension: path.extname(my.url.pathname)
-        base: fullPath.replace(stripExtension,'$1')
+    parsedurl= parse(req.url)
+    pathname= decodeURIComponent(parsedurl.pathname)
+    unless pathname.indexOf('\0')
+      return forbidden(res)
+    #Set some initial attributes of req.malifi.  More will be added after baseSiteStack.getSite() is invoked, but
+    #methods that it invokes may expect req.malifi to have as many attributes set as possible without knowing what
+    #the current site's directory is (which is what getSite() establishes).
+    pathinfo=
+      host: new ParseHost(req)
+      url:
+        parsed: parsedurl
+        pathname: pathname
+    siteStack= baseSiteStack.getSite(req,pathinfo)
+    #Now that we know the current site's directory, fill in the rest of the attributes
+    pathinfo.pwd= siteStack[0]
+    fullPath= join(pathinfo.pwd,pathname)
+    pathinfo.path=
+      full: fullPath
+      extension: path.extname(pathinfo.url.pathname)
+      base: fullPath.replace(stripExtension,'$1')
 
     actionobj=
       req: req
       res: res
       next: next
-      malifi: req.malifi
+      pathinfo: pathinfo
       meta: meta.default #todo: implement the meta file loader
     action.call(actionobj,action.defaultActions)
 

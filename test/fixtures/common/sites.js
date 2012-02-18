@@ -5,8 +5,8 @@ var map= {
 }
 
 exports= module.exports= {
-  lookup: function(req) {
-      return map[req.malifi.host.hostname()]
+  lookup: function() {
+      return map[this.host.hostname()]
     }
   ,paths: [site]
 }

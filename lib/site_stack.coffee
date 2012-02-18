@@ -14,8 +14,8 @@ module.exports = exports= class SiteStack
     return null unless isFileSync(sitesFileName)
     @siteMapper= require(sitesFileName)
       
-  getSite: (req) ->
+  getSite: (req,pathinfo) ->
     siteStack= @stack
-    if @siteMapper? && (hostSite= @siteMapper.lookup(req))
+    if @siteMapper? && (hostSite= @siteMapper.lookup.call(pathinfo,req))
       siteStack.unshift(normalize(hostSite))
     siteStack
