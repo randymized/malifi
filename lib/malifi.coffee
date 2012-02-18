@@ -54,6 +54,12 @@ malifi= (root,options)->
       extension: path.extname(pathinfo.url.pathname)
       base: fullPath.replace(stripExtension,'$1')
 
+    # Actions and page modules are run in the scope of actionobj.
+    # It provides access to req, res, next as well as pathinfo and the metadata
+    # for the URL being served.  It can also be used as a bus for conveying
+    # other data among action and page modules.
+    # Actionobj is unique and specific to one request and its lifetime is
+    # that of the request.
     actionobj=
       req: req
       res: res
