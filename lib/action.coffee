@@ -14,15 +14,7 @@ exports = module.exports = class Action
         return true
       return false
 
-    runner(noBackoutAction)   # URLs cannot drop out of the site's root dir
     return for actor in @actions when runner(actor)
-
-# disallow using .. in URLs to drop out of a site's root directory
-noBackoutAction= () ->
-  when: (req,malifi)->
-    0 < malifi.path.full.indexOf(malifi.pwd)
-  run: (req,res,next) ->
-    return utils.forbidden(res)
 
 exports.defaultActions= [
     require('./actions/get_only')
