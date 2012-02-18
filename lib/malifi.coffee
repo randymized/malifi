@@ -56,7 +56,7 @@ malifi= (root,options)->
         base: fullPath.replace(stripExtension,'$1')
       my.meta= meta.default #todo: implement the meta file loader
 
-    new Action(Action.defaultActions).do(req,res,next)
+    new Action(Action.defaultActions).run(req,res,next)
 
 exports = module.exports = malifi
 

@@ -2,5 +2,5 @@
 module.exports= getOnlyAction= () ->
   when: (req,malifi,meta)->
     req.malifi.meta.getOnly? && 'GET' != req.method && 'HEAD' != req.method
-  do: (req,res,next) ->
+  run: (req,res,next) ->
     next()

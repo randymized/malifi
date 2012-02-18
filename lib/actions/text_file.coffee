@@ -4,5 +4,5 @@ staticHandler= require('../static_handler')
 module.exports= textAction= () ->
   when: (req)->
     '.txt' == req.malifi.path.extension
-  do: (req,res,next) ->
+  run: (req,res,next) ->
     staticHandler(req,res,next)

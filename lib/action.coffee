@@ -4,13 +4,13 @@ utils = connect.utils
 exports = module.exports = class Action
   constructor: (actions)->
     @actions= actions
-  do: (req,res,next)->
+  run: (req,res,next)->
     malifi= req.malifi
     meta= malifi.meta
     runner= (actor)->
       act= actor()
       if act.when(req,malifi,meta)
-        act.do(req,res,next,malifi,meta)
+        act.run(req,res,next,malifi,meta)
         return true
       return false
 
@@ -21,7 +21,7 @@ exports = module.exports = class Action
 noBackoutAction= () ->
   when: (req,malifi)->
     0 < malifi.path.full.indexOf(malifi.pwd)
-  do: (req,res,next) ->
+  run: (req,res,next) ->
     return utils.forbidden(res)
 
 exports.defaultActions= [
