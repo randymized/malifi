@@ -1,6 +1,6 @@
 connect = require('connect')
 utils = connect.utils
-forbiddenURLChars= /\/([._][^/]*)|_$/
+forbiddenURLChars = /(\/[._])|(_\/)|_$/
 
 ###
 todo: // detect if URL is of a directory and, if so, bring up the _index
