@@ -22,13 +22,10 @@ exports = module.exports = action= ()->
     return;
 
   urlExtension = @pathinfo.path.extension
-  if urlExtension
+  if urlExtension && @meta._allowed_url_extensions
     aue= @meta._allowed_url_extensions
-    unless aue.set
-      s= {}
-      s['.'+key]=true for key in aue
-      aue.set= s
-    unless aue.set[urlExtension]
+    aue.regexp ?= new RegExp('((\.' + aue.join(')|(\.') + '))$')
+    unless aue.regexp.test(urlExtension)
       @res.statusCode = 415;
       @res.end('Unsupported Media Type');
       return;
