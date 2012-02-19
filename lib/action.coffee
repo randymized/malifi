@@ -1,6 +1,6 @@
 connect = require('connect')
 utils = connect.utils
-
+forbiddenURLChars= /\/([._][^/]*)|_$/
 
 ###
 todo: // detect if URL is of a directory and, if so, bring up the _index
@@ -15,6 +15,11 @@ if (stat.isDirectory())
 
 exports = module.exports = action= ()->
   actions= @meta._actions
+
+  if forbiddenURLChars.test(@pathinfo.url.pathname)
+    @res.statusCode = 403;
+    @res.end('Forbidden URL');
+    return;
 
   urlExtension = @pathinfo.path.extension
   if urlExtension

@@ -51,3 +51,9 @@ describe 'malifi server', ->
     get('/notHere',404, done)
   it 'should err if the URL has an extension, but the extension is not allowed', (done) ->
     get('/any.xxx',415, done)
+  it 'should err if the URL starts with an underscore', (done) ->
+    get('/_no',403, done)
+  it 'should err if the URL ends with an underscore', (done) ->
+    get('/no_',403, done)
+  it 'should err if the URL starts with a dot', (done) ->
+    get('/.no',403, done)
