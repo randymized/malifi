@@ -6,6 +6,15 @@ module.exports=
   # specific handler
   _getOnly: true
 
+  # Valid URLs may include the following extensions.
+  # Any other extensions at the end of a URL will be disallowed.
+  _allowed_url_extensions: ['txt','pdf']
+
+  # Static files may be served if they have the following extensions and
+  # either the URL includes the extension or the URL has no extension but
+  # otherwise matches the file.
+  _allowed_static_extensions: ['txt','pdf']
+
   # The default set of actions to be performed on an incoming request.
   # The actions are invoked in order.  Each may either handle the request
   # by invoking @res.end or @next or pass on the request.  Each request

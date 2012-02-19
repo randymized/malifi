@@ -49,3 +49,5 @@ describe 'malifi server', ->
     get('/aJSFile','Got JS', done)
   it 'should 404 if a file is not present', (done) ->
     get('/notHere',404, done)
+  it 'should err if the URL has an extension, but the extension is not allowed', (done) ->
+    get('/any.xxx',415, done)
