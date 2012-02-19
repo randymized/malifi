@@ -8,6 +8,7 @@
         "connect": "1.8.5"
       , "coffee-script": "1"
       , "mime": ">= 0.0.1"
+      , "mime-magic": ">= 0.2.5"
     }
   , "devDependencies": {
       "should": "*"
