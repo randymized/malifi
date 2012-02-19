@@ -4,7 +4,7 @@ module.exports=
   # For example, if a POST request is received for /foo/bar, the request will
   # be 404ed unless there is a *.post.js, *.post.coffee or other such post-
   # specific handler
-  getOnly: true
+  _getOnly: true
 
   # The default set of actions to be performed on an incoming request.
   # The actions are invoked in order.  Each may either handle the request
@@ -14,7 +14,7 @@ module.exports=
   # first followed by a handler for just a .js or .coffee module.  If
   # template is discovered, its handler will invoke any .js or .coffee
   # module first, providing the coupling expected by the template.
-  actions: [
+  _actions: [
       require('../lib/actions/get_only')
     , require('../lib/actions/text_file')
     , require('../lib/actions/just_a_module')
