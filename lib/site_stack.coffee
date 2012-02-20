@@ -11,7 +11,6 @@ module.exports = exports= class SiteStack
     @stack=[normalize(defaultSiteDir), normalize(join(__dirname,'../base-site'))]
     sitesFileName= join(defaultSiteDir,'_sites')
     @sitemap= null
-    debugger
     return null unless isModuleSync(sitesFileName)
     @siteMapper= require(sitesFileName)
       
