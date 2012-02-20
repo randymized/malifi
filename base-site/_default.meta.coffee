@@ -19,7 +19,9 @@ module.exports=
   # First the request method: GET, POST, PUT, DELETE, etc is selected.
   # Then the URL's extension.  If there is no extension, the key will be
   # a blank string.  A '*' key will apply to any extensions without a
-  # more specific match.
+  # more specific match.  A '/' key is a special case: it applies to
+  # cases where the URL matches a directory.  Directories will only be
+  # matched to a URL if a '/' key exists.
   # After selecting by method and extension, an additional, optional, layer
   # may provide a dir: and/or file: fork.  The dir fork will be taken if the
   # URL corresponds to a directory.  Without a dir fork, if the URL will not
@@ -34,11 +36,13 @@ module.exports=
   # module first, providing the coupling expected by the template.
   _actions:
     'GET':
-      '':
-        #todo define and test a directory (dir:) action silo
-        file: [
-            require('../lib/actions/get_only')
-          , require('../lib/actions/just_a_module')
+      '/': [
+          #todo define and test a meaningful directory (dir:) action silo
+          require('../lib/actions/reject')
+        ]
+      '': [
+          require('../lib/actions/get_only')
+        , require('../lib/actions/just_a_module')
         ]
       '*': [
           require('../lib/actions/get_only')

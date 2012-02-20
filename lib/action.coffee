@@ -43,10 +43,14 @@ exports = module.exports = action= (siteStack)->
     pass()
 
   extLookup= actions[if @req.method is 'HEAD' then 'GET' else @req.method]
-  actionList= extLookup[urlExtension] ? extLookup['*']
-  if actionList.dir? || actionList.file?
+  extSilo = extLookup[urlExtension] ? extLookup['*']
+  if extLookup['/']?
     fs.stat @path.full, (err,stats)=>
-      runActionList (!err && stats.isDirectory() && actionList.dir? && actionList.dir) ||
-                  (actionList.file? && actionList.file)
+      runActionList(
+        if !err && stats.isDirectory() && extLookup['$dir']?
+          extLookup['$dir']
+        else
+          extSilo
+      )
   else
-    runActionList(actionList)
+    runActionList(extSilo)
