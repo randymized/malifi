@@ -69,6 +69,8 @@ malifi= (root,options)->
       url: pathinfo.url
       meta: meta.default #todo: implement the meta file loader
 
+    if actionobj.meta._forbiddenURLChars?.test(pathname)
+      return forbidden(res)
     action.call(actionobj,siteStack)
 
 exports = module.exports = malifi

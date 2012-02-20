@@ -17,11 +17,6 @@ if (stat.isDirectory())
 exports = module.exports = action= (siteStack)->
   actions= @meta._actions
 
-  if @meta._forbiddenURLChars?.test(@url.decoded_path)
-    @res.statusCode = 403;
-    @res.end('Forbidden URL');
-    return;
-
   urlExtension = @path.extension
   if urlExtension && @meta._allowed_url_extensions
     aue= @meta._allowed_url_extensions
