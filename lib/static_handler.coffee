@@ -18,23 +18,12 @@ connect = require('connect')
 utils = connect.utils
 
 exports= module.exports= staticHandler= ()->
-  path= @pathinfo.path.full
+  path= @path.full
   mime_magic.fileWrapper path, (err, type) =>
     if (err)
       return if 'ENOENT' == err.code then @next() else @next(err)
     else
       fs.stat path, (err, stat) =>
-        ###
-        todo: // redirect directory in case index.html is present
-        } else if (stat.isDirectory()) {
-          if (!redirect) return @next();
-          @res.statusCode = 301;
-          @res.setHeader('Location', url.pathname + '/');
-          @res.end('Redirecting to ' + url.pathname + '/');
-          return;
-        }
-        ###
-
         # header fields
         unless @res.getHeader('Date')
           @res.setHeader('Date', new Date().toUTCString())

@@ -16,12 +16,12 @@ if (stat.isDirectory())
 exports = module.exports = action= ()->
   actions= @meta._actions
 
-  if forbiddenURLChars.test(@pathinfo.url.pathname)
+  if forbiddenURLChars.test(@url.decoded_path)
     @res.statusCode = 403;
     @res.end('Forbidden URL');
     return;
 
-  urlExtension = @pathinfo.path.extension
+  urlExtension = @path.extension
   if urlExtension && @meta._allowed_url_extensions
     aue= @meta._allowed_url_extensions
     aue.regexp ?= new RegExp('((\.' + aue.join(')|(\.') + '))$')

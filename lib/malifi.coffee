@@ -32,23 +32,28 @@ malifi= (root,options)->
 
   return malifiMainHandler= (req, res, next)->
     siteStack= null
-    parsedurl= parse(req.url)
+    parsedurl= parse(req.url,true)
     pathname= decodeURIComponent(parsedurl.pathname)
     unless pathname.indexOf('\0')
       return forbidden(res)
     pathinfo=
       host: new ParseHost(req)
       url:
+        raw: req.url
         parsed: parsedurl
-        pathname: pathname
+        decoded_path: pathname
     siteStack= baseSiteStack.getSite(req,pathinfo)
-    #Now that we know the current site's directory, fill in the rest of the attributes
-    pathinfo.pwd= siteStack[0]
-    fullPath= join(pathinfo.pwd,pathname)
-    pathinfo.path=
-      full: fullPath
-      extension: path.extname(pathinfo.url.pathname)
-      base: fullPath.replace(stripExtension,'$1')
+
+    class PathElement
+      constructor: ->
+        pwd= siteStack[0]
+        fullPath= join(pwd,pathname)
+        @site_root= pwd
+        @full= fullPath
+        @relative= fullPath.substr(pwd.length)
+        @extension= path.extname(fullPath)
+        @base= fullPath.replace(stripExtension,'$1')
+        @relative_base= @base.substr(pwd.length)
 
     # Actions and page modules are run in the scope of actionobj.
     # It provides access to req, res, next as well as pathinfo and the metadata
@@ -60,9 +65,11 @@ malifi= (root,options)->
       req: req
       res: res
       next: next
-      pathinfo: pathinfo
+      path: new PathElement
+      host: pathinfo.host
+      url: pathinfo.url
       meta: meta.default #todo: implement the meta file loader
-    action.call(actionobj)
+    action.call(actionobj,siteStack)
 
 exports = module.exports = malifi
 
