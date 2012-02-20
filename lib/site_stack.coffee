@@ -4,14 +4,15 @@ path = require('path')
 join = path.join
 normalize = path.normalize
 utilities= require('./utilities')
-isFileSync= utilities.isFileSync
+isModuleSync= utilities.isModuleSync
 
 module.exports = exports= class SiteStack
   constructor: (defaultSiteDir)->
     @stack=[normalize(defaultSiteDir), normalize(join(__dirname,'../base-site'))]
-    sitesFileName= join(defaultSiteDir,'sites.js')
+    sitesFileName= join(defaultSiteDir,'_sites')
     @sitemap= null
-    return null unless isFileSync(sitesFileName)
+    debugger
+    return null unless isModuleSync(sitesFileName)
     @siteMapper= require(sitesFileName)
       
   getSite: (req,pathinfo) ->
