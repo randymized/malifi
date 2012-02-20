@@ -1,5 +1,6 @@
 connect = require('connect')
 utils = connect.utils
+fs = require('fs')
 forbiddenURLChars = /(\/[._])|(_\/)|_$/
 
 ###
@@ -30,14 +31,22 @@ exports = module.exports = action= (siteStack)->
       @res.end('Unsupported Media Type');
       return;
 
+  runActionList= (actionList)=>
+    @next() unless actionList
+    i= -1
+    pass= ()=>
+      i+= 1
+      if (actionList.length > i)
+        actionList[i].call(this,pass)
+      else
+        @next()
+    pass()
+
   extLookup= actions[if @req.method is 'HEAD' then 'GET' else @req.method]
   actionList= extLookup[urlExtension] ? extLookup['*']
-  @next() unless actionList
-  i= -1
-  pass= ()=>
-    i+= 1
-    if (actionList.length > i)
-      actionList[i].call(this,pass)
-    else
-      @next()
-  pass()
+  if actionList.dir? || actionList.file?
+    fs.stat @path.full, (err,stats)=>
+      runActionList (!err && stats.isDirectory() && actionList.dir? && actionList.dir) ||
+                  (actionList.file? && actionList.file)
+  else
+    runActionList(actionList)
