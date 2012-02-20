@@ -1,9 +1,8 @@
 fs = require('fs')
 
 isFile= (name,foundCB)->
-  try
-    fs.stat name, (err,stats)->
-      foundCB(!err && stats.isFile())
+  fs.stat name, (err,stats)->
+    foundCB(!err && stats.isFile())
 
 isFileSync= (name)->
   try
