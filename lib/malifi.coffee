@@ -44,16 +44,9 @@ malifi= (root,options)->
         decoded_path: pathname
     siteStack= baseSiteStack.getSite(req,pathinfo)
 
-    class PathElement
-      constructor: ->
-        pwd= siteStack[0]
-        fullPath= join(pwd,pathname)
-        @site_root= pwd
-        @full= fullPath
-        @relative= fullPath.substr(pwd.length)
-        @extension= path.extname(fullPath)
-        @base= fullPath.replace(stripExtension,'$1')
-        @relative_base= @base.substr(pwd.length)
+    pwd= siteStack[0]
+    fullPath= join(pwd,pathname)
+    base= fullPath.replace(stripExtension,'$1')
 
     # Actions and page modules are run in the scope of actionobj.
     # It provides access to req, res, next as well as pathinfo and the metadata
@@ -65,7 +58,13 @@ malifi= (root,options)->
       req: req
       res: res
       next: next
-      path: new PathElement
+      path:
+        site_root: pwd
+        full: fullPath
+        relative: fullPath.substr(pwd.length)
+        extension: path.extname(fullPath)
+        base: base
+        relative_base: base.substr(pwd.length)
       host: pathinfo.host
       url: pathinfo.url
       meta: meta.default #todo: implement the meta file loader
