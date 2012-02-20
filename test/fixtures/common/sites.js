@@ -6,7 +6,7 @@ var map= {
 
 exports= module.exports= {
   lookup: function() {
-      return map[this.host.hostname()]
+      return map[this.host.name]
     }
   ,paths: [site]
 }

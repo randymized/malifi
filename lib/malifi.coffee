@@ -15,14 +15,13 @@ SiteStack= require('./site_stack')
 stripExtension= /(.*)(?:\.[^/.]+)$/
 Meta= require('./meta')
 action= require('./action')
-extractHostFromHost= /([^:]+).*/
-extractPortFromHost= /[^:]+:(.*)/
+extractHostAndPort= /([^:]+)(?::(.*))?/
 
 class ParseHost
   constructor: (req)->
-    @host= req.headers.host
-  hostname: -> @_hostname||= @host.replace(extractHostFromHost,'$1')
-  port: -> @_port||= @host.replace(extractPortFromHost,'$1')
+    matches = req.headers.host.match(extractHostAndPort);
+    @name= matches[1]
+    @port= matches[2]
 
 malifi= (root,options)->
   unless root?
@@ -37,9 +36,6 @@ malifi= (root,options)->
     pathname= decodeURIComponent(parsedurl.pathname)
     unless pathname.indexOf('\0')
       return forbidden(res)
-    #Set some initial attributes of req.malifi.  More will be added after baseSiteStack.getSite() is invoked, but
-    #methods that it invokes may expect req.malifi to have as many attributes set as possible without knowing what
-    #the current site's directory is (which is what getSite() establishes).
     pathinfo=
       host: new ParseHost(req)
       url:
