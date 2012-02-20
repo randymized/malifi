@@ -15,6 +15,16 @@ module.exports=
   # otherwise matches the file.
   _allowed_static_extensions: ['txt','pdf']
 
+  # If defined and not null, any URLs matching this regular expression will be
+  # rejected as forbidden.  The default rejects URLs where any element starts
+  # with a dot or with an underline or which end with an underline.  The
+  # underline rejection is a Malifi convention in which file or directory
+  # names starting with an underline are special files having some meaning to
+  # malifi but not intended to be served and where names ending with an
+  # underline are only served if the subject of an internal redirect or serve
+  # as partials.
+  _forbiddenURLChars: /(\/[._])|(_\/)|_$/
+
   # The default set of actions to be performed on an incoming request.
   # First the request method: GET, POST, PUT, DELETE, etc is selected.
   # Then the URL's extension.  If there is no extension, the key will be
