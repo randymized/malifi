@@ -68,6 +68,7 @@ malifi= (root,options)->
       host: pathinfo.host
       url: pathinfo.url
       meta: meta.default #todo: implement the meta file loader
+
     action.call(actionobj,siteStack)
 
 exports = module.exports = malifi

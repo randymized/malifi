@@ -13,7 +13,7 @@ if (stat.isDirectory())
 }
 ###
 
-exports = module.exports = action= ()->
+exports = module.exports = action= (siteStack)->
   actions= @meta._actions
 
   if forbiddenURLChars.test(@url.decoded_path)
@@ -30,7 +30,8 @@ exports = module.exports = action= ()->
       @res.end('Unsupported Media Type');
       return;
 
-  actionList= actions[urlExtension] ? actions['*']
+  extLookup= actions[if @req.method is 'HEAD' then 'GET' else @req.method]
+  actionList= extLookup[urlExtension] ? extLookup['*']
   @next() unless actionList
   i= -1
   pass= ()=>
