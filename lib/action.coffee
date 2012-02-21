@@ -1,6 +1,7 @@
 connect = require('connect')
 utils = connect.utils
 fs = require('fs')
+utilities= require('./utilities')
 forbiddenURLChars = /(\/[._])|(_\/)|_$/
 
 ###
@@ -19,9 +20,7 @@ exports = module.exports = action= (siteStack)->
 
   urlExtension = @path.extension
   if urlExtension && @meta._allowed_url_extensions
-    aue= @meta._allowed_url_extensions
-    aue.regexp ?= new RegExp('((\.' + aue.join(')|(\.') + '))$')
-    unless aue.regexp.test(urlExtension)
+    unless utilities.nameIsInArray(urlExtension,@meta._allowed_url_extensions)
       @res.statusCode = 415;
       @res.end('Unsupported Media Type');
       return;

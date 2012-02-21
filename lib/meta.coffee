@@ -90,6 +90,3 @@ module.exports = class Meta
     inter= merged(inter,options)
     inter= loadTree(dirs[1],inter)
   find: find
-
-
-
