@@ -13,6 +13,7 @@ normalize = path.normalize
 parse = require('url').parse
 SiteStack= require('./site_stack')
 stripExtension= require('./strip_extension')
+unhandledHandler= require('./unhandled_exception_handler')
 Meta= require('./meta')
 action= require('./action')
 extractHostAndPort= /([^:]+)(?::(.*))?/
@@ -70,6 +71,7 @@ malifi= (root,options)->
 
     if actionobj.meta._forbiddenURLChars?.test(pathname)
       return forbidden(res)
+    unhandledHandler.log.call(actionobj)
     action.call(actionobj,siteStack)
 
 exports = module.exports = malifi
