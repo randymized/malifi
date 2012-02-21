@@ -12,14 +12,13 @@
 ###
 
 fs = require('fs')
-mime = require('mime')
-mime_magic = require('mime-magic')
 connect = require('connect')
 utils = connect.utils
+mime = require('mime')
 
-exports= module.exports= staticHandler= ()->
+exports= module.exports= staticHandler= (mimeWrapper)->
   path= @path.full
-  mime_magic.fileWrapper path, (err, type) =>
+  mimeWrapper path, (err, type) =>
     if (err)
       return if 'ENOENT' == err.code then @next() else @next(err)
     else
