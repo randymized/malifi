@@ -1,6 +1,14 @@
 connect = require('connect')
 utilities= require('./utilities')
 isModuleSync= utilities.isModuleSync
+path = require('path')
+normalize = path.normalize
+fs = require('fs')
+stripExtension= require('./strip_extension')
+metafileSignature= /\.meta\.(js|coffee|json)$/
+aDefaultFileSignature= /_default\.meta\.(js|coffee|json)$/
+stripMetaExtension= /(.*)(?:\.meta\.(js|coffee|json))$/
+canDescendNoMore= /^\.?\/$/
 
 merged= (base,dominant)->
   return base unless dominant
@@ -14,23 +22,60 @@ merged= (base,dominant)->
 defaultMetaName= (dir)->
   "#{dir}/_default.meta"
 
+cache= {}
 
-load= (name,meta)->
-  if isModuleSync(name)
-    content = require(name)
-    # A meta file module may be a function as well as an object.  If its a function,
-    # it will be invoked with the parent metadata as an argument and should return
-    # a metadata object.
-    merged(meta, content?(meta) ? content)
+find= (name)->
+  if cache[name]
+    return cache[name]
   else
+    return {} if canDescendNoMore.test(name)  # emergency shut-off
+    return find(path.dirname(name)+'/')
+
+load= (name,superMeta,cachename)->
+    content = require(name)
+    # A meta file module may be a function or an object.  If its a function,
+    # it will be invoked with the parent metadata as an argument and should return
+    # a metadata object.  The meta file can thus create metadata that is
+    # affected by the values in the parent metadata
+    merged(superMeta, content?(superMeta) ? content)
+
+loadTree= (dirname,superMeta) ->
+  loadDir= (dirname,superMeta,visited) ->   #recursive
+    defaultModName = path.join(dirname,'_default.meta')
+    meta= if isModuleSync(defaultModName)
+      debugger
+      cache[dirname+'/']= load(defaultModName,superMeta)
+    else
+      superMeta
+    for filename in fs.readdirSync(dirname)
+      unless aDefaultFileSignature.test(filename)
+        filename= path.join(dirname,filename)
+        stat = fs.lstatSync(filename)
+        if stat.isDirectory()
+          unless visited[stat.ino]  # do not follow circular symbolic link
+            debugger
+            newvisited= {}
+            newvisited[ino] = true for ino, val of visited
+            newvisited[stat.ino]= true
+            loadDir(filename,meta,newvisited)
+        else
+          if metafileSignature.test(filename)
+            cache[filename.replace(stripMetaExtension,'$1')]= load(stripExtension(filename),meta)
     meta
+  visited= {}
+  visited[fs.lstatSync(dirname).ino]= true
+  cache[dirname+'/']= superMeta  # this will be overridden if _default_meta found
+  loadDir(dirname,superMeta,visited)
 
 module.exports = class Meta
   constructor: (baseSiteStack,options={})->
     dirs = baseSiteStack.stack.reverse()
-    @base= require(defaultMetaName(dirs[0]))
-    @optioned= merged(@base,options)
-    @default= load(defaultMetaName(dirs[1]),@optioned)
+    debugger
+    inter= loadTree(dirs[0],{})
+    inter= merged(inter,options)
+    inter= loadTree(dirs[1],inter)
+    loadTree(normalize(p),inter) for p in baseSiteStack.siteMapper.paths
+  find: find
 
 
 

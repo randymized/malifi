@@ -12,7 +12,7 @@ join = path.join
 normalize = path.normalize
 parse = require('url').parse
 SiteStack= require('./site_stack')
-stripExtension= /(.*)(?:\.[^/.]+)$/
+stripExtension= require('./strip_extension')
 Meta= require('./meta')
 action= require('./action')
 extractHostAndPort= /([^:]+)(?::(.*))?/
@@ -46,7 +46,7 @@ malifi= (root,options)->
 
     pwd= siteStack[0]
     fullPath= join(pwd,pathname)
-    base= fullPath.replace(stripExtension,'$1')
+    base= stripExtension(fullPath)
 
     # Actions and page modules are run in the scope of actionobj.
     # It provides access to req, res, next as well as pathinfo and the metadata
@@ -67,7 +67,7 @@ malifi= (root,options)->
         relative_base: base.substr(pwd.length)
       host: pathinfo.host
       url: pathinfo.url
-      meta: meta.default #todo: implement the meta file loader
+      meta: meta.find(fullPath)
 
     if actionobj.meta._forbiddenURLChars?.test(pathname)
       return forbidden(res)
