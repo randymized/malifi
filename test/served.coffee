@@ -46,7 +46,7 @@ describe 'malifi server', ->
   it 'should pick up correct site metadata', (done) ->
     get('/metaTestString','site:test', done)
   it 'metadata may be in a JSON file', (done) ->
-    get('/sub/showmeta','common', done)
+    get('/sub/showmeta','b/show.test_string', done)
   it 'should be able to run a .js file', (done) ->
     get('/aJSFile','Got JS', done)
   it 'should 404 if a file is not present', (done) ->
