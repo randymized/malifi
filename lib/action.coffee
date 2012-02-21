@@ -29,11 +29,14 @@ exports = module.exports = action= (siteStack)->
     @next() unless actionList
     i= -1
     pass= ()=>
-      i+= 1
-      if (actionList.length > i)
-        actionList[i].call(this,pass)
-      else
-        @next()
+      try
+        i+= 1
+        if (actionList.length > i)
+            actionList[i].call(this,pass)
+        else
+          @next()
+      catch e
+        @next(e)
     pass()
 
   extLookup= actions[if @req.method is 'HEAD' then 'GET' else @req.method]
