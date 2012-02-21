@@ -13,7 +13,7 @@ module.exports=
   # Static files may be served if they have the following extensions and
   # either the URL includes the extension or the URL has no extension but
   # otherwise matches the file.
-  _allowed_static_extensions: ['txt','pdf']
+  _allowed_static_extensions: ['txt','pdf','html','htm','gif','jpg','ico','tif','png']
 
   # If defined and not null, any URLs matching this regular expression will be
   # rejected as forbidden.  The default rejects URLs where any element starts
@@ -64,7 +64,7 @@ module.exports=
         ]
       '*': [
           require('../lib/actions/get_only')
-        , require('../lib/actions/text_file')
+        , require('../lib/actions/static_file')
       ]
 
   test_string: 'base'
