@@ -1,4 +1,6 @@
 connect = require('connect')
+path = require('path')
+normalize = path.normalize
 utilities= require('./utilities')
 isModuleSync= utilities.isModuleSync
 path = require('path')
@@ -6,6 +8,7 @@ normalize = path.normalize
 fs = require('fs')
 stripExtension= require('./strip_extension')
 metafileSignature= /\.meta\.(js|coffee|json)$/
+moduleSignature= /\.(js|coffee|json)$/
 aDefaultFileSignature= /_default\.meta\.(js|coffee|json)$/
 stripMetaExtension= /(.*)(?:\.meta\.(js|coffee|json))$/
 canDescendNoMore= /^\.?\/$/
@@ -40,10 +43,10 @@ load= (name,superMeta,cachename)->
     merged(superMeta, content?(superMeta) ? content)
 
 loadTree= (dirname,superMeta) ->
+  modules= []
   loadDir= (dirname,superMeta,visited) ->   #recursive
     defaultModName = path.join(dirname,'_default.meta')
     meta= if isModuleSync(defaultModName)
-      debugger
       cache[dirname+'/']= load(defaultModName,superMeta)
     else
       superMeta
@@ -53,28 +56,39 @@ loadTree= (dirname,superMeta) ->
         stat = fs.lstatSync(filename)
         if stat.isDirectory()
           unless visited[stat.ino]  # do not follow circular symbolic link
-            debugger
             newvisited= {}
             newvisited[ino] = true for ino, val of visited
             newvisited[stat.ino]= true
             loadDir(filename,meta,newvisited)
         else
-          if metafileSignature.test(filename)
-            cache[filename.replace(stripMetaExtension,'$1')]= load(stripExtension(filename),meta)
-    meta
+          if moduleSignature.test(filename)
+            stripped= stripExtension(filename)
+            if metafileSignature.test(filename)
+              cache[filename.replace(stripMetaExtension,'$1')]= load(stripped,meta)
+            else
+              modules.unshift(stripped)
+    return meta
   visited= {}
   visited[fs.lstatSync(dirname).ino]= true
   cache[dirname+'/']= superMeta  # this will be overridden if _default_meta found
-  loadDir(dirname,superMeta,visited)
+  meta= loadDir(dirname,superMeta,visited)
+  preload(modules,superMeta)
+  return meta
+
+sitesModuleSignature= /_sites$/
+preload= (modules,superMeta)->
+  for mod in modules
+    require(mod) if find(mod)?._preload_modules
+    if sitesModuleSignature.test(mod)
+      m = require(mod)  # assure load even if preload_modules is off
+      loadTree(normalize(sitepath),superMeta) for sitepath in m.paths
 
 module.exports = class Meta
   constructor: (baseSiteStack,options={})->
     dirs = baseSiteStack.stack.reverse()
-    debugger
     inter= loadTree(dirs[0],{})
     inter= merged(inter,options)
     inter= loadTree(dirs[1],inter)
-    loadTree(normalize(p),inter) for p in baseSiteStack.siteMapper.paths
   find: find
 
 

@@ -31,7 +31,6 @@ malifi= (root,options)->
   meta= new Meta(baseSiteStack,options)
 
   return malifiMainHandler= (req, res, next)->
-    siteStack= null
     parsedurl= parse(req.url,true)
     pathname= decodeURIComponent(parsedurl.pathname)
     unless pathname.indexOf('\0')
