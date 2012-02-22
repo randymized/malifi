@@ -16,6 +16,8 @@ if (stat.isDirectory())
 ###
 
 exports = module.exports = action= (siteStack)->
+  @meta._unhandled_handler?.log?.call(this)
+
   actions= @meta._actions
 
   urlExtension = @path.extension

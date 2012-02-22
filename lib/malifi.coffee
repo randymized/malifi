@@ -71,7 +71,6 @@ malifi= (root,options)->
 
     if actionobj.meta._forbiddenURLChars?.test(pathname)
       return forbidden(res)
-    actionobj.meta._unhandled_handler?.log?.call(actionobj)
     action.call(actionobj,siteStack)
 
 exports = module.exports = malifi
