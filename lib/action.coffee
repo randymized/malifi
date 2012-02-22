@@ -29,23 +29,20 @@ exports = module.exports = action= ()->
       @res.end('Unsupported Media Type');
       return;
 
-  @meta_lookup('/x')
   actions= @meta._actions
   extLookup= actions[if @req.method is 'HEAD' then 'GET' else @req.method]
   extSilo = extLookup[urlExtension] ? extLookup['*']
 
   siteindex= 0
   nextSite= ()=>
-    if (root= @site_stack[siteindex++])
-      pathobj= @path
-      pathobj.site_root= root
-      pathobj.full= join(root,@path.relative)
-      pathobj.base= join(root,@path.relative_base)
-
-      traverseActionList= (actionList)=>
-        @next() unless actionList
+    root= @site_stack[siteindex++]
+    unless root
+      @next()
+    else
+      traverseActionList = (actionList)=>
+        nextSite() unless actionList
         i= 0
-        pass= ()=>
+        pass = ()=>
           try
             actor= actionList[i++]
             if (actor)
@@ -56,6 +53,11 @@ exports = module.exports = action= ()->
             @next(e)
         pass()
 
+      pathobj= @path
+      pathobj.site_root= root
+      pathobj.full= join(root,@path.relative)
+      pathobj.base= join(root,@path.relative_base)
+
       if extLookup['/']?
         fs.stat @path.full, (err,stats)=>
           if !err && stats.isDirectory() && extLookup['/']?
@@ -64,7 +66,4 @@ exports = module.exports = action= ()->
             traverseActionList(extSilo)
       else
         traverseActionList(extSilo)
-
-    else
-      @next()
   nextSite()
