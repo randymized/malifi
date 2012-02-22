@@ -17,7 +17,7 @@ if (stat.isDirectory())
 }
 ###
 
-exports = module.exports = action= (siteStack)->
+exports = module.exports = action= ()->
   @meta._unhandled_handler?.log?.call(this)
 
   urlExtension = @path.extension
@@ -27,13 +27,14 @@ exports = module.exports = action= (siteStack)->
       @res.end('Unsupported Media Type');
       return;
 
+  @meta_lookup('/x')
   actions= @meta._actions
   extLookup= actions[if @req.method is 'HEAD' then 'GET' else @req.method]
   extSilo = extLookup[urlExtension] ? extLookup['*']
 
   siteindex= 0
   nextSite= ()=>
-    if (root= siteStack[siteindex++])
+    if (root= @site_stack[siteindex++])
       pathobj= @path
       pathobj.site_root= root
       pathobj.full= join(root,@path.relative)

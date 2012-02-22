@@ -61,7 +61,9 @@ malifi= (root,options)->
         #absolute paths will be added when the site is selected from the site stack
       host: pathinfo.host
       url: pathinfo.url
+      meta_lookup: meta.find
       meta: meta.find(join(siteStack[0],pathname))
+      site_stack: siteStack
 
     if actionobj.meta._forbiddenURLChars?.test(pathname)
       return forbidden(res)
