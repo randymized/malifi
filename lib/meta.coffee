@@ -83,10 +83,10 @@ preload= (modules,superMeta)->
       m = require(mod)  # assure load even if preload_modules is off
       loadTree(normalize(sitepath),superMeta) for sitepath in m.paths
 
-module.exports = class Meta
-  constructor: (baseSiteStack,options={})->
-    dirs = baseSiteStack.stack.reverse()
-    inter= loadTree(dirs[0],{})
+module.exports=
+  init: (baseSiteStack,options={})->
+    dirs = baseSiteStack.stack  # note: the stack is maintained in reverse order
+    inter= loadTree(dirs[1],{})
     inter= merged(inter,options)
-    inter= loadTree(dirs[1],inter)
+    inter= loadTree(dirs[0],inter)
   find: find

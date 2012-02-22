@@ -12,7 +12,7 @@ normalize = path.normalize
 parse = require('url').parse
 SiteStack= require('./site_stack')
 stripExtension= require('./strip_extension')
-Meta= require('./meta')
+meta= require('./meta')
 action= require('./action')
 package = require('../package')
 extractHostAndPort= /([^:]+)(?::(.*))?/
@@ -28,7 +28,7 @@ malifi= (root,options)->
     throw new Error('malifi site root path required')
   options?= {}
   baseSiteStack= new SiteStack(normalize(root))
-  meta= new Meta(baseSiteStack,options)
+  meta.init(baseSiteStack,options)
 
   return malifiMainHandler= (req, res, next)->
     parsedurl= parse(req.url,true)
