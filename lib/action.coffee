@@ -1,6 +1,8 @@
 connect = require('connect')
 utils = connect.utils
 fs = require('fs')
+path = require('path')
+join = path.join
 utilities= require('./utilities')
 forbiddenURLChars = /(\/[._])|(_\/)|_$/
 
@@ -18,8 +20,6 @@ if (stat.isDirectory())
 exports = module.exports = action= (siteStack)->
   @meta._unhandled_handler?.log?.call(this)
 
-  actions= @meta._actions
-
   urlExtension = @path.extension
   if urlExtension && @meta._allowed_url_extensions
     unless utilities.nameIsInArray(urlExtension,@meta._allowed_url_extensions)
@@ -27,29 +27,41 @@ exports = module.exports = action= (siteStack)->
       @res.end('Unsupported Media Type');
       return;
 
-  runActionList= (actionList)=>
-    @next() unless actionList
-    i= -1
-    pass= ()=>
-      try
-        i+= 1
-        if (actionList.length > i)
-            actionList[i].call(this,pass)
-        else
-          @next()
-      catch e
-        @next(e)
-    pass()
-
+  actions= @meta._actions
   extLookup= actions[if @req.method is 'HEAD' then 'GET' else @req.method]
   extSilo = extLookup[urlExtension] ? extLookup['*']
-  if extLookup['/']?
-    fs.stat @path.full, (err,stats)=>
-      runActionList(
-        if !err && stats.isDirectory() && extLookup['$dir']?
-          extLookup['$dir']
-        else
-          extSilo
-      )
-  else
-    runActionList(extSilo)
+
+  siteindex= 0
+  nextSite= ()=>
+    if (root= siteStack[siteindex++])
+      pathobj= @path
+      pathobj.site_root= root
+      pathobj.full= join(root,@path.relative)
+      pathobj.base= join(root,@path.relative_base)
+
+      throughActionList= (actionList)=>
+        @next() unless actionList
+        i= 0
+        pass= ()=>
+          try
+            actor= actionList[i++]
+            if (actor)
+              actor.call(this,pass)
+            else
+              nextSite()
+          catch e
+            @next(e)
+        pass()
+
+      if extLookup['/']?
+        fs.stat @path.full, (err,stats)=>
+          if !err && stats.isDirectory() && extLookup['/']?
+            throughActionList(extLookup['/'])
+          else
+            throughActionList(extSilo)
+      else
+        throughActionList(extSilo)
+
+    else
+      @next()
+  nextSite()

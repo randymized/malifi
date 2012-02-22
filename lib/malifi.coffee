@@ -44,10 +44,6 @@ malifi= (root,options)->
         decoded_path: pathname
     siteStack= baseSiteStack.getSite(req,pathinfo)
 
-    pwd= siteStack[0]
-    fullPath= join(pwd,pathname)
-    base= stripExtension(fullPath)
-
     # Actions and page modules are run in the scope of actionobj.
     # It provides access to req, res, next as well as pathinfo and the metadata
     # for the URL being served.  It can also be used as a bus for conveying
@@ -59,15 +55,13 @@ malifi= (root,options)->
       res: res
       next: next
       path:
-        site_root: pwd
-        full: fullPath
-        relative: fullPath.substr(pwd.length)
-        extension: path.extname(fullPath)
-        base: base
-        relative_base: base.substr(pwd.length)
+        relative: pathname
+        extension: path.extname(pathname)
+        relative_base: base= stripExtension(pathname)
+        #absolute paths will be added when the site is selected from the site stack
       host: pathinfo.host
       url: pathinfo.url
-      meta: meta.find(fullPath)
+      meta: meta.find(join(siteStack[0],pathname))
 
     if actionobj.meta._forbiddenURLChars?.test(pathname)
       return forbidden(res)
