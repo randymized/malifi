@@ -89,7 +89,7 @@ preload= (modules,superMeta)->
 
 module.exports=
   init: (baseSiteStack,options={})->
-    dirs = baseSiteStack.stack  # note: the stack is maintained in reverse order
+    dirs = baseSiteStack  # note: the stack is maintained in reverse order
     userPath= dirs[0]
     defaultPath= dirs[1]
     inter= loadTree(defaultPath,{})

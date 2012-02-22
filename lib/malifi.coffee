@@ -10,7 +10,6 @@ forbidden = connect.utils.forbidden
 join = path.join
 normalize = path.normalize
 parse = require('url').parse
-SiteStack= require('./site_stack')
 stripExtension= require('./strip_extension')
 meta= require('./meta')
 action= require('./action')
@@ -27,7 +26,7 @@ malifi= (root,options)->
   unless root?
     throw new Error('malifi site root path required')
   options?= {}
-  baseSiteStack= new SiteStack(normalize(root))
+  baseSiteStack= [normalize(root), normalize(join(__dirname,'../base-site'))]
   meta.init(baseSiteStack,options)
 
   return malifiMainHandler= (req, res, next)->
@@ -42,7 +41,7 @@ malifi= (root,options)->
         parsed: parsedurl
         decoded_path: pathname
 
-    siteStack= meta.site_lookup.call(pathinfo,req).concat(baseSiteStack.stack)
+    siteStack= meta.site_lookup.call(pathinfo,req).concat(baseSiteStack)
 
     # Actions and page modules are run in the scope of actionobj.
     # It provides access to req, res, next as well as pathinfo and the metadata
