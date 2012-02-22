@@ -1,3 +1,4 @@
+allowed_extensions= ['txt','pdf','html','htm','gif','jpg','ico','tif','png']
 module.exports=
   # If getOnly is true, only GET or HEAD requests will be handled, unless a
   # request-type specific handler is found.
@@ -8,12 +9,12 @@ module.exports=
 
   # Valid URLs may include the following extensions.
   # Any other extensions at the end of a URL will be disallowed.
-  _allowed_url_extensions: ['txt','pdf']
+  _allowed_url_extensions: allowed_extensions
 
   # Static files may be served if they have the following extensions and
   # either the URL includes the extension or the URL has no extension but
   # otherwise matches the file.
-  _allowed_static_extensions: ['txt','pdf','html','htm','gif','jpg','ico','tif','png']
+  _allowed_static_extensions: allowed_extensions
 
   # If defined and not null, any URLs matching this regular expression will be
   # rejected as forbidden.  The default rejects URLs where any element starts
