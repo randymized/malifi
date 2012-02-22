@@ -14,6 +14,7 @@ SiteStack= require('./site_stack')
 stripExtension= require('./strip_extension')
 Meta= require('./meta')
 action= require('./action')
+package = require('../package')
 extractHostAndPort= /([^:]+)(?::(.*))?/
 
 class ParseHost
@@ -67,4 +68,4 @@ malifi= (root,options)->
 
 exports = module.exports = malifi
 
-exports.version = '0.0.1'
+exports.version = package.version
