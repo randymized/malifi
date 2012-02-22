@@ -65,6 +65,7 @@ module.exports=
         ]
       '*': [
           require('../lib/actions/get_only')
+        , require('../lib/actions/just_a_module')
         , require('../lib/actions/static_file')
       ]
 

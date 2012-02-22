@@ -71,3 +71,5 @@ describe 'malifi server', ->
     get('/x/.no',403, done)
   it 'should err if any element of the URL starts with a dot', (done) ->
     get('/.no/whey',403, done)
+  it 'should serve favicon.ico (which is in the base site)', (done) ->
+    get('/favicon.ico',200, done)
