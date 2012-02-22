@@ -13,7 +13,15 @@ mimeWrapper= (path,cb)->
 
 # if a .txt file is requested, return it
 module.exports= textAction= (pass) ->
-  if !@meta._allowed_static_extensions? || utilities.nameIsInArray(@path.extension,@meta._allowed_static_extensions)
-    staticHandler.call(this,mimeWrapper)
-  else
-    pass()
+  try
+    if !@meta._allowed_static_extensions? || utilities.nameIsInArray(@path.extension,@meta._allowed_static_extensions)
+      fs.stat @path.full, (err, stat) =>
+        try
+          return pass() if err
+          staticHandler.call(this,mimeWrapper)
+        catch e
+          @next(e)
+    else
+      pass()
+  catch e
+    @next(e)
