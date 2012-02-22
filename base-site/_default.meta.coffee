@@ -67,4 +67,15 @@ module.exports=
         , require('../lib/actions/static_file')
       ]
 
+  # Specify a module that will handle any unhandled exceptions.  Best practice
+  # is to exit the process as a result of an unhandled exception, but the handler
+  # may log some clues to help identify the problem.  It might also notify
+  # someone about the problem.
+  # The module should export a 'log' method.  The log method will be bound to
+  # the action object and will thus have access to the same member variables
+  # as an action handler.  The log method should also register a method
+  # to catch unhandled exceptions if the method has not already been registered.
+  _unhandled_handler:
+    require('../lib/unhandled_exception_handler')
+
   test_string: 'base'
