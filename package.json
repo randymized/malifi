@@ -5,15 +5,14 @@
   , "keywords": []
   , "author": "Randy McLaughlin <8b629a9884@snkmail.com>"
   , "dependencies": {
-        "connect": "1.8.5"
-      , "coffee-script": "1"
+        "connect": "1.8.x"
       , "mime": ">= 0.0.1"
-      , "mime-magic": ">= 0.2.5"
+      , "coffee-script": "1.2.x"
     }
   , "devDependencies": {
-      "should": "*"
-      , "mocha": "*"
+        "should": "0.5.x"
+      , "mocha": "0.12.x"
     }
   , "main": "index"
-  , "engines": { "node": "0.6.x" }
+  , "engines": { "node": ">= 0.6.0" }
 }
