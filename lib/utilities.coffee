@@ -26,6 +26,10 @@ hasAnExtension= (name,extensions,foundCB)->
     isFile(name+extensions[i],looper)
   looper(false) #initiate the process
 
+createArrayRegexp= (arr)->
+  a= (RegExp.escape(n) for n in arr)
+  arr.regexp ?= new RegExp('((\\.' + a.join(')|(\\.') + '))$')
+
 module.exports=
   # is the given name that of a regular file?
   isFile: isFile
@@ -48,7 +52,6 @@ module.exports=
   #
   nameIsInArray: (name,arr)->
     return if arr
-      a= (RegExp.escape(n) for n in arr)
-      (arr.regexp ?= new RegExp('((\.' + a.join(')|(\.') + '))$')).test(name)
+      (arr.regexp ?= createArrayRegexp(arr)).test(name)
     else
       false
