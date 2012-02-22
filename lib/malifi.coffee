@@ -4,7 +4,6 @@
  * MIT Licensed
 ###
 
-fs = require('fs')
 path = require('path')
 connect = require('connect')
 forbidden = connect.utils.forbidden
@@ -13,7 +12,6 @@ normalize = path.normalize
 parse = require('url').parse
 SiteStack= require('./site_stack')
 stripExtension= require('./strip_extension')
-unhandledHandler= require('./unhandled_exception_handler')
 Meta= require('./meta')
 action= require('./action')
 extractHostAndPort= /([^:]+)(?::(.*))?/
@@ -65,9 +63,7 @@ malifi= (root,options)->
       meta: meta.find(join(siteStack[0],pathname))
       site_stack: siteStack
 
-    if actionobj.meta._forbiddenURLChars?.test(pathname)
-      return forbidden(res)
-    action.call(actionobj,siteStack)
+    action.call(actionobj)
 
 exports = module.exports = malifi
 
