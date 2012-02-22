@@ -39,7 +39,7 @@ exports = module.exports = action= (siteStack)->
       pathobj.full= join(root,@path.relative)
       pathobj.base= join(root,@path.relative_base)
 
-      throughActionList= (actionList)=>
+      traverseActionList= (actionList)=>
         @next() unless actionList
         i= 0
         pass= ()=>
@@ -56,11 +56,11 @@ exports = module.exports = action= (siteStack)->
       if extLookup['/']?
         fs.stat @path.full, (err,stats)=>
           if !err && stats.isDirectory() && extLookup['/']?
-            throughActionList(extLookup['/'])
+            traverseActionList(extLookup['/'])
           else
-            throughActionList(extSilo)
+            traverseActionList(extSilo)
       else
-        throughActionList(extSilo)
+        traverseActionList(extSilo)
 
     else
       @next()
