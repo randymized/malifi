@@ -11,7 +11,7 @@ metafileSignature= /\.meta\.(js|coffee|json)$/
 moduleSignature= /\.(js|coffee|json)$/
 aDefaultFileSignature= /_default\.meta\.(js|coffee|json)$/
 stripMetaExtension= /(.*)(?:\.meta\.(js|coffee|json))$/
-canDescendNoMore= /^\.?\/$/
+canDescendNoMore= /^[/.]?\/$/
 
 merged= (base,dominant)->
   return base unless dominant
