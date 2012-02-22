@@ -41,7 +41,8 @@ malifi= (root,options)->
         raw: req.url
         parsed: parsedurl
         decoded_path: pathname
-    siteStack= baseSiteStack.getSite(req,pathinfo)
+
+    siteStack= meta.site_lookup.call(pathinfo,req).concat(baseSiteStack.stack)
 
     # Actions and page modules are run in the scope of actionobj.
     # It provides access to req, res, next as well as pathinfo and the metadata

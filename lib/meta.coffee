@@ -75,18 +75,38 @@ loadTree= (dirname,superMeta) ->
   preload(modules,superMeta)
   return meta
 
+siteLookupRoot= null
+sites= {}
 sitesModuleSignature= /_sites$/
 preload= (modules,superMeta)->
-  for mod in modules
-    require(mod) if find(mod)?._preload_modules
-    if sitesModuleSignature.test(mod)
-      m = require(mod)  # assure load even if preload_modules is off
+  for modname in modules
+    require(modname) if find(modname)?._preload_modules
+    if sitesModuleSignature.test(modname)
+      m = require(modname)  # assure load even if preload_modules is off
+      sites[path.dirname(modname)]= m
+      siteLookupRoot ?= path.dirname(modname)
       loadTree(normalize(sitepath),superMeta) for sitepath in m.paths
 
 module.exports=
   init: (baseSiteStack,options={})->
     dirs = baseSiteStack.stack  # note: the stack is maintained in reverse order
-    inter= loadTree(dirs[1],{})
+    userPath= dirs[0]
+    defaultPath= dirs[1]
+    inter= loadTree(defaultPath,{})
     inter= merged(inter,options)
-    inter= loadTree(dirs[0],inter)
+    loadTree(userPath,inter)
   find: find
+  site_lookup: (req)->
+    stack= []
+    siteLookup= (req,sitename)=>
+      newname= sites[sitename]?.lookup?.call(this,req)
+      if newname
+        newname= normalize(newname)
+        stack.unshift(newname)
+        siteLookup(newname)
+      else
+        return stack
+    return if siteLookupRoot?
+      siteLookup(req,siteLookupRoot)
+    else
+      stack
