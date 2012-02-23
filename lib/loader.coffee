@@ -103,7 +103,7 @@ module.exports=
       if newname
         newname= normalize(newname)
         stack.unshift(newname)
-        siteLookup(newname)
+        siteLookup(req,newname)
       else
         return stack
     return if siteLookupRoot?
