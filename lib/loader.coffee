@@ -27,12 +27,12 @@ defaultMetaName= (dir)->
 
 cache= {}
 
-find= (name)->
+meta_lookup= (name)->
   if cache[name]
     return cache[name]
   else
     return {} if canDescendNoMore.test(name)  # emergency shut-off
-    return find(path.dirname(name)+'/')
+    return meta_lookup(path.dirname(name)+'/')
 
 load= (name,superMeta,cachename)->
     content = require(name)
@@ -80,7 +80,7 @@ sites= {}
 sitesModuleSignature= /_sites$/
 preload= (modules,superMeta)->
   for modname in modules
-    require(modname) if find(modname)?._preload_modules
+    require(modname) if meta_lookup(modname)?._preload_modules
     if sitesModuleSignature.test(modname)
       m = require(modname)  # assure load even if preload_modules is off
       sites[path.dirname(modname)]= m
@@ -95,7 +95,7 @@ module.exports=
     inter= loadTree(defaultPath,{})
     inter= merged(inter,options)
     loadTree(userPath,inter)
-  find: find
+  meta_lookup: meta_lookup
   site_lookup: (req)->
     stack= []
     siteLookup= (req,sitename)=>

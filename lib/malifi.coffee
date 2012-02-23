@@ -11,7 +11,7 @@ join = path.join
 normalize = path.normalize
 parse = require('url').parse
 stripExtension= require('./strip_extension')
-meta= require('./meta')
+loader= require('./loader')
 action= require('./action')
 package = require('../package')
 extractHostAndPort= /([^:]+)(?::(.*))?/
@@ -27,7 +27,7 @@ malifi= (root,options)->
     throw new Error('malifi site root path required')
   options?= {}
   baseSiteStack= [normalize(root), normalize(join(__dirname,'../base-site'))]
-  meta.init(baseSiteStack,options)
+  loader.init(baseSiteStack,options)
 
   return malifiMainHandler= (req, res, next)->
     parsedurl= parse(req.url,true)
@@ -41,7 +41,7 @@ malifi= (root,options)->
         parsed: parsedurl
         decoded_path: pathname
 
-    siteStack= meta.site_lookup.call(pathinfo,req).concat(baseSiteStack)
+    siteStack= loader.site_lookup.call(pathinfo,req).concat(baseSiteStack)
 
     # Actions and page modules are run in the scope of actionobj.
     # It provides access to req, res, next as well as pathinfo and the metadata
@@ -60,8 +60,8 @@ malifi= (root,options)->
         #absolute paths will be added when the site is selected from the site stack
       host: pathinfo.host
       url: pathinfo.url
-      meta_lookup: meta.find
-      meta: meta.find(join(siteStack[0],pathname))
+      meta_lookup: loader.meta_lookup
+      meta: loader.meta_lookup(join(siteStack[0],pathname))
       site_stack: siteStack
 
     action.call(actionobj)
