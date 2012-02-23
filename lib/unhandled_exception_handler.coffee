@@ -18,8 +18,8 @@ module.exports= exports=
 
   enable: ()->
     enabled= true
-    process.on('uncaughtException', uncaught)
+    process.on('uncaughtException', uncaught) unless process.env.NODE_ENV == 'test'
 
   diable: ()->
-    process.removeListener('uncaughtException', uncaught)
+    process.removeListener('uncaughtException', uncaught) unless process.env.NODE_ENV == 'test'
     enabled= false
