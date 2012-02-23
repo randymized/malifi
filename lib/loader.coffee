@@ -21,28 +21,10 @@ actionsCopier= (src)->
       if _.isArray(src[key])
         dest[key]= src[key][0...src[key].length]
       else
-        actionsCopier(src[key])
+        dest[key]= actionsCopier(src[key])
     else
       dest[key]= src[key]
   return dest
-
-actionsExtender= (dest,src)->
-  dest ?= {}
-  if src
-    for key of src
-      unless src[key]?
-        delete dest[key] if _.has(dest,key)
-      else
-        if _.isArray(src[key])
-          dest[key]= src[key]
-        else
-          if typeof src[key] == 'object'
-            dest[key]= actionsExtender(dest[key],src[key])
-          else
-            dest[key]= src[key]
-    return dest
-  else
-    return src
 
 extend= (base,dominant)->
   return dominant unless base
@@ -52,7 +34,7 @@ extend= (base,dominant)->
       delete r[key] if _.has(r,key)
     else
       if key == '_actions'  #todo: allow similar "deeper copy" options for other keys (that, itself, could be in meta)
-        r[key]= actionsExtender(actionsCopier(base[key] ? {}),value)
+        r[key]= actionsCopier(dominant[key])
       else
         r[key] = value
   return r
