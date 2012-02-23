@@ -1,3 +1,4 @@
+_ = require('underscore')._
 connect = require('connect')
 path = require('path')
 normalize = path.normalize
@@ -13,17 +14,49 @@ skipThisFileSignature= /^\.|^_default\.meta\.(js|coffee|json)$/
 stripMetaExtension= /(.*)(?:\.meta\.(js|coffee|json))$/
 canDescendNoMore= /^[/.]?\/$/
 
-merged= (base,dominant)->
-  return base unless dominant
+actionsCopier= (src)->
+  dest= {}
+  for key of src
+    if typeof src[key] == 'object'
+      if _.isArray(src[key])
+        dest[key]= src[key][0...src[key].length]
+      else
+        actionsCopier(src[key])
+    else
+      dest[key]= src[key]
+  return dest
+
+actionsExtender= (dest,src)->
+  dest ?= {}
+  if src
+    for key of src
+      unless src[key]?
+        delete dest[key] if _.has(dest,key)
+      else
+        if _.isArray(src[key])
+          dest[key]= src[key]
+        else
+          if typeof src[key] == 'object'
+            dest[key]= actionsExtender(dest[key],src[key])
+          else
+            dest[key]= src[key]
+    return dest
+  else
+    return src
+
+extend= (base,dominant)->
   return dominant unless base
-  r= {}
-  r[key] = base[key] for key of base
-  r[key] = dominant[key] for key of dominant
+  r= _.clone(base)
+  for key, value of dominant
+    unless value?
+      delete r[key] if _.has(r,key)
+    else
+      if key == '_actions'  #todo: allow similar "deeper copy" options for other keys (that, itself, could be in meta)
+        r[key]= actionsExtender(actionsCopier(base[key] ? {}),value)
+      else
+        r[key] = value
   return r
 
-
-defaultMetaName= (dir)->
-  "#{dir}/_default.meta"
 
 cache= {}
 
@@ -40,7 +73,8 @@ load= (name,superMeta,cachename)->
     # it will be invoked with the parent metadata as an argument and should return
     # a metadata object.  The meta file can thus create metadata that is
     # affected by the values in the parent metadata
-    merged(superMeta, content?(superMeta) ? content)
+    content= content(superMeta) if typeof content == "function"
+    extend(superMeta, content)
 
 loadTree= (dirname,superMeta) ->
   modules= []
@@ -93,7 +127,7 @@ module.exports=
     userPath= dirs[0]
     defaultPath= dirs[1]
     inter= loadTree(defaultPath,{})
-    inter= merged(inter,options)
+    inter= extend(inter,options)
     loadTree(userPath,inter)
   meta_lookup: meta_lookup
   site_lookup: (req)->
