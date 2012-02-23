@@ -44,7 +44,7 @@ describe 'malifi server', ->
   it 'should find /sub/b.txt', (done) ->
     get('/sub/b.txt','this is the content of sub/b.txt', done)
   it 'should pick up correct site metadata', (done) ->
-    get('/metaTestString','site:test', done)
+    get('/metaTestString','foreground:test', done)
   it 'metadata may be in a JSON file', (done) ->
     get('/sub/showmeta','b/show.test_string', done)
   it 'should be able to run a .js file', (done) ->
@@ -73,3 +73,7 @@ describe 'malifi server', ->
     get('/.no/whey',403, done)
   it 'should serve favicon.ico (which is in the base site)', (done) ->
     get('/favicon.ico',200, done)
+  it 'should find a file in the background layer site', (done) ->
+    get('/background.txt','In the background', done)
+  it 'should find a file in the common layer site', (done) ->
+    get('/common.txt','in common', done)
