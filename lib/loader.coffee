@@ -9,7 +9,7 @@ fs = require('fs')
 stripExtension= require('./strip_extension')
 metafileSignature= /\.meta\.(js|coffee|json)$/
 moduleSignature= /\.(js|coffee|json)$/
-aDefaultFileSignature= /_default\.meta\.(js|coffee|json)$/
+skipThisFileSignature= /^\.|^_default\.meta\.(js|coffee|json)$/
 stripMetaExtension= /(.*)(?:\.meta\.(js|coffee|json))$/
 canDescendNoMore= /^[/.]?\/$/
 
@@ -51,7 +51,7 @@ loadTree= (dirname,superMeta) ->
     else
       superMeta
     for filename in fs.readdirSync(dirname)
-      unless aDefaultFileSignature.test(filename)
+      unless skipThisFileSignature.test(filename)
         filename= path.join(dirname,filename)
         stat = fs.lstatSync(filename)
         if stat.isDirectory()
