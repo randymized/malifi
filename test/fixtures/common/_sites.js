@@ -1,12 +1,12 @@
-var site= __dirname+'/../site';
+var background= __dirname+'/../background';
 var map= {
-  localhost: site
- ,'127.0.0.1': site
+  localhost: background
+ ,'127.0.0.1': background
 }
 
 exports= module.exports= {
   lookup: function() {
       return map[this.host.name]
     }
-  ,paths: [site]
+  ,paths: [background]
 }
