@@ -35,6 +35,11 @@ extend= (base,dominant)->
     else
       if key == '_actions'  #todo: allow similar "deeper copy" options for other keys (that, itself, could be in meta)
         r[key]= actionsCopier(dominant[key])
+        oldactions= dominant[key]
+        r[key].change= (cb)->
+          dest= actionsCopier(oldactions)
+          cb(dest)
+          return dest
       else
         r[key] = value
   return r
@@ -88,7 +93,7 @@ loadTree= (dirname,superMeta) ->
   visited[fs.lstatSync(dirname).ino]= true
   cache[dirname+'/']= superMeta  # this will be overridden if _default_meta found
   meta= loadDir(dirname,superMeta,visited)
-  preload(modules,superMeta)
+  preload(modules,meta)
   return meta
 
 siteLookupRoot= null
@@ -101,7 +106,8 @@ preload= (modules,superMeta)->
       m = require(modname)  # assure load even if preload_modules is off
       sites[path.dirname(modname)]= m
       siteLookupRoot ?= path.dirname(modname)
-      loadTree(normalize(sitepath),superMeta) for sitepath in m.paths
+      for sitepath in m.paths
+        loadTree(normalize(sitepath),superMeta)
 
 module.exports=
   init: (baseSiteStack,options={})->
