@@ -25,9 +25,7 @@ exports = module.exports = action= ()->
   urlExtension = @path.extension
   if urlExtension && @meta._allowed_url_extensions
     unless utilities.nameIsInArray(urlExtension,@meta._allowed_url_extensions)
-      @res.statusCode = 415;
-      @res.end('Unsupported Media Type');
-      return;
+      return @next()
 
   actions= @meta._actions
   extLookup= actions[if @req.method is 'HEAD' then 'GET' else @req.method]

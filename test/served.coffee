@@ -52,7 +52,7 @@ describe 'malifi server', ->
   it 'should 404 if a file is not present', (done) ->
     get('/notHere',404, done)
   it 'should err if the URL has an extension, but the extension is not allowed', (done) ->
-    get('/any.xxx',415, done)
+    get('/any.xxx',404, done)
   it 'should err if any element of the URL starts with an underscore', (done) ->
     get('/x/_no',403, done)
   it 'should err if any element of the URL starts with an underscore', (done) ->
