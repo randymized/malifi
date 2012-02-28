@@ -28,7 +28,7 @@ hasAnExtension= (name,extensions,foundCB)->
 
 createArrayRegexp= (arr)->
   a= (RegExp.escape(n) for n in arr)
-  arr.regexp ?= new RegExp('((\\.' + a.join(')|(\\.') + '))$')
+  arr.regexp ?= new RegExp('((' + a.join(')|(') + '))$')
 
 module.exports=
   # is the given name that of a regular file?
