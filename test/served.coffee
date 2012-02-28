@@ -77,3 +77,9 @@ describe 'malifi server', ->
     get('/background.txt','In the background', done)
   it 'should find a file in the common layer site', (done) ->
     get('/common.txt','in common', done)
+  it 'should trigger the first of the action handlers in a silo', (done) ->
+    get('/x.test','x test page', done)
+  it 'should trigger the last of the action handlers in a silo', (done) ->
+    get('/z.test','z test page', done)
+  it 'should trigger an action handlers in the middle of a silo', (done) ->
+    get('/y.test','y test page', done)
