@@ -54,7 +54,7 @@ exports = module.exports = action= ()->
       pathobj= @path
       pathobj.site_root= root
       pathobj.full= join(root,@path.relative)
-      pathobj.base= join(root,@path.relative_base)
+      pathobj.full_base= join(root,@path.relative_base)
 
       if extLookup['/']?
         fs.stat @path.full, (err,stats)=>

@@ -15,6 +15,7 @@ loader= require('./loader')
 action= require('./action')
 package = require('../package')
 extractHostAndPort= /([^:]+)(?::(.*))?/
+extractNameParts= /(.*[/\\]([^/\\]+?))(\.([^.]+))?$/
 
 class ParseHost
   constructor: (req)->
@@ -42,6 +43,7 @@ malifi= (root,options)->
         decoded_path: pathname
 
     siteStack= loader.site_lookup.call(pathinfo,req).concat(baseSiteStack)
+    pathparts= pathname.match(extractNameParts)
 
     # Actions and page modules are run in the scope of actionobj.
     # It provides access to req, res, next as well as pathinfo and the metadata
@@ -54,9 +56,17 @@ malifi= (root,options)->
       res: res
       next: next
       path:
+        # if decoded URL ==     /zyx/abc.def.txt
+        #   path.relative=      /zyx/abc.def.txt
+        #   path.relative_base= /zyx/abc.def
+        #   path.base=               abc.def
+        #   path.dot_extension=             .txt
+        #   path.extension=                  txt
         relative: pathname
-        extension: path.extname(pathname)
-        relative_base: base= stripExtension(pathname)
+        relative_base: pathparts[1]
+        base: pathparts[2]
+        dot_extension: pathparts[3]
+        extension: pathparts[4]
         #absolute paths will be added when the site is selected from the site stack
       host: pathinfo.host
       url: pathinfo.url
