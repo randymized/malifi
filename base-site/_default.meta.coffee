@@ -1,4 +1,4 @@
-allowed_extensions= ['txt','pdf','html','htm','gif','jpg','ico','tif','png']
+allowed_extensions= ['txt','pdf','html','htm','gif','jpg','jpeg','ico','tif','png','tiff','bmp']
 module.exports=
   # If getOnly is true, only GET or HEAD requests will be handled, unless a
   # request-type specific handler is found.
