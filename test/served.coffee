@@ -83,3 +83,8 @@ describe 'malifi server', ->
     get('/z.test','z test page', done)
   it 'should trigger an action handlers in the middle of a silo', (done) ->
     get('/y.test','y test page', done)
+  it 'should not find /_hidden.txt', (done) ->
+      get('/_hidden.txt',403, done)
+  it 'should be able to internally redirect (readdress), serving the otherwise hidden _hidden.txt', (done) ->
+      get('/readdress','This is hidden from outside requests.', done)
+

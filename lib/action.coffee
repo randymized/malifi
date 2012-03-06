@@ -21,14 +21,15 @@ exports = module.exports = action= (req,res,next)->
   meta= malifi.meta
   pathobj= malifi.path
   meta._unhandled_handler?.log?(req)
-
-  if meta._forbiddenURLChars?.test(malifi.url.decoded_path)
-    return forbidden(res)
-
   urlExtension = pathobj.extension
-  if urlExtension && meta._allowed_url_extensions
-    unless utilities.nameIsInArray(urlExtension,meta._allowed_url_extensions)
-      return next()
+
+  unless req.req_stack  # internal requests and redirections may address resources that are hidden to the outside world
+    if meta._forbiddenURLChars?.test(malifi.url.decoded_path)
+      return forbidden(res)
+
+    if urlExtension && meta._allowed_url_extensions
+      unless utilities.nameIsInArray(urlExtension,meta._allowed_url_extensions)
+        return next()
 
   actions= meta._actions
   extLookup= actions[if req.method is 'HEAD' then 'GET' else req.method]

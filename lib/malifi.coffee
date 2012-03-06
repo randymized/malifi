@@ -30,7 +30,8 @@ malifi= (root,options)->
   baseSiteStack= [normalize(root), normalize(join(__dirname,'../base-site'))]
   loader.init(baseSiteStack,options)
 
-  return malifiMainHandler= (req, res, next)->
+  malifiMainHandler= (req, res, next)->
+    debugger
     parsedurl= parse(req.url,true)
     pathname= decodeURIComponent(parsedurl.pathname)
     unless pathname.indexOf('\0')
@@ -64,15 +65,30 @@ malifi= (root,options)->
         base: pathparts[2]
         dot_extension: pathparts[3]
         extension: pathparts[4]
+
         #absolute paths will be added when the site is selected from the site stack
       host: pathinfo.host
       url: pathinfo.url
       meta_lookup: loader.meta_lookup
       meta: meta
       site_stack: siteStack
+      readdress: (req,res,next,url,host)->
+        newreq= {}
+        for key, val of req
+          newreq[key] = val
+        newreq.url= url
+        if host
+          for key, val of newreq.headers
+            newreq.headers[key] = val
+          newreq.headers.host= host
+        (newreq.req_stack ?= []).push(req)
+        malifiMainHandler(newreq,res,next)
+
     req[meta._malifi_alias]= req.malifi if meta._malifi_alias
 
     action(req,res,next)
+
+  return malifiMainHandler
 
 exports = module.exports = malifi
 
