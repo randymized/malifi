@@ -1,3 +1,3 @@
 faviconFn = require('connect').favicon()
-module.exports= ()->
-  faviconFn(@req,@res,@next)
+module.exports= (req,res,next)->
+  faviconFn(req,res,next)

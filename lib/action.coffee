@@ -8,56 +8,60 @@ utilities= require('./utilities')
 ###
 todo: // detect if URL is of a directory and, if so, bring up the _index
 if (stat.isDirectory())
-  if (!redirect) return @next();
-  @res.statusCode = 301;
-  @res.setHeader('Location', url.pathname + '/');
-  @res.end('Redirecting to ' + url.pathname + '/');
+  if (!redirect) return next();
+  res.statusCode = 301;
+  res.setHeader('Location', url.pathname + '/');
+  res.end('Redirecting to ' + url.pathname + '/');
   return;
 }
 ###
 
-exports = module.exports = action= ()->
-  @meta._unhandled_handler?.log?.call(this)
+exports = module.exports = action= (req,res,next)->
+  malifi= req.malifi
+  meta= malifi.meta
+  pathobj= malifi.path
+  meta._unhandled_handler?.log?(req)
 
-  if @meta._forbiddenURLChars?.test(@url.decoded_path)
-    return forbidden(@res)
+  if meta._forbiddenURLChars?.test(malifi.url.decoded_path)
+    return forbidden(res)
 
-  urlExtension = @path.extension
-  if urlExtension && @meta._allowed_url_extensions
-    unless utilities.nameIsInArray(urlExtension,@meta._allowed_url_extensions)
-      return @next()
+  urlExtension = pathobj.extension
+  if urlExtension && meta._allowed_url_extensions
+    unless utilities.nameIsInArray(urlExtension,meta._allowed_url_extensions)
+      return next()
 
-  actions= @meta._actions
-  extLookup= actions[if @req.method is 'HEAD' then 'GET' else @req.method]
+  actions= meta._actions
+  extLookup= actions[if req.method is 'HEAD' then 'GET' else req.method]
   extSilo = extLookup[urlExtension] ? extLookup['*']
 
+  malifi.next_layer= next_layer= next
   siteindex= 0
   nextSite= ()=>
-    root= @site_stack[siteindex++]
+    root= malifi.site_stack[siteindex++]
     unless root
-      @next()
+      next_layer()
     else
       traverseActionList = (actionList)=>
         nextSite() unless actionList
         i= 0
-        pass = ()=>
+        next= (err)=>
+          next_layer(err) if err
           try
             actor= actionList[i++]
             if (actor)
-              actor.call(this,pass)
+              actor(req,res,next)
             else
               nextSite()
           catch e
-            @next(e)
-        pass()
+            next_layer(e)
+        next()
 
-      pathobj= @path
       pathobj.site_root= root
-      pathobj.full= join(root,@path.relative)
-      pathobj.full_base= join(root,@path.relative_base)
+      pathobj.full= join(root,pathobj.relative)
+      pathobj.full_base= join(root,pathobj.relative_base)
 
       if extLookup['/']?
-        fs.stat @path.full, (err,stats)=>
+        fs.stat pathobj.full, (err,stats)=>
           if !err && stats.isDirectory() && extLookup['/']?
             traverseActionList(extLookup['/'])
           else

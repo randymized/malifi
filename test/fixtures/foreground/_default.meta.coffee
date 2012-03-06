@@ -9,34 +9,34 @@ exports= module.exports= (prev)=>
       [
         # first action (yes, action handlers may be defined inline, as well
         # as in separate files).
-        (pass) ->
+        (req,res,next) ->
           try
-            if @path.base == 'x'
-              this.res.setHeader('Content-Type','text/plain')
-              this.res.end('x test page')
+            if req.malifi.path.base == 'x'
+              res.setHeader('Content-Type','text/plain')
+              res.end('x test page')
             else
-              pass()
+              next()
           catch e
-            @next(e)
-        ,(pass) ->
+            next(e)
+        ,(req,res,next) ->
           # second action
           try
-            if @path.base == 'y'
-              this.res.setHeader('Content-Type','text/plain')
-              this.res.end('y test page')
+            if req.malifi.path.base == 'y'
+              res.setHeader('Content-Type','text/plain')
+              res.end('y test page')
             else
-              pass()
+              next()
           catch e
-            @next(e)
-        ,(pass) ->
+            next(e)
+        ,(req,res,next) ->
           # third action
           try
-            if @path.base == 'z'
-              this.res.setHeader('Content-Type','text/plain')
-              this.res.end('z test page')
+            if req.malifi.path.base == 'z'
+              res.setHeader('Content-Type','text/plain')
+              res.end('z test page')
             else
-              pass()
+              next()
           catch e
-            @next(e)
+            next(e)
       ]
 

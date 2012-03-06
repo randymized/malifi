@@ -1,9 +1,10 @@
 # ignore non-GET requests
-module.exports= getOnlyAction= (pass) ->
+module.exports= getOnlyAction= (req,res,next) ->
   try
-    if @meta._getOnly? && 'GET' != @req.method && 'HEAD' != @req.method
-      @next()
+    malifi = req.malifi
+    if malifi.meta._getOnly? && 'GET' != req.method && 'HEAD' != req.method
+      malifi.next_layer()
     else
-      pass()
+      next()
   catch e
-    @next(e)
+    next(e)

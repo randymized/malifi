@@ -7,6 +7,14 @@ module.exports=
   # specific handler
   _getOnly: true
 
+  # An object named 'malifi' will be added to req.  That object contains references
+  # to the current metadata, a method to look up other metadata, the site stack
+  # and decoded path, url and host strings.  If _malifi_alias is defined in the
+  # metadata, a second reference to the same object will be added to req using
+  # that name.  Since the default is '_', the metadata can be accessed either as
+  # req.malifi.meta or req._.meta
+  _malifi_alias: '_'
+
   # Valid URLs may include the following extensions.
   # Any other extensions at the end of a URL will be disallowed.
   _allowed_url_extensions: allowed_extensions
@@ -47,8 +55,9 @@ module.exports=
   # successfully match a directory.
   # Finally the tree of objects will lead to an array of actions.
   # The actions are invoked in order.  Each may either handle the
-  # request by invoking @res.end or @next or pass on the request.  Each request
-  # will thus move down the list until it finds a suitable handler.
+  # request by invoking res.end or next to pass on the request or
+  # req.malifi.next_layer to pass the request on to the next connect layer.
+  # Each request will thus move down the list until it finds a suitable handler.
   # A typical ordering would have handlers for differnt types of templates
   # first followed by a handler for just a .js or .coffee module.  If
   # template is discovered, its handler will invoke any .js or .coffee

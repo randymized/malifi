@@ -8,11 +8,11 @@ uncaught= (err) ->
   process.exit(1)
 
 module.exports= exports=
-  log: ()->
+  log: (req)->
     recent.unshift
-      headers: @req.headers
-      time: @req._startTime
-      url: @req.url
+      headers: req.headers
+      time: req._startTime
+      url: req.url
     recent= recent[0...limit]
     exports.enable() unless enabled
 

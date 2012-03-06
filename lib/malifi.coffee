@@ -45,16 +45,13 @@ malifi= (root,options)->
     siteStack= loader.site_lookup.call(pathinfo,req).concat(baseSiteStack)
     pathparts= pathname.match(extractNameParts)
 
-    # Actions and page modules are run in the scope of actionobj.
-    # It provides access to req, res, next as well as pathinfo and the metadata
-    # for the URL being served.  It can also be used as a bus for conveying
-    # other data among action and page modules.
-    # Actionobj is unique and specific to one request and its lifetime is
-    # that of the request.
-    actionobj=
-      req: req
-      res: res
-      next: next
+    # Add a malifi object to req.  It contains the current metadata, a
+    # reference to an object that can look up any metadata, the site stack and
+    # some decoded path, url and host information.
+    # If malifi.alias is defined in the metadata (default is "_"), a reference
+    # to the malifi object of that name will also be added to req.
+    meta= loader.meta_lookup(join(siteStack[0],pathname))
+    req.malifi=
       path:
         # if decoded URL ==     /zyx/abc.def.txt
         #   path.relative=      /zyx/abc.def.txt
@@ -71,10 +68,11 @@ malifi= (root,options)->
       host: pathinfo.host
       url: pathinfo.url
       meta_lookup: loader.meta_lookup
-      meta: loader.meta_lookup(join(siteStack[0],pathname))
+      meta: meta
       site_stack: siteStack
+    req[meta._malifi_alias]= req.malifi if meta._malifi_alias
 
-    action.call(actionobj)
+    action(req,res,next)
 
 exports = module.exports = malifi
 
