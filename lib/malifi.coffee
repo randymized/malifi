@@ -14,6 +14,7 @@ stripExtension= require('./strip_extension')
 loader= require('./loader')
 action= require('./action')
 package = require('../package')
+readdress= require('./readdress')
 extractHostAndPort= /([^:]+)(?::(.*))?/
 extractNameParts= /(.*[/\\]([^/\\]+?))(\.([^.]+))?$/
 
@@ -73,16 +74,7 @@ malifi= (root,options)->
       meta: meta
       site_stack: siteStack
       readdress: (req,res,next,url,host)->
-        newreq= {}
-        for key, val of req
-          newreq[key] = val
-        newreq.url= url
-        if host
-          for key, val of newreq.headers
-            newreq.headers[key] = val
-          newreq.headers.host= host
-        (newreq.req_stack ?= []).push(req)
-        malifiMainHandler(newreq,res,next)
+        readdress(malifiMainHandler,req,res,next,url,host)
 
     req[meta._malifi_alias]= req.malifi if meta._malifi_alias
 
