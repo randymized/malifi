@@ -25,6 +25,16 @@ module.exports=
   # buffer and may need to be converted to a string via its toString() method.
   _partial: require('../lib/partial')
 
+  # If _custom_404 is true, unserviced requests are not passed on to the next
+  # level of middleware, but instead result in rerouting to a custom _404 page.
+  # A default _404 page will be shown if one has not been defined for the site.
+  _custom_404: false
+
+  # If _custom_500 is true, next(err) will unserviced requests are not passed on to the next
+  # level of middleware, but instead result in rerouting to a custom _500 page.
+  # A default _500 page will be shown if one has not been defined for the site.
+  _custom_500: false
+
   # If getOnly is true, only GET or HEAD requests will be handled, unless a
   # request-type specific handler is found.
   # For example, if a POST request is received for /foo/bar, the request will
@@ -88,6 +98,7 @@ module.exports=
       '': [
           require('../lib/actions/get_only')
         , require('../lib/actions/just_a_module')
+        , require('../lib/actions/textfile')
         ]
       '*': [
           require('../lib/actions/get_only')

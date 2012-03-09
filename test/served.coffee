@@ -9,10 +9,10 @@ app= connect.createServer()
 app.use(malifi(__dirname+'/fixtures/common'))
 app.listen(port)
 
-get= (url, expected, test, done)->
+get= (url, expected, statusCode, done)->
   unless done?
-    done= test
-    test= null
+    done= statusCode
+    statusCode=200
   options =
     host: host,
     port: port,
@@ -23,7 +23,7 @@ get= (url, expected, test, done)->
       res.statusCode.should.equal(expected)
       done()
     else
-      res.statusCode.should.equal(200)
+      res.statusCode.should.equal(statusCode)
       res.setEncoding('utf8')
       res.on 'data', (chunk)->
         buf += chunk
@@ -86,6 +86,10 @@ describe 'malifi server', ->
   it 'should not find /_hidden.txt', (done) ->
     get('/_hidden.txt',403, done)
   it 'should be able to internally redirect (reroute), serving the otherwise hidden _hidden.txt', (done) ->
-    get('/reroute','This is hidden from outside requests.', done)
+    get('/showhidden','This is hidden from outside requests.', done)
   it 'should be able to capture a partial and insert it into some text or a page', (done) ->
     get('/partial','start...This is hidden from outside requests....end', done)
+  it 'should be able to redirect to another site, pick up the site\'s metadata, and show the right 404 message', (done) ->
+    get('/reroute','Cannot GET //sample.com/nothing', 404, done)
+  it 'should be able to redirect to another site, and show a page from it, pulling the page\'s name from the query string', (done) ->
+    get('/reroute?what=something','Isn\'t this something?\n', done)

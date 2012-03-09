@@ -8,7 +8,10 @@ module.exports= justAModuleAction= (req,res,next) ->
     fullpath = req.malifi.path.full
     hasAnExtension fullpath, extensions, (found)=>
       if found
-        require(fullpath)(req,res,next)
+        try
+          require(fullpath)(req,res,next)
+        catch e
+          next(e)
       else
         next()
   catch e

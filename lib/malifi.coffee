@@ -62,8 +62,8 @@ malifi= (root,options)->
         relative: pathname
         relative_base: pathparts[1]
         base: pathparts[2]
-        dot_extension: pathparts[3]
-        extension: pathparts[4]
+        dot_extension: pathparts[3] || ''
+        extension: pathparts[4] || ''
 
         #absolute paths will be added when the site is selected from the site stack
       host: pathinfo.host
@@ -74,6 +74,24 @@ malifi= (root,options)->
       main_handler: malifiMainHandler
 
     req[meta._malifi_alias]= req.malifi if meta._malifi_alias
+
+    if meta._custom_404 || meta._custom_500
+      orignext= next
+      next= (err)->
+        nonext= (err)->   # this should never be called: _500 or _404 should not call next()
+          throw "No _505 or _404 handler found or the handler punted."
+        if err?
+          if meta._custom_500
+            req.err= err
+            meta._reroute('/_500')(req,res,nonext)
+          else
+            orignext(err)
+        else
+          if meta._custom_404
+            req.notfound= req.malifi.url.decoded_path
+            meta._reroute('/_404')(req,res,nonext)
+          else
+            orignext()
 
     action(req,res,next)
 

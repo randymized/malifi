@@ -1,2 +1,6 @@
 module.exports= (req,res,next)->
-  req._.meta._reroute('/_hidden.txt')(req,res,next)
+  q= req._.url.parsed.query
+  req._.meta._reroute(
+    '/'+(q.what ? 'nothing'),
+    'sample.com'
+  )(req,res,next)
