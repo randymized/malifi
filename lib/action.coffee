@@ -23,7 +23,7 @@ exports = module.exports = action= (req,res,next)->
   meta._unhandled_handler?.log?(req)
   urlExtension = pathobj.extension
 
-  unless req.req_stack  # internal requests and redirections may address resources that are hidden to the outside world
+  unless req.internal?  # internal requests and redirections may address resources that are hidden to the outside world
     if meta._forbiddenURLChars?.test(malifi.url.decoded_path)
       return forbidden(res)
 

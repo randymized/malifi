@@ -14,7 +14,6 @@ stripExtension= require('./strip_extension')
 loader= require('./loader')
 action= require('./action')
 package = require('../package')
-readdress= require('./readdress')
 extractHostAndPort= /([^:]+)(?::(.*))?/
 extractNameParts= /(.*[/\\]([^/\\]+?))(\.([^.]+))?$/
 
@@ -32,7 +31,6 @@ malifi= (root,options)->
   loader.init(baseSiteStack,options)
 
   malifiMainHandler= (req, res, next)->
-    debugger
     parsedurl= parse(req.url,true)
     pathname= decodeURIComponent(parsedurl.pathname)
     unless pathname.indexOf('\0')
@@ -73,8 +71,7 @@ malifi= (root,options)->
       meta_lookup: loader.meta_lookup
       meta: meta
       site_stack: siteStack
-      readdress: (req,res,next,url,host)->
-        readdress(malifiMainHandler,req,res,next,url,host)
+      main_handler: malifiMainHandler
 
     req[meta._malifi_alias]= req.malifi if meta._malifi_alias
 

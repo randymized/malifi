@@ -1,5 +1,22 @@
 allowed_extensions= ['txt','pdf','html','htm','gif','jpg','jpeg','ico','tif','png','tiff','bmp']
 module.exports=
+  # The module that will serve reroute requests.
+  # Reroute is an internal redirect.  The request will be served as if it were
+  # for the new URL rather than the original one.  Rerouted requests may access
+  # pages that are otherwise hidden (see _forbiddenURLChars).
+  # With rerouting, the entire page (or response) is served from the new
+  # destination.  The partial module should be used instead if you want to
+  # include content from one page inside another.
+  _reroute: require('../lib/reroute')
+
+  # A "partial" allows the content from one page to be included within another.
+  # A partial page may be served by a page that is otherwise hidden (see
+  # _forbiddenURLChars).
+  # The data output from the partial will be accumulated and made available to
+  # the callback method provided.  The output data will be in the form of a
+  # buffer and may need to be converted to a string via its toString() method.
+  _partial: require('../lib/partial')
+
   # If getOnly is true, only GET or HEAD requests will be handled, unless a
   # request-type specific handler is found.
   # For example, if a POST request is received for /foo/bar, the request will

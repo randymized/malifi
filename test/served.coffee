@@ -84,7 +84,8 @@ describe 'malifi server', ->
   it 'should trigger an action handlers in the middle of a silo', (done) ->
     get('/y.test','y test page', done)
   it 'should not find /_hidden.txt', (done) ->
-      get('/_hidden.txt',403, done)
-  it 'should be able to internally redirect (readdress), serving the otherwise hidden _hidden.txt', (done) ->
-      get('/readdress','This is hidden from outside requests.', done)
-
+    get('/_hidden.txt',403, done)
+  it 'should be able to internally redirect (reroute), serving the otherwise hidden _hidden.txt', (done) ->
+    get('/reroute','This is hidden from outside requests.', done)
+  it 'should be able to capture a partial and insert it into some text or a page', (done) ->
+    get('/partial','start...This is hidden from outside requests....end', done)
