@@ -1,5 +1,13 @@
 allowed_extensions= ['txt','pdf','html','htm','gif','jpg','jpeg','ico','tif','png','tiff','bmp']
 module.exports=
+  # An object named 'malifi' will be added to req.  That object contains references
+  # to the current metadata, a method to look up other metadata, the site stack
+  # and decoded path, url and host strings.  If _malifi_alias is defined in the
+  # metadata, a second reference to the same object will be added to req using
+  # that name.  Assuming the default of '_', the metadata can be accessed either
+  # as req.malifi.meta or req._.meta
+  _malifi_alias: '_'
+
   # The module that will serve reroute requests.
   # Reroute is an internal redirect.  The request will be served as if it were
   # for the new URL rather than the original one.  Rerouted requests may access
@@ -23,14 +31,6 @@ module.exports=
   # be 404ed unless there is a *.post.js, *.post.coffee or other such post-
   # specific handler
   _getOnly: true
-
-  # An object named 'malifi' will be added to req.  That object contains references
-  # to the current metadata, a method to look up other metadata, the site stack
-  # and decoded path, url and host strings.  If _malifi_alias is defined in the
-  # metadata, a second reference to the same object will be added to req using
-  # that name.  Since the default is '_', the metadata can be accessed either as
-  # req.malifi.meta or req._.meta
-  _malifi_alias: '_'
 
   # Valid URLs may include the following extensions.
   # Any other extensions at the end of a URL will be disallowed.
