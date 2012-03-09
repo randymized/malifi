@@ -1,17 +1,9 @@
 fs = require('fs')
 staticHandler= require('../static_handler')
 utilities= require('../utilities')
-mime = require('mime')
+mimeWrapper= require('../mime_wrapper')
 
-mimeWrapper= (path,cb)->
-  fs.stat path, (err, stat) =>
-    if err
-      cb(err)
-    else
-      type = mime.lookup(path)
-      cb(null,mime.lookup(path))
-
-# if a .txt file is requested, return it
+# if a static file is requested, return it
 module.exports= textAction= (req,res,next) ->
   try
     malifi = req.malifi
