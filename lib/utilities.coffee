@@ -20,7 +20,7 @@ moduleExtensions= ['.js','.coffee','.json']
 hasAnExtension= (name,extensions,foundCB)->
   i= -1
   looper= (found)->
-    return foundCB(extensions[i]) if found
+    return foundCB(name+extensions[i]) if found
     i+= 1
     return foundCB(false) unless i<extensions.length
     isFile(name+extensions[i],looper)
