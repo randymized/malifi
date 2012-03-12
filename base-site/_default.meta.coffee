@@ -11,7 +11,7 @@ module.exports=
   # The module that is to be invoked whenever a request is received, after
   # looking up the metadata and building the req.malifi object.  The default
   # action module selects and iterates through sites and action silos.
-  _action_module: require('../lib/action')
+  _main_action: require('../lib/action')
 
   # The module that will serve reroute requests.
   # Reroute is an internal redirect.  The request will be served as if it were

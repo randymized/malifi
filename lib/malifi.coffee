@@ -93,7 +93,7 @@ malifi= (root,options)->
           else
             orignext()
 
-    meta._action_module(req,res,next)
+    meta._main_action(req,res,next)
 
   return malifiMainHandler
 
