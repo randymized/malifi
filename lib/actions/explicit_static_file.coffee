@@ -3,7 +3,7 @@ staticHandler= require('../static_handler')
 utilities= require('../utilities')
 mimeWrapper= require('../mime_wrapper')
 
-# if a static file is requested, return it
+# if a static file is requested (including its extension), return it
 module.exports= textAction= (req,res,next) ->
   try
     malifi = req.malifi

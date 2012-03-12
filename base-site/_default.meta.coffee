@@ -98,17 +98,17 @@ module.exports=
     'GET':
       '/': [
           #todo define and test a meaningful directory (dir:) action silo
-          require('../lib/actions/reject')
+          require('../lib/actions/reject_anything')
         ]
       '': [
-          require('../lib/actions/get_only')
-        , require('../lib/actions/just_a_module')
-        , require('../lib/actions/textfile')
+          require('../lib/actions/get_method_only')
+        , require('../lib/actions/serve_if_module')
+        , require('../lib/actions/implied_textfile')
         ]
       '*': [
-          require('../lib/actions/get_only')
-        , require('../lib/actions/just_a_module')
-        , require('../lib/actions/static_file')
+          require('../lib/actions/get_method_only')
+        , require('../lib/actions/serve_if_module')
+        , require('../lib/actions/explicit_static_file')
       ]
 
   # Specify a module that will handle any unhandled exceptions.  Best practice
