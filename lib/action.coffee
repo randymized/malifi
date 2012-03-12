@@ -1,9 +1,9 @@
 connect = require('connect')
-forbidden = connect.utils.forbidden
 fs = require('fs')
 path = require('path')
 join = path.join
 utilities= require('./utilities')
+forbidden = utilities.forbidden
 
 ###
 todo: // detect if URL is of a directory and, if so, bring up the _index
