@@ -8,6 +8,11 @@ module.exports=
   # as req.malifi.meta or req._.meta
   _malifi_alias: '_'
 
+  # The module that is to be invoked whenever a request is received, after
+  # looking up the metadata and building the req.malifi object.  The default
+  # action module selects and iterates through sites and action silos.
+  _action_module: require('../lib/action')
+
   # The module that will serve reroute requests.
   # Reroute is an internal redirect.  The request will be served as if it were
   # for the new URL rather than the original one.  Rerouted requests may access
