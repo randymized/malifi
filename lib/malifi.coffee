@@ -43,7 +43,7 @@ malifi= (root,options)->
         decoded_path: pathname
 
     siteStack= loader.site_lookup.call(pathinfo,req).concat(baseSiteStack)
-    pathparts= pathname.match(extractNameParts)
+    pathparts= pathname.match(extractNameParts) || []
 
     # Add a malifi object to req.  It contains the current metadata, a
     # reference to an object that can look up any metadata, the site stack and
@@ -60,8 +60,8 @@ malifi= (root,options)->
         #   path.dot_extension=             .txt
         #   path.extension=                  txt
         relative: pathname
-        relative_base: pathparts[1]
-        base: pathparts[2]
+        relative_base: pathparts[1] || ''
+        base: pathparts[2] || ''
         dot_extension: pathparts[3] || ''
         extension: pathparts[4] || ''
 
