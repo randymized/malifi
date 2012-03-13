@@ -122,4 +122,11 @@ module.exports=
   _unhandled_handler:
     require('../lib/unhandled_exception_handler')
 
+  # Options for the _serve_directory_listings action.  These are the options
+  # of Connect's directory middleware.
+  # If not otherwise specified, a filter that hides any files matching
+  # _forbiddenURLChars will be applied.  This can be overridden by providing
+  # an explicit filter.
+  _serve_directory_listings_options: {}
+
   test_string: 'base'
