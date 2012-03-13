@@ -43,7 +43,7 @@ exports = module.exports = action= (req,res,next)->
       next_layer()
     else
       traverseActionList = (actionList)=>
-        nextSite() unless actionList
+        return nextSite() unless actionList?
         i= 0
         next= (err)=>
           next_layer(err) if err
