@@ -48,11 +48,15 @@ extend= (base,dominant)->
 cache= {}
 
 meta_lookup= (name)->
-  if cache[name]
-    return cache[name]
-  else
-    return {} if canDescendNoMore.test(name)  # emergency shut-off
-    return meta_lookup(path.dirname(name)+'/')
+  descend= (name)->
+    if cache[name]
+      return cache[name]
+    else
+      return {} if canDescendNoMore.test(name)  # emergency shut-off
+      return meta_lookup(path.dirname(name)+'/')
+  if c= cache[name+'/']  # the original file name is that of a directory and it has default metadata
+    return c
+  descend(name)
 
 load= (name,superMeta,cachename)->
     content = require(name)
