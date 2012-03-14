@@ -11,7 +11,7 @@ exports= module.exports= (prev)=>
         # as in separate files).
         (req,res,next) ->
           try
-            if req.malifi.path.base == 'x'
+            if req._.path.base == 'x'
               res.setHeader('Content-Type','text/plain')
               res.end('x test page')
             else
@@ -21,7 +21,7 @@ exports= module.exports= (prev)=>
         ,(req,res,next) ->
           # second action
           try
-            if req.malifi.path.base == 'y'
+            if req._.path.base == 'y'
               res.setHeader('Content-Type','text/plain')
               res.end('y test page')
             else
@@ -31,7 +31,7 @@ exports= module.exports= (prev)=>
         ,(req,res,next) ->
           # third action
           try
-            if req.malifi.path.base == 'z'
+            if req._.path.base == 'z'
               res.setHeader('Content-Type','text/plain')
               res.end('z test page')
             else
