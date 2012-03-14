@@ -42,13 +42,13 @@ exports = module.exports = action= (req,res,next)->
       actions= site_meta._actions
       extLookup= actions[if req.method is 'HEAD' then 'GET' else req.method]
       extSilo = extLookup[urlExtension] ? extLookup['*']
-      traverseActionList = (actionList)=>
-        return nextSite() unless actionList?
+      traverseActionList = (silo)=>
+        return nextSite() unless silo
         i= 0
         next= (err)=>
           next_layer(err) if err
           try
-            actor= actionList[i++]
+            actor= silo[i++]
             if (actor)
               actor(req,res,next)
             else
