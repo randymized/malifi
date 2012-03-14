@@ -33,6 +33,10 @@ get= (url, expected, statusCode, done)->
       res.on 'error', (exception) ->
         done(exception)
 
+describe 'Malifi', ->
+    it 'should provide its version', ->
+      malifi.version.should.match(/^\d+\.\d+\.\d+$/)
+
 describe 'malifi server', ->
   before (cb) ->
     process.nextTick cb
