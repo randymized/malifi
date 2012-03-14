@@ -94,7 +94,7 @@ describe 'malifi server', ->
   it 'should be able to capture a partial and insert it into some text or a page', (done) ->
     get('/partial','start...This is hidden from outside requests....end', done)
   it 'should be able to redirect to another site, pick up the site\'s metadata, and show the right 404 message', (done) ->
-    get('/reroute','Cannot GET //sample.com/nothing', 404, done)
+    get('/reroute','Cannot GET //example.com/nothing', 404, done)
   it 'should be able to redirect to another site, and show a page from it, pulling the page\'s name from the query string', (done) ->
     get('/reroute?what=something','Isn\'t this something?\n', done)
   it 'should produce a listing of the content of a directory, if enabled.', (done) ->
