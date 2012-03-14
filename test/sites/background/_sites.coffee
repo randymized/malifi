@@ -5,5 +5,5 @@ map=
 
 exports= module.exports=
   lookup: ()->
-    return map[this.host.name]
+    return map[@host.name]
   paths: [foreground]
