@@ -6,7 +6,7 @@ port= 8889
 host = 'localhost'
 
 app= connect.createServer()
-app.use(malifi(__dirname+'/fixtures/common'))
+app.use(malifi(__dirname+'/sites/common'))
 app.listen(port)
 
 get= (url, expected, statusCode, done)->
