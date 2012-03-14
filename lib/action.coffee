@@ -31,10 +31,6 @@ exports = module.exports = action= (req,res,next)->
       unless utilities.nameIsInArray(urlExtension,meta._allowed_url_extensions)
         return next()
 
-  actions= meta._actions
-  extLookup= actions[if req.method is 'HEAD' then 'GET' else req.method]
-  extSilo = extLookup[urlExtension] ? extLookup['*']
-
   malifi.next_layer= next_layer= next
   siteindex= 0
   nextSite= ()=>
@@ -42,6 +38,9 @@ exports = module.exports = action= (req,res,next)->
     unless root
       next_layer()
     else
+      actions= malifi.meta_lookup(join(root,malifi.path.relative))._actions
+      extLookup= actions[if req.method is 'HEAD' then 'GET' else req.method]
+      extSilo = extLookup[urlExtension] ? extLookup['*']
       traverseActionList = (actionList)=>
         return nextSite() unless actionList?
         i= 0
