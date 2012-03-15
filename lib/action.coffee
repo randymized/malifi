@@ -41,6 +41,7 @@ exports = module.exports = action= (req,res,next)->
       site_meta= malifi.site_meta= malifi.meta_lookup(join(root,malifi.path.relative))
       actions= site_meta._actions
       extLookup= actions[if req.method is 'HEAD' then 'GET' else req.method]
+      return nextSite() unless extLookup?
       extSilo = extLookup[urlExtension] ? extLookup['*']
       traverseActionList = (silo)=>
         return nextSite() unless silo

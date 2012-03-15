@@ -81,10 +81,6 @@ module.exports=
   # more specific match.  A '/' key is a special case: it applies to
   # cases where the URL matches a directory.  Directories will only be
   # matched to a URL if a '/' key exists.
-  # After selecting by method and extension, an additional, optional, layer
-  # may provide a dir: and/or file: fork.  The dir fork will be taken if the
-  # URL corresponds to a directory.  Without a dir fork, if the URL will not
-  # successfully match a directory.
   # Finally the tree of objects will lead to an array of actions.
   # The actions are invoked in order.  Each may either handle the
   # request by invoking res.end or next to pass on the request or
