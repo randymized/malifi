@@ -38,11 +38,6 @@ exports = module.exports = action= (req,res,next)->
     unless root
       next_layer()
     else
-      site_meta= malifi.site_meta= malifi.meta_lookup(join(root,malifi.path.relative))
-      actions= site_meta._actions
-      extLookup= actions[if req.method is 'HEAD' then 'GET' else req.method]
-      return nextSite() unless extLookup?
-      extSilo = extLookup[urlExtension] ? extLookup['*']
       traverseActionList = (silo)=>
         return nextSite() unless silo
         i= 0
@@ -62,9 +57,15 @@ exports = module.exports = action= (req,res,next)->
       pathobj.full= join(root,pathobj.relative)
       pathobj.full_base= join(root,pathobj.relative_base)
 
+      site_meta= malifi.site_meta= malifi.meta_lookup(join(root,malifi.path.relative))
+      actions= site_meta._actions
+      extLookup= actions[if req.method is 'HEAD' then 'GET' else req.method]
+      return nextSite() unless extLookup?
+      extSilo = extLookup[urlExtension] ? extLookup['*']
+
       if extLookup['/']?
         fs.stat pathobj.full, (err,stats)=>
-          if !err && stats.isDirectory() && extLookup['/']?
+          if !err && stats.isDirectory()
             traverseActionList(extLookup['/'])
           else
             traverseActionList(extSilo)
