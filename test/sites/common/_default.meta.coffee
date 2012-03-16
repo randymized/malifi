@@ -4,6 +4,6 @@ module.exports= (prev)->
   _actions: prev._actions.change (newAction)->
     newAction.GET.test=
       [
-        require('../../../lib/actions/get_method_only')
-      , require('../../../lib/actions/serve_if_module')
+        require('../../../lib/action_handlers/get_method_only')
+      , require('../../../lib/action_handlers/serve_if_module')
       ]

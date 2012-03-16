@@ -93,18 +93,18 @@ module.exports=
   _actions:
     'GET':
       '/': [
-          require('../lib/actions/add_slash_to_directory')
-        , require('../lib/actions/serve_index_resource')
+          require('../lib/action_handlers/add_slash_to_directory')
+        , require('../lib/action_handlers/serve_index_resource')
         ]
       '': [
-          require('../lib/actions/get_method_only')
-        , require('../lib/actions/serve_if_module')
-        , require('../lib/actions/implied_textfile')
+          require('../lib/action_handlers/get_method_only')
+        , require('../lib/action_handlers/serve_if_module')
+        , require('../lib/action_handlers/implied_textfile')
         ]
       '*': [
-          require('../lib/actions/get_method_only')
-        , require('../lib/actions/serve_if_module')
-        , require('../lib/actions/explicit_static_file')
+          require('../lib/action_handlers/get_method_only')
+        , require('../lib/action_handlers/serve_if_module')
+        , require('../lib/action_handlers/explicit_static_file')
       ]
 
   # In many servers, if a URL is of a directory and a script of the right name,

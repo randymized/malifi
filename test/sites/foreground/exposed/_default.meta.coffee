@@ -2,6 +2,6 @@ module.exports= (prev)->
   _actions:
     'GET':
       '/': [
-          require('../../../../lib/actions/serve_directory_listings')
+          require('../../../../lib/action_handlers/serve_directory_listings')
       ]
       '*': prev._actions.GET['*']
