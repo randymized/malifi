@@ -2,7 +2,6 @@
 endswith= /\/$/
 module.exports= addSlashToDirectory= (req,res,next) ->
   try
-    debugger
     url = req._.url
     unless endswith.test(url.decoded_path)
       res.statusCode = 301;
