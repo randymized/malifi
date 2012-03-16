@@ -61,14 +61,10 @@ exports = module.exports = action= (req,res,next)->
       actions= site_meta._actions
       extLookup= actions[if req.method is 'HEAD' then 'GET' else req.method]
       return nextSite() unless extLookup?
-      extSilo = extLookup[urlExtension] ? extLookup['*']
 
-      if extLookup['/']?
-        fs.stat pathobj.full, (err,stats)=>
-          if !err && stats.isDirectory()
-            traverseActionList(extLookup['/'])
-          else
-            traverseActionList(extSilo)
-      else
-        traverseActionList(extSilo)
+      fs.stat pathobj.full, (err,stats)=>
+        if !err && stats.isDirectory()
+          traverseActionList(extLookup['/'])
+        else
+          traverseActionList(extLookup[urlExtension] ? extLookup['*'])
   nextSite()
