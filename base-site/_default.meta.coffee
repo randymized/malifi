@@ -93,9 +93,8 @@ module.exports=
   _actions:
     'GET':
       '/': [
-          #todo define and test a meaningful directory (dir:) action silo
           require('../lib/actions/add_slash_to_directory')
-        , require('../lib/actions/reject_anything')
+        , require('../lib/actions/serve_index_resource')
         ]
       '': [
           require('../lib/actions/get_method_only')
@@ -107,6 +106,13 @@ module.exports=
         , require('../lib/actions/serve_if_module')
         , require('../lib/actions/explicit_static_file')
       ]
+
+  # In many servers, if a URL is of a directory and a script of the right name,
+  # such as index.whatever, exists, that script will be run rather than producing
+  # a listing of the files in that directory.  Here is where you configure the
+  # base name of that script.  This default means that a resource like _index.js,
+  # _index.coffee or _index.txt would be served.
+  _indexResourceName: '_index'
 
   # Specify a module that will handle any unhandled exceptions.  Best practice
   # is to exit the process as a result of an unhandled exception, but the handler
