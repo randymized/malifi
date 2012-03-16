@@ -189,6 +189,8 @@ Rerouting is achieved by sending the destination path and optionally a hostname 
 
 A partial is obtained sending the destination path and optionally a hostname to `req.malifi.meta._partial()`.  This returns an object that will fetch that resource and accumulate the result.  Send req,res,next and a callback to that partial-fetching object to actually fetch the partial.  A buffer containing the result will be sent to the callback when the partial has completed.  If there is an error, including a HTTP status code other than 200 it will be sent to `next()` and the callback will never be invoked.  Any headers sent by the partial will be ignored.
 
+The default action handlers will exteranlly redirect a URL that is of a directory but lacking a trailing slash to the same URL with a trailing slash.  If the URL includes a trailing slash, a resource named _index will be served (such as _index.js or _index.coffee).
+
 
 ## Template Support
 
