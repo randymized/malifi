@@ -99,8 +99,8 @@ describe 'malifi server', ->
     get('/reroute?what=something','Isn\'t this something?\n', done)
   it 'should produce a listing of the content of a directory, if enabled.', (done) ->
     get('/exposed','aPDF.pdf\nmore.txt\nsome.txt\n', done)
-  it 'should not produce a listing of directory content, if disabled.', (done) ->
-    get('/sub',404, done)
+  it 'should (based on default actions) redirect if url is of a directory but is without a trailing slash.', (done) ->
+    get('/sub',301, done)
   it 'deals with _sites module returning its own directory: going no further', (done) ->
     get('/from_common','This should be hidden: it\'s in the common layer.', done)
   it 'errs if hostname is unknown to _sites file', (done) ->

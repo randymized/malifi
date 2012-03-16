@@ -5,17 +5,6 @@ join = path.join
 utilities= require('./utilities')
 forbidden = utilities.forbidden
 
-###
-todo: // detect if URL is of a directory and, if so, bring up the _index
-if (stat.isDirectory())
-  if (!redirect) return next();
-  res.statusCode = 301;
-  res.setHeader('Location', url.pathname + '/');
-  res.end('Redirecting to ' + url.pathname + '/');
-  return;
-}
-###
-
 exports = module.exports = action= (req,res,next)->
   malifi= req.malifi
   meta= malifi.meta

@@ -94,7 +94,8 @@ module.exports=
     'GET':
       '/': [
           #todo define and test a meaningful directory (dir:) action silo
-          require('../lib/actions/reject_anything')
+          require('../lib/actions/add_slash_to_directory')
+        , require('../lib/actions/reject_anything')
         ]
       '': [
           require('../lib/actions/get_method_only')
