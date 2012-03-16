@@ -101,3 +101,7 @@ describe 'malifi server', ->
     get('/exposed','aPDF.pdf\nmore.txt\nsome.txt\n', done)
   it 'should not produce a listing of directory content, if disabled.', (done) ->
     get('/sub',404, done)
+  it 'deals with _sites module returning its own directory: going no further', (done) ->
+    get('/from_common','This should be hidden: it\'s in the common layer.', done)
+  it 'errs if hostname is unknown to _sites file', (done) ->
+    get('/unknown_site',500, done)

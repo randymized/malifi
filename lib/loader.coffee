@@ -122,17 +122,22 @@ module.exports=
     inter= extend(inter,options)
     loadTree(userPath,inter)
   meta_lookup: meta_lookup
-  site_lookup: (req)->
+  site_lookup: (req,res,next)->
     stack= []
-    siteLookup= (req,sitename)=>
-      newname= sites[sitename]?.lookup?.call(this,req)
-      if newname
-        newname= normalize(newname)
-        stack.unshift(newname)
-        siteLookup(req,newname)
+    siteLookup= (sitename)=>
+      lookup = sites[sitename]?.lookup
+      if lookup?
+        newname= lookup.call(this,req,res,next)
+        if newname
+          newname= normalize(newname)
+          if newname == sitename
+            return stack
+          else
+            stack.unshift(newname)
+            siteLookup(newname)
       else
         return stack
     return if siteLookupRoot?
-      siteLookup(req,siteLookupRoot)
+      siteLookup(siteLookupRoot)
     else
       stack

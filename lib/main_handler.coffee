@@ -42,7 +42,10 @@ malifi= (root,options)->
         parsed: parsedurl
         decoded_path: pathname
 
-    siteStack= loader.site_lookup.call(pathinfo,req).concat(baseSiteStack)
+    try
+      siteStack= loader.site_lookup.call(pathinfo,req,res,next).concat(baseSiteStack)
+    catch e
+      return next(new Error('Unknown site'))
     pathparts= pathname.match(extractNameParts) || []
 
     # Add a malifi object to req.  It contains the current metadata, a

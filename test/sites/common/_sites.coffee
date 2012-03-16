@@ -4,6 +4,7 @@ map=
   localhost: background
   '127.0.0.1': background
   'example.com': example
+  'common.localhost': __dirname
 
 exports= module.exports=
   lookup: ()->
