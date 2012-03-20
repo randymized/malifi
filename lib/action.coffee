@@ -1,3 +1,4 @@
+_ = require('underscore')._
 connect = require('connect')
 fs = require('fs')
 path = require('path')
@@ -29,6 +30,8 @@ exports = module.exports = action= (req,res,next)->
     else
       traverseActionList = (silo)=>
         return nextSite() unless silo
+        if _.isFunction(silo)
+          silo= [silo]
         i= 0
         next= (err)=>
           next_layer(err) if err
@@ -51,9 +54,12 @@ exports = module.exports = action= (req,res,next)->
       extLookup= actions[if req.method is 'HEAD' then 'GET' else req.method]
       return nextSite() unless extLookup?
 
-      fs.stat pathobj.full, (err,stats)=>
-        if !err && stats.isDirectory()
-          traverseActionList(extLookup['/'])
-        else
-          traverseActionList(extLookup[urlExtension] ? extLookup['*'])
+      if _.isArray(extLookup) ||_.isFunction(extLookup)
+        traverseActionList(extLookup)
+      else
+        fs.stat pathobj.full, (err,stats)=>
+          if !err && stats.isDirectory()
+            traverseActionList(extLookup['/'])
+          else
+            traverseActionList(extLookup[urlExtension] ? extLookup['*'])
   nextSite()
