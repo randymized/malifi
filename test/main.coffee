@@ -2,12 +2,26 @@ connect= require('connect')
 assert = require('assert')
 malifi = require('..')
 http = require('http')
+querystring = require('querystring')
 port= 8889
 host = 'localhost'
 
 app= connect.createServer()
+app.use(connect.urlencoded())
 app.use(malifi(__dirname+'/sites/common'))
 app.listen(port)
+
+getResponse= (res,expected,statusCode,done)->
+  buf= ''
+  res.statusCode.should.equal(statusCode)
+  res.setEncoding('utf8')
+  res.on 'data', (chunk)->
+    buf += chunk
+  res.on 'end', ()->
+    buf.should.equal(expected)
+    done()
+  res.on 'error', (exception) ->
+    done(exception)
 
 get= (url, expected, statusCode, done)->
   unless done?
@@ -18,20 +32,11 @@ get= (url, expected, statusCode, done)->
     port: port,
     path: url
   req= http.get options, (res)->
-    buf= ''
     if typeof expected is 'number'
       res.statusCode.should.equal(expected)
       done()
     else
-      res.statusCode.should.equal(statusCode)
-      res.setEncoding('utf8')
-      res.on 'data', (chunk)->
-        buf += chunk
-      res.on 'end', ()->
-        buf.should.equal(expected)
-        done()
-      res.on 'error', (exception) ->
-        done(exception)
+      getResponse(res,expected,statusCode,done)
 
 describe 'Malifi', ->
     it 'should provide its version', ->
@@ -107,3 +112,22 @@ describe 'malifi server', ->
     get('/from_common','This should be hidden: it\'s in the common layer.', done)
   it 'errs if hostname is unknown to _sites file', (done) ->
     get('/unknown_site',500, done)
+  it 'accepts a POST', (done) ->
+    postdata= querystring.stringify
+      a: 'b'
+      x: 'y'
+    options =
+      host: 'localhost'
+      port: port
+      path: '/post'
+      method: 'POST'
+      headers:
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'Content-Length': postdata.length
+
+    req = http.request options, (res)->
+      getResponse(res,'{"a":"b","x":"y"}',200,done)
+
+    # write data to request body
+    req.write postdata
+    req.end();
