@@ -48,7 +48,7 @@ When a request is received, Malifi:
 * A new object is created containing references to the metadata, the site stack and the parsed URL, path and host and added to the request.  This object can be accessed as `req.malifi`.  By default, an alias named `req._` is also added.  The underscore alias is defined in the default metadata and, like anything else in the metadata, may be disabled or changed for any site or any directory within a site.
 * The main action is then called.  It selects and invokes actions that may serve the request.  The remainder of the steps described herein are performed by the default main action.  The default main action is provided by Malifi and specified in the default metadata.  Since metadata may be overridden, an alternate main action may be substituted for any site, any directory or for the entire server.
 * Files and directories whose names start with or end with an underscore or start with a dot are hidden.  A request for such a hidden resource will result in a "not found" condition.  By default, the request will be passed to the next Connect middleware, but if a custom 404 handler is enabled, a 404 Not Found response will be returned.
-* An "action silo" is selected based upon the request method (GET, POST, etc), and the extension, if any, of the URL.  Each action in the silo is structured the same as Connect middleware and may either serve the request or pass the request on to the next level.  But here, the "next level" means the next action in the silo.  If all the actions in the silo pass on the request, the process is repeated for next site in the site_stack.  Only when all actions in the selected silo of each site in the site_stack passes on the request does Malifi pass on the request.  If a custom 404 handler is defined, it will be invoked.  Otherwise the request is passed to the next Connect middleware level.  The request can also be punted to the next Connect middleware level without going through (short circuiting) all actions of all sites in the site_stack by calling req.malifi.next_layer().
+* An action handler, or list of action handlers, is selected based upon the request method (GET, POST, etc), and optionally the extension, if any, of the URL.  Action handlers are structured the same as Connect middleware and may either serve the request or pass the request on to the next level.  But here, the "next level" means the next action in the list of action handlers.  If all the actions in the list pass on the request (or if there is a single action handler), the process is repeated for next site in the site stack.  Only when all actions in the selected action handlers of each site in the site stack passes on the request does Malifi pass on the request.  If a custom 404 handler is defined, it will be invoked.  Otherwise the request is passed to the next Connect middleware level.  The request can also be punted to the next Connect middleware level without going through (short circuiting) all actions of all sites in the site stack by calling req.malifi.next_layer().
 
 
 ## Naming conventions
@@ -154,30 +154,32 @@ If the metadata module is a .js or .coffee file, it may simply export an object 
 
 All metadata is preloaded in a single synchronous operation when the server is initialized.
 
-## Actions and action silos
+## Actions and action handlers
 
-When a request is received, it is sent to each site in the site stack until served.  Within each site, metadata is obtained for the requested path within the site and then that metadata is indexed by '_actions'.  That object is indexed by the requested HTTP method (HEAD is mapped to GET for this indexing operation), giving the method object.
+When a request is received, it is sent to each site in the site stack until served.  Within each site, metadata is obtained for the requested path within the site and then that metadata is indexed by '_actions'.  That object is indexed by the requested HTTP method (HEAD is mapped to GET for this indexing operation), giving either the method object, an action handler function or an array of action handlers.
 
-The method object is in turn indexed by either the request's extension or some other value according to the following rules:
+A method object is in turn indexed by either the request's extension or some other value according to the following rules:
 
   * If the request maps to a directory in the filesystem the method object is indexed by `'/'`.  
   * If the request includes an extension, the method object will be indexed by that extension.
   * If the request includes an extension but there is no index of the method object matching that extension, the method object will be indexed by `'*'`. 
   * If the request does not include an extension, the method object is indexed by an empty string. 
   
-The result of indexing the method object should be an array of action handlers that will be referred to as the action silo.
+The result of indexing the method object is either an action handler function or an array of action handlers.
 
-The action handlers in an action silo have the same interface as Connect middleware.  They export a function that accepts req, res and next arguments.  If the handler is able to serve the request, it sends a response to the `res` object.  If not, it calls `next()`.  If it encounters an error, it calls `next(err)`.  One additional response is allowed: the handler may call the `req.malifi.next_layer()` function, which will result in the request being immediately passed to the next Connect middleware layer, bypassing further actions in the silo and bypassing any remaining sites.
+Action handlers have the same interface as Connect middleware.  They export a function that accepts req, res and next arguments.  If the handler is able to serve the request, it sends a response to the `res` object.  If not, it calls `next()`.  If it encounters an error, it calls `next(err)`.  One additional response is allowed: the handler may call the `req.malifi.next_layer()` function, which will result in the request being immediately passed to the next Connect middleware layer, bypassing further actions in the the array of action handlers and bypassing any remaining sites.
 
-The `next()` function in this context sends the request to the next action in the silo, or if all actions have been visited to the next site in the site stack.  If all sites have been visited without the request being served, the request is forwarded to the next middleware layer.  
+The `next()` function in this context sends the request to the next action in the action array, or if a single action handler is specified or all actions have been visited to the next site in the site stack.  If all sites have been visited without the request being served, the request is forwarded to the next middleware layer.  
 
-Typically an action will be looking for a file whose name matches `req.malifi.path.full_base` plus an extension, such as that of a module, as static asset or a template.  If that file exists it is served or it is called and the result served.  An action has considerable latitude in how it potentially responds to a request, and may depart from this pattern, such as performing more complex routing or redirecting the request, either internally or externally.
+Typically an action will be looking for a file whose name matches `req.malifi.path.full_base` plus an extension, such as that of a module, as static asset or a template.  If that file exists it is served or it is called and the result served.  An action has considerable latitude in how it potentially responds to a request, and may depart from this pattern, such as performing more complex routing or redirecting the request, either internally or externally.  If the request method is other than GET or HEAD, note that the method will conventionally also be added to the expected file name as detailed in the HTTP method support section below.
 
 ## HTTP method support
 
 If the HTTP method is something other than GET or HEAD, Malifi's convention is to append the method, converted to lower case, as an extra extension before looking for matching files.  A post to `http://example.com/a` would map to `a.post.js` or `a.post.coffee`, for example.  A common case might be that a GET of `/a` would produce a form that when filled out is POSTed to the same URL, '/a'.  These might be served by the files `a.js` (and perhaps `a.template`) and by `a.post.js` respectively.  The files would be close together in an alphabetic list of files.
 
 Since this convention is implemented in action handlers, it can be changed by simply substituting different handlers in the metadata.
+
+Malifi does not parse request bodies.  For POST, PUT and other methods that include a request body to work, Connect's bodyParser or equivalent middleware must preceded Malifi.
 
 ## Internal redirection (rerouting) and partials
 
