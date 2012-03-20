@@ -28,7 +28,7 @@ module.exports= partial= (url,host)->
     newres.writeContinue= ()->
       next(new Error('writeContinue in the context of a partial is not supported'))
     newres.statusCode= (statusCode)->
-      unless statusCode == 200
+      unless statusCode == 200 || statusCode == 100
         next(new Error('Status code of '+statusCode+' was encountered in a partial.'))
     newres.writeHead= (statusCode,reasonPhrase,hdrs)->
       newres.statusCode= (statusCode)
