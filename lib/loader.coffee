@@ -105,9 +105,9 @@ sites= {}
 sitesModuleSignature= /_sites$/
 preload= (modules,superMeta)->
   for modname in modules
-    require(modname) if meta_lookup(modname)?._preload_modules
+    m= meta_lookup(modname)?._preload_modules && require(modname)
     if sitesModuleSignature.test(modname)
-      m = require(modname)  # assure load even if preload_modules is off
+      m ?= require(modname)  # assure load even if preload_modules is off
       sites[path.dirname(modname)]= m
       siteLookupRoot ?= path.dirname(modname)
       for sitepath in m.paths
