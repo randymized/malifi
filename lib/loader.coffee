@@ -28,6 +28,11 @@ actionsCopier= (src)->
 
 extend= (base,dominant)->
   return dominant unless base
+  # A meta file module may be a function or an object.  If its a function,
+  # it will be invoked with the parent metadata as an argument and should return
+  # a metadata object.  The meta file can thus create metadata that is
+  # affected by the values in the parent metadata
+  dominant= dominant(base) if typeof dominant == "function"
   r= _.clone(base)
   for key, value of dominant
     unless value?
@@ -59,13 +64,7 @@ meta_lookup= (name)->
   descend(name)
 
 load= (name,superMeta,cachename)->
-    content = require(name)
-    # A meta file module may be a function or an object.  If its a function,
-    # it will be invoked with the parent metadata as an argument and should return
-    # a metadata object.  The meta file can thus create metadata that is
-    # affected by the values in the parent metadata
-    content= content(superMeta) if typeof content == "function"
-    extend(superMeta, content)
+  extend(superMeta, require(name))
 
 loadTree= (dirname,superMeta) ->
   modules= []
