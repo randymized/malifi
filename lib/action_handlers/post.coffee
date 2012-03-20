@@ -4,7 +4,6 @@ extensions= ['.js','.coffee']
 
 module.exports= postAction= (req,res,next) ->
   try
-    debugger
     modname = req.malifi.path.full+'.post'
     hasAnExtension modname, extensions, (found)=>
       if found
