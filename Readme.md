@@ -59,13 +59,13 @@ File and directory names that end with an underscore are also by default hidden,
 
 Malifi also, by default, enforces the convention that any file or directory name starting with a dot is hidden.
 
-These conventions are enforced by application of a regular expression defined as the _forbiddenURLChars element of the metadata.  As with any other metadata element, this may be overridden.
+These conventions are enforced by application of a regular expression defined as the _forbiddenURLChars property of the metadata.  As with any other metadata property, this may be overridden.
 
 ## req.malifi (alias req._)
 
-Whenever a request is received by Malifi, it adds an element named malifi to the request object.  By default, a second reference is added identified by the underscore character.  The req.malifi object includes the following elements, and possibly more:
+Whenever a request is received by Malifi, it adds an property named malifi to the request object.  By default, a second reference is added identified by the underscore character.  The req.malifi object includes the following properties, and possibly more:
 
-* host: parses `req.headers.host` into separate elements:
+* host: parses `req.headers.host` into separate properties:
   * name (hostname without any port number)
   * port
   
@@ -92,15 +92,15 @@ Whenever a request is received by Malifi, it adds an element named malifi to the
         <tr><th>path.full_base</th><td>&lt;site-root&gt;/zyx/abc.def</td></tr>
     </table>
     
-    The site_root, full, and full_base elements will reflect the root of the site currently being examined and thus may vary during processing of a request.  These are the elements you would normally use for building names of files that might serve the request.
+    The site_root, full, and full_base properties will reflect the root of the site currently being examined and thus may vary during processing of a request.  These are the properties you would normally use for building names of files that might serve the request.
 
 * meta: the metadata for a resource located at the `path.full` using the root directory of the first (most specific) site on the site stack.  This will remain unchanged as the request is conveyed through the site stack.
 
 * site_meta: the metadata for a resource located at the current `path.full`.  This will vary to reflect the site currently selected in the site stack.
 
-* meta_lookup:  A function that will return the metadata for any fully-qualified path.  The `meta` and `site_meta` elements were obtained using this function.  A request for a directory's metadata should include a trailing slash.
+* meta_lookup:  A function that will return the metadata for any fully-qualified path.  The `meta` and `site_meta` properties were obtained using this function.  A request for a directory's metadata should include a trailing slash.
 
-* site_stack: A list of fully-qualified names of the root directories of all sites that are to be included when attempting to fulfill a request.  The first directory is that most specific to the request and the request will be served from files located in that directory if possible.  The final directory in the list will always be `<malifi>/base-site`, the system default site.  The site stack will always include at least two elements.
+* site_stack: A list of fully-qualified names of the root directories of all sites that are to be included when attempting to fulfill a request.  The first directory is that most specific to the request and the request will be served from files located in that directory if possible.  The final directory in the list will always be `<malifi>/base-site`, the system default site.  The site stack will always include at least two properties.
 
 ## Multiple site support
 
@@ -112,7 +112,7 @@ The _sites.js module should export two things:
 
 * lookup: a function that for any given request will return the path that will
   serve as a root for that request.  Lookup is invoked so that `this` refers to
-  a partially constructed `req.malifi` that contains only `host` and `url` elements
+  a partially constructed `req.malifi` that contains only `host` and `url` properties
   and will also receive the usual `req,res,next` argument.  Most commonly, 
   lookup will map `this.host.name` (`@host.name` in CoffeeScript) to the
   path serving that hostname and the req argument can be ignored.
@@ -140,7 +140,7 @@ In this test environment, a request for `favicon.ico` will first be sent to the 
 
 The original idea of metadata was to specify and make available information about a page or resource such as its name (perhaps needed by another resource when creating breadcrumb navigation) or whether authorization is required to access the resource.  But it soon became apparent that it could hold much more information, including configuration information for Malifi itself.  Metadata can include just about any immutable value and, depending upon where it is defined, may pertain to the entire server, a site, a directory within a site or an individual file or resource.
 
-The metadata for any directory is specified in a `_default.meta.js` (or `_default.meta.coffee` or `_default.meta.json`) file.  Server-wide default metadata is defined in `<malifi directory>/base-site/_default.meta.coffee`.  A default value of all metadata recognized by Malifi is defined there and comments in that file describe each of those metadata elements.  Metadata elements whose name starts with an underscore are reserved for malifi and its extensions.
+The metadata for any directory is specified in a `_default.meta.js` (or `_default.meta.coffee` or `_default.meta.json`) file.  Server-wide default metadata is defined in `<malifi directory>/base-site/_default.meta.coffee`.  A default value of all metadata recognized by Malifi is defined there and comments in that file describe each of those metadata properties.  Metadata properties whose name starts with an underscore are reserved for malifi and its extensions.
 
 When Malifi is initialized, the root directory of a site to be served must be provided as the first parameter.  If an optional second parameter is provided, it will be merged with the base-site metadata so that any of the argument options override base-site metadata.  If there is a `_default.meta` module in common site's root directory (the directory provided as the first parameter), this will be merged with the result of the options merge to arrive at the server-wide metadata.
 
@@ -148,9 +148,9 @@ If multiple sites are defined, as each site stack is built, the `_default_meta` 
 
 Each subdirectory of a site's root directory similarly inherits the root's metadata merged with any `_default.meta` module encountered in that subdirectory.  This continues for each subdirectory of a subdirectory, so that any given subdirectory inherits the metadata of the directory above it merged with any `_default.meta` module found in that subdirectory.
 
-Finally any given resource may include a `<resource-name>.meta.js` (or .coffee or .json) module, which will be merged with the containing directory's metadata to arrive at the resource's metadata.  The resource's main module (<resource-name>.js or <resource-name>.coffee) may also export a 'meta' element which is treated the same (see test/sites/foreground/sub/addmeta.coffee for an example). If metadata is not defined for any resource (or any directory) it inherits the metadata of the directory it is contained in.  Thus every resource has associated metadata that is ultimately based upon the server-wide metadata.  This will be loaded when malifi receives a request into `req.malifi.meta`.
+Finally any given resource may include a `<resource-name>.meta.js` (or .coffee or .json) module, which will be merged with the containing directory's metadata to arrive at the resource's metadata.  The resource's main module (<resource-name>.js or <resource-name>.coffee) may also export a 'meta' property which is treated the same (see test/sites/foreground/sub/addmeta.coffee for an example). If metadata is not defined for any resource (or any directory) it inherits the metadata of the directory it is contained in.  Thus every resource has associated metadata that is ultimately based upon the server-wide metadata.  This will be loaded when malifi receives a request into `req.malifi.meta`.
 
-If the metadata module is a .js or .coffee file, it may simply export an object containing the metadata as `<malifi directory>/base-site/_default.meta.coffee` does.  It may alternatively export a function taking one parameter.  That parameter is the metadata being inherited.  It is thus possible to base the value of any given metadata object on the value it inherits or even dependant upon other metadata elements.  An example of this can be found at `<malifi directory>/test/sites/common/_default.meta.coffee`.
+If the metadata module is a .js or .coffee file, it may simply export an object containing the metadata as `<malifi directory>/base-site/_default.meta.coffee` does.  It may alternatively export a function taking one parameter.  That parameter is the metadata being inherited.  It is thus possible to base the value of any given metadata object on the value it inherits or even dependant upon other metadata properties.  An example of this can be found at `<malifi directory>/test/sites/common/_default.meta.coffee`.
 
 All metadata is preloaded in a single synchronous operation when the server is initialized.
 
