@@ -4,13 +4,13 @@ utilities= require('../utilities')
 mimeWrapper= require('../mime_wrapper')
 
 # if a static file is requested (including its extension), return it
-module.exports= ()->
+module.exports= (metaname)->
   textAction= (req,res,next) ->
     try
       malifi = req.malifi
       meta = malifi.meta
       path = malifi.path
-      if !meta._allowed_static_extensions? || utilities.nameIsInArray(path.extension,meta._allowed_static_extensions)
+      if !meta[metaname]? || utilities.nameIsInArray(path.extension,meta[metaname])
         fs.stat path.full, (err, stat) =>
           try
             return next() if err

@@ -91,15 +91,15 @@ module.exports=
     'GET':
       '/': [
           require('../lib/action_handlers/add_slash_to_directory')()
-        , require('../lib/action_handlers/serve_index_resource')()
+        , require('../lib/action_handlers/serve_index_resource')('_indexResourceName')
         ]
       '': [
           require('../lib/action_handlers/serve_if_module')()
-        , require('../lib/action_handlers/implied_static_file')()
+        , require('../lib/action_handlers/implied_static_file')('_implied_static_extensions')
         ]
       '*': [
           require('../lib/action_handlers/serve_if_module')()
-        , require('../lib/action_handlers/explicit_static_file')()
+        , require('../lib/action_handlers/explicit_static_file')('_allowed_static_extensions')
       ]
     'POST': require('../lib/action_handlers/post')()
 

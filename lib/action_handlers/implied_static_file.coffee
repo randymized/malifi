@@ -4,11 +4,11 @@ hasAnExtension = require('../utilities').hasAnExtension
 
 # If adding one of the extensions in meta._implied_static_extensions to the end
 # of the path finds a file, serve the contents of that file
-module.exports= ()->
+module.exports= (metaname)->
   implicitTextFileAction= (req,res,next) ->
     try
       fullpath = req.malifi.path.full
-      hasAnExtension fullpath+'.', req.malifi.meta._implied_static_extensions, (found)=>
+      hasAnExtension fullpath+'.', req.malifi.meta[metaname], (found)=>
         if found
           try
             req.malifi.path.full= found
