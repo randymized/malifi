@@ -131,3 +131,5 @@ describe 'malifi server', ->
     # write data to request body
     req.write postdata
     req.end();
+  it "metadata may be included in the resource's main module", (done) ->
+    get('/sub/addmeta','foreground+', done)
