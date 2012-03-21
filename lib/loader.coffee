@@ -26,29 +26,25 @@ actionsCopier= (src)->
       dest[key]= src[key]
   return dest
 
+metacloner= (from)->
+  r= _.clone(from)
+  r._actions= actionsCopier(r._actions)
+  r
+
 extend= (base,dominant)->
   return dominant unless base
   # A meta file module may be a function or an object.  If its a function,
   # it will be invoked with the parent metadata as an argument and should return
   # a metadata object.  The meta file can thus create metadata that is
   # affected by the values in the parent metadata
-  dominant= dominant(base) if typeof dominant == "function"
+  dominant= dominant(metacloner(base)) if typeof dominant == "function"
   r= _.clone(base)
-  for key, value of dominant
-    unless value?
-      delete r[key] if _.has(r,key)
+  for key,val of dominant
+    if val?
+      r[key]=val
     else
-      if key == '_actions'  #todo: allow similar "deeper copy" options for other keys (that, itself, could be in meta)
-        r[key]= actionsCopier(dominant[key])
-        oldactions= dominant[key]
-        r[key].change= (cb)->
-          dest= actionsCopier(oldactions)
-          cb(dest)
-          return dest
-      else
-        r[key] = value
-  return r
-
+      delete r[key]
+  r
 
 cache= {}
 
