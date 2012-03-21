@@ -167,7 +167,7 @@ A method object is in turn indexed by either the request's extension or some oth
   
 The result of indexing the method object is either an action handler function or an array of action handlers.
 
-Action handlers have the same interface as Connect middleware.  They export a function that accepts req, res and next arguments.  If the handler is able to serve the request, it sends a response to the `res` object.  If not, it calls `next()`.  If it encounters an error, it calls `next(err)`.  One additional response is allowed: the handler may call the `req.malifi.next_layer()` function, which will result in the request being immediately passed to the next Connect middleware layer, bypassing further actions in the the array of action handlers and bypassing any remaining sites.
+Action handlers have the same interface as Connect middleware.  They export an initialization function which returns a handler -- a function that accepts req, res and next arguments.  If the handler is able to serve the request, it sends a response to the `res` object.  If not, it calls `next()`.  If it encounters an error, it calls `next(err)`.  One additional response is allowed: the handler may call the `req.malifi.next_layer()` function, which will result in the request being immediately passed to the next Connect middleware layer, bypassing further actions in the the array of action handlers and bypassing any remaining sites.
 
 The `next()` function in this context sends the request to the next action in the action array, or if a single action handler is specified or all actions have been visited to the next site in the site stack.  If all sites have been visited without the request being served, the request is forwarded to the next middleware layer.  
 
