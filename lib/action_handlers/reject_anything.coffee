@@ -2,4 +2,4 @@
 # serves the request, this will result in a 404 error
 module.exports= ()->
   rejectAnythingAction= (req,res,next) ->
-    req.malifi.next_layer()
+    req.malifi.next_middleware_layer()

@@ -21,12 +21,12 @@ exports = module.exports = action= (req,res,next)->
       unless utilities.nameIsInArray(urlExtension,meta._allowed_url_extensions)
         return next()
 
-  malifi.next_layer= next_layer= next
+  malifi.next_middleware_layer= next_middleware_layer= next
   siteindex= 0
   nextSite= ()=>
     root= malifi.site_stack[siteindex++]
     unless root
-      next_layer()
+      next_middleware_layer()
     else
       traverseActionList = (silo)=>
         return nextSite() unless silo
@@ -34,7 +34,7 @@ exports = module.exports = action= (req,res,next)->
           silo= [silo]
         i= 0
         next= (err)=>
-          next_layer(err) if err
+          next_middleware_layer(err) if err
           try
             actor= silo[i++]
             if (actor)
@@ -42,7 +42,7 @@ exports = module.exports = action= (req,res,next)->
             else
               nextSite()
           catch e
-            next_layer(e)
+            next_middleware_layer(e)
         next()
 
       pathobj.site_root= root

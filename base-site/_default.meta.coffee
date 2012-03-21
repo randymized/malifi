@@ -81,7 +81,7 @@ module.exports=
   # Finally the tree of objects will lead to an array of actions.
   # The actions are invoked in order.  Each may either handle the
   # request by invoking res.end or next to pass on the request or
-  # req.malifi.next_layer to pass the request on to the next connect layer.
+  # req.malifi.next_middleware_layer to pass the request on to the next connect layer.
   # Each request will thus move down the list until it finds a suitable handler.
   # A typical ordering would have handlers for differnt types of templates
   # first followed by a handler for just a .js or .coffee module.  If
