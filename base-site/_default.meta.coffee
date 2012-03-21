@@ -59,14 +59,6 @@ module.exports=
   # as partials.
   _forbiddenURLChars: /(\/[._])|(_\/)|_$/
 
-  # The require(module) function is synchronous and will block if the module
-  # needs to be loaded from disk.  Modules will be preloaded when Malifi is
-  # started so that they are already cached and thus available without a blocking
-  # operation.  _preload_modules may be set to false for a site or directory
-  # if memory is tight and there are a large number of modules that are unlikely
-  # to be accessed.
-  _preload_modules: true
-
   # The default set of actions to be performed on an incoming request.
   # First the request method: GET, POST, PUT, DELETE, etc is selected.
   # Then the URL's extension.  If there is no extension, the key will be
