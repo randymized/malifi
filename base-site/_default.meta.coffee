@@ -40,13 +40,6 @@ module.exports=
   # A default _500 page will be shown if one has not been defined for the site.
   _custom_500: false
 
-  # If getOnly is true, only GET or HEAD requests will be handled, unless a
-  # request-type specific handler is found.
-  # For example, if a POST request is received for /foo/bar, the request will
-  # be 404ed unless there is a *.post.js, *.post.coffee or other such post-
-  # specific handler
-  _getOnly: true
-
   # Valid URLs may include the following extensions.
   # Any other extensions at the end of a URL will be disallowed.
   _allowed_url_extensions: allowed_extensions
