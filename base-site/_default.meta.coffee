@@ -47,7 +47,19 @@ module.exports=
   # Static files may be served if they have the following extensions and
   # either the URL includes the extension or the URL has no extension but
   # otherwise matches the file.
+  # The lib/action_handlers/explicit_static_file handler provides a
+  # reference implementation that serves explicitly specified files that are
+  # on this list.
   _allowed_static_extensions: allowed_extensions
+
+  # A URL that does not include an extension may be matched with a static
+  # resource that has an extension included in this array.  For example,
+  # a request for "/a" may serve "/a.txt" if that file is present and its
+  # extension is included here.
+  # The lib/action_handlers/implied_static_file handler provides a
+  # reference implementation that serves explicitly specified files that are
+  # on this list.
+  _implied_static_extensions: ['txt','html','htm']
 
   # If defined and not null, any URLs matching this regular expression will be
   # rejected as forbidden.  The default rejects URLs where any element starts
@@ -83,8 +95,7 @@ module.exports=
         ]
       '': [
           require('../lib/action_handlers/serve_if_module')()
-        , require('../lib/action_handlers/implied_html')()
-        , require('../lib/action_handlers/implied_textfile')()
+        , require('../lib/action_handlers/implied_static_file')()
         ]
       '*': [
           require('../lib/action_handlers/serve_if_module')()
