@@ -87,18 +87,15 @@ Whenever a request is received by Malifi, it adds an property named malifi to th
         <tr><th>path.base</th><td>abc.def</td></tr>
         <tr><th>path.dot_extension</th><td>.txt</td></tr>
         <tr><th>path.extension</th><td>txt</td></tr>
-        <tr><th>path.site_root</th><td>(the site's root directory)</td></tr>
-        <tr><th>path.full</th><td>&lt;site-root&gt;/zyx/abc.def.txt</td></tr>
-        <tr><th>path.full_base</th><td>&lt;site-root&gt;/zyx/abc.def</td></tr>
     </table>
     
     The site_root, full, and full_base properties will reflect the root of the site currently being examined and thus may vary during processing of a request.  These are the properties you would normally use for building names of files that might serve the request.
 
-* meta: the metadata for a resource located at the `path.full` using the root directory of the first (most specific) site on the site stack.  This will remain unchanged as the request is conveyed through the site stack.
+* files: all files matching the URL.  This is an object where each attribute is the file's extension and the value of the attribute is the file's fully-qualified name.  An action handler can often determine if it can support the request by determining if this object includes extensions needed for its action.  For example, an action handler that simply hands over a request to a module would check if either this object includes a `js` or `coffee` attribute and, if so, invoking that module.  This object is an accumulation of files from all site layers where files in a more specific layer overrides one with the same extension from a more general layer.
 
-* site_meta: the metadata for a resource located at the current `path.full`.  This will vary to reflect the site currently selected in the site stack.
+* meta: the metadata for the requested resource.
 
-* meta_lookup:  A function that will return the metadata for any fully-qualified path.  The `meta` and `site_meta` properties were obtained using this function.  A request for a directory's metadata should include a trailing slash.
+* meta_lookup:  A function that will return the metadata for any fully-qualified path.  The `meta` and property was obtained using this function.  A request for a directory's metadata should include a trailing slash.
 
 * site_stack: A list of fully-qualified names of the root directories of all sites that are to be included when attempting to fulfill a request.  The first directory is that most specific to the request and the request will be served from files located in that directory if possible.  The final directory in the list will always be `<malifi>/base-site`, the system default site.  The site stack will always include at least two properties.
 

@@ -59,7 +59,7 @@ module.exports=
   # The lib/action_handlers/implied_static_file handler provides a
   # reference implementation that serves explicitly specified files that are
   # on this list.
-  _implied_static_extensions: ['txt','html','htm']
+  _implied_static_extensions: ['html','txt','htm']
 
   # If defined and not null, any URLs matching this regular expression will be
   # rejected as forbidden.  The default rejects URLs where any element starts
@@ -90,11 +90,11 @@ module.exports=
   _actions:
     'GET':
       '/': [
-          require('../lib/action_handlers/add_slash_to_directory')()
-        , require('../lib/action_handlers/serve_index_resource')('_indexResourceName')
+          require('../lib/action_handlers/serve_if_module')('_indexResourceName')
         ]
       '': [
-          require('../lib/action_handlers/serve_if_module')()
+          require('../lib/action_handlers/add_slash_to_directory')()
+        , require('../lib/action_handlers/serve_if_module')()
         , require('../lib/action_handlers/implied_static_file')('_implied_static_extensions')
         ]
       '*': [

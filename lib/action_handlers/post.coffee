@@ -1,18 +1,15 @@
 # default handling of POST requests
 hasAnExtension = require('../utilities').hasAnExtension
-extensions= ['.js','.coffee']
+extensions= ['post.js','post.coffee']
 
 module.exports= ()->
   postAction= (req,res,next) ->
     try
-      modname = req.malifi.path.full+'.post'
-      hasAnExtension modname, extensions, (found)=>
-        if found
-          try
-            require(found)(req,res,next)
-          catch e
-              next(e)
-        else
-          next()
+      files = req.malifi.files
+      for ext in extensions
+        if files[ext]
+          debugger
+          return require(files[ext])(req,res,next)
+      next()
     catch e
       next(e)

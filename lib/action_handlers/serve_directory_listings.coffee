@@ -4,18 +4,16 @@ directory = require('connect').middleware.directory
 module.exports= (metaOptionsName)->
   serveDirectoryListings= (req,res,next) ->
     try
-      meta= req.malifi.meta
-      fullpath = req.malifi.path.full
-      options= meta[metaOptionsName] ? {}
-      fs.stat fullpath, (err,stats)->
-        if !err && stats.isDirectory()
-          try
-            options.filter ?= (file)->
-              !meta._forbiddenURLChars?.test('/'+file)
-            directory(req.malifi.path.site_root,options)(req,res,next)
-          catch e
-            next(e)
-        else
-          next()
+      malifi = req.malifi
+      dirname = malifi.files['/']
+      if dirname
+        meta= malifi.meta
+        options= meta[metaOptionsName] ? {}
+        options.filter ?= (file)->
+          !meta._forbiddenURLChars?.test('/'+file)
+        req.url= '/'
+        directory(dirname,options)(req,res,next)
+      else
+        next()
     catch e
       next(e)

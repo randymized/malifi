@@ -1,5 +1,4 @@
 _ = require('underscore')._
-connect = require('connect')
 fs = require('fs')
 path = require('path')
 join = path.join
@@ -17,49 +16,81 @@ exports = module.exports = action= (req,res,next)->
     if meta._forbiddenURLChars?.test(malifi.url.decoded_path)
       return forbidden(res)
 
-    if urlExtension && meta._allowed_url_extensions
+    if urlExtension && meta._allowed_url_extensions && '/' != urlExtension
       unless utilities.nameIsInArray(urlExtension,meta._allowed_url_extensions)
         return next()
 
-  malifi.next_middleware_layer= next_middleware_layer= next
-  siteindex= 0
-  nextSite= ()=>
-    root= malifi.site_stack[siteindex++]
-    unless root
-      next_middleware_layer()
-    else
-      traverseActionList = (silo)=>
-        return nextSite() unless silo
-        if _.isFunction(silo)
-          silo= [silo]
-        i= 0
-        next= (err)=>
-          next_middleware_layer(err) if err
-          try
-            actor= silo[i++]
-            if (actor)
-              actor(req,res,next)
-            else
-              nextSite()
-          catch e
-            next_middleware_layer(e)
-        next()
-
-      pathobj.site_root= root
-      pathobj.full= join(root,pathobj.relative)
-      pathobj.full_base= join(root,pathobj.relative_base)
-
-      site_meta= malifi.site_meta= malifi.meta_lookup(join(root,malifi.path.relative))
-      actions= site_meta._actions
-      extLookup= actions[if req.method is 'HEAD' then 'GET' else req.method]
-      return nextSite() unless extLookup?
-
-      if _.isArray(extLookup) ||_.isFunction(extLookup)
-        traverseActionList(extLookup)
-      else
-        fs.stat pathobj.full, (err,stats)=>
-          if !err && stats.isDirectory()
-            traverseActionList(extLookup['/'])
+  selectActions= (files)->
+    debugger
+    malifi.files= files
+    malifi.next_middleware_layer= next
+    traverseActionList = (silo,nextActionList)=>
+      return next() unless silo
+      if _.isFunction(silo)
+        silo= [silo]
+      i= 0
+      nextActionHandler= (err)=>
+        next(err) if err
+        try
+          actor= silo[i++]
+          if (actor)
+            actor(req,res,nextActionHandler)
           else
-            traverseActionList(extLookup[urlExtension] ? extLookup['*'])
-  nextSite()
+            next()
+        catch e
+          next(e)
+      nextActionHandler()
+
+    extLookup= meta._actions[if req.method is 'HEAD' then 'GET' else req.method]
+    return next() unless extLookup?
+
+    if _.isArray(extLookup) ||_.isFunction(extLookup)
+      traverseActionList(extLookup)
+    else
+      if pathobj.extension == ['/']
+        traverseActionList(extLookup['/'])
+      else
+        traverseActionList(extLookup[urlExtension] ? extLookup['*'])
+
+  find_files= (dirname, basename, cb)->
+    dirname= '' if '/' == dirname
+    re= new RegExp("^#{basename}(?:\\.(.+))?$")
+    completed= 0
+    findings= {}
+    site_stack = malifi.site_stack.reverse()
+    loops = site_stack.length
+    oneDone= ()->
+      if loops == ++completed
+        # all readdir results have been received and added to findings
+        candidates= {}
+        for site in malifi.site_stack # merge, priortizing most specific site
+          _.extend(candidates,findings[site])
+        for ext,name of candidates
+          candidates[ext]= name+'.'+ext if ext && '/' != ext
+        cb(candidates)
+    for site in site_stack
+      do ()->
+        sitedir= site
+        searchpath= join(sitedir,dirname)
+        fs.readdir searchpath, (err,files)->
+          if files
+            for file in files
+              m= re.exec(file)
+              (findings[sitedir] ?= {})[m[1] ? ''] = join(searchpath,basename) if m
+          finding = findings[sitedir]
+          if finding?['']
+            fs.stat finding[''], (err,stats)->
+              if stats.isDirectory()
+                finding['/']= finding['']
+                delete finding['']
+              oneDone()
+          else
+            oneDone()
+
+  find_files pathobj.dirname, pathobj.base, (files)->
+    if files['/'] && meta._indexResourceName && 1 == Object.keys(files).length
+      # A directory was found.  Scan it, looking for _index files
+      find_files join(pathobj.dirname,pathobj.basename), meta._indexResourceName, (indexFiles)->
+        selectActions(_.extend(files,indexFiles))
+    else
+      selectActions(files)

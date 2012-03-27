@@ -15,7 +15,7 @@ loader= require('./loader')
 action= require('./action')
 package = require('../package')
 extractHostAndPort= /([^:]+)(?::(.*))?/
-extractNameParts= /(.*[/\\]([^/\\]+?))(\.([^.]+))?$/
+extractNameParts= /(?:((.*)\/([^/]*))\/$)|((.*)\/([^/]+?))(\.([^./]+))?$/
 
 class ParseHost
   constructor: (req)->
@@ -54,21 +54,27 @@ malifi= (root,options)->
     # If malifi.alias is defined in the metadata (default is "_"), a reference
     # to the malifi object of that name will also be added to req.
     meta= loader.meta_lookup(join(siteStack[0],pathname))
+    basename= (pathparts[6] || '')+(pathparts[7] || '')
     req.malifi=
       path:
-        # if decoded URL ==     /zyx/abc.def.txt
-        #   path.relative=      /zyx/abc.def.txt
-        #   path.relative_base= /zyx/abc.def
-        #   path.base=               abc.def
-        #   path.dot_extension=             .txt
-        #   path.extension=                  txt
-        relative: pathname
-        relative_base: pathparts[1] || ''
-        base: pathparts[2] || ''
-        dot_extension: pathparts[3] || ''
-        extension: pathparts[4] || ''
-
-        #absolute paths will be added when the site is selected from the site stack
+        if pathparts[1]
+          # if decoded URL ==               # /zyx/abc/
+          relative:      pathparts[1] ? '/' # /zyx/abc
+          relative_base: pathparts[1] ? '/' # /zyx/abc
+          dirname:       pathparts[2] ? '/' # /zyx
+          base:          pathparts[3] ? ''  #      abc
+          basename:      pathparts[3] ? ''  #      abc
+          dot_extension: ''                 # (empty string)
+          extension: '/'                    # /
+        else
+          # if decoded URL ==               # /zyx/abc.def.txt
+          relative: pathname                # /zyx/abc.def.txt
+          relative_base: pathparts[4] ? '/' # /zyx/abc.def
+          dirname: pathparts[5] ? '/'       # /zyx
+          base: pathparts[6] ? ''           #      abc.def
+          basename: basename                #      abc.def.txt
+          dot_extension: pathparts[7] ? ''  #             .txt
+          extension: pathparts[8] ? ''      #              txt
       host: pathinfo.host
       url: pathinfo.url
       meta_lookup: loader.meta_lookup

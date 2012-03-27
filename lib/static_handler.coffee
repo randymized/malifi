@@ -17,7 +17,7 @@ utils = connect.utils
 mime = require('mime')
 
 exports= module.exports= staticHandler= (req,res,next,mimeWrapper)->
-  fullpath= req.malifi.path.full
+  fullpath= req.malifi.files['']
   mimeWrapper fullpath, (err, type) =>
     if (err)
       return if 'ENOENT' == err.code then next() else next(err)
