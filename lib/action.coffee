@@ -1,8 +1,8 @@
 _ = require('underscore')._
-fs = require('fs')
 path = require('path')
 join = path.join
 utilities= require('./utilities')
+find_files= require('./find_files')
 forbidden = utilities.forbidden
 
 exports = module.exports = action= (req,res,next)->
@@ -52,46 +52,10 @@ exports = module.exports = action= (req,res,next)->
       else
         traverseActionList(extLookup[urlExtension] ? extLookup['*'])
 
-  find_files= (dirname, basename, cb)->
-    dirname= '' if '/' == dirname
-    re= new RegExp("^#{basename}(?:\\.(.+))?$")
-    completed= 0
-    findings= {}
-    site_stack = malifi.site_stack.reverse()
-    loops = site_stack.length
-    oneDone= ()->
-      if loops == ++completed
-        # all readdir results have been received and added to findings
-        malifi.matching_files_by_site= findings
-        candidates= {}
-        for site in malifi.site_stack # merge, priortizing most specific site
-          _.extend(candidates,findings[site])
-        for ext,name of candidates
-          candidates[ext]= name+'.'+ext if ext && '/' != ext
-        cb(candidates)
-    for site in site_stack
-      do ()->
-        sitedir= site
-        searchpath= join(sitedir,dirname)
-        fs.readdir searchpath, (err,files)->
-          if files
-            for file in files
-              m= re.exec(file)
-              (findings[sitedir] ?= {})[m[1] ? ''] = join(searchpath,basename) if m
-          finding = findings[sitedir]
-          if finding?['']
-            fs.stat finding[''], (err,stats)->
-              if stats.isDirectory()
-                finding['/']= finding['']
-                delete finding['']
-              oneDone()
-          else
-            oneDone()
-
-  find_files pathobj.dirname, pathobj.basename, (files)->
+  find_files.call malifi, pathobj.dirname, pathobj.basename, (files)->
     if files['/'] && meta._indexResourceName && 1 == Object.keys(files).length
       # A directory was found.  Scan it, looking for _index files
-      find_files join(pathobj.dirname,pathobj.basename), meta._indexResourceName, (indexFiles)->
+      find_files.call malifi, join(pathobj.dirname,pathobj.basename), meta._indexResourceName, (indexFiles)->
         selectActions(_.extend(files,indexFiles))
     else
       selectActions(files)
