@@ -62,6 +62,7 @@ exports = module.exports = action= (req,res,next)->
     oneDone= ()->
       if loops == ++completed
         # all readdir results have been received and added to findings
+        malifi.matching_files_by_site= findings
         candidates= {}
         for site in malifi.site_stack # merge, priortizing most specific site
           _.extend(candidates,findings[site])

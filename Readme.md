@@ -99,6 +99,8 @@ Whenever a request is received by Malifi, it adds an property named malifi to th
 
 * site_stack: A list of fully-qualified names of the root directories of all sites that are to be included when attempting to fulfill a request.  The first directory is that most specific to the request and the request will be served from files located in that directory if possible.  The final directory in the list will always be `<malifi>/base-site`, the system default site.  The site stack will always include at least two properties.
 
+* matching_files_by_site: All files matching the request, organized by site.  This in an object where the attribute names are the fully qualified root path of a site and the value of each attribute is an object in which the attributes names are the extension of each matching file and the value is the fully-qualified name of the file.  This is the full list of files matching the request before being merged to a single object containing the most specific file of each extension.
+
 ## Multiple site support
 
 Malifi supports multiple sites and the ability for sites to inherit common pages and behavior.  One process can serve several domains.  Even when only one domain is being served, that site inherits from Malifi's base site.
