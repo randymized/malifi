@@ -12,9 +12,7 @@ module.exports= (allowedExtensions)->
       files = malifi.files
       meta = malifi.meta
       allowed = meta[allowedExtensions]
-      if (!allowed? || utilities.nameIsInArray(path.extension,allowed)) && files[path.extension]
-        debugger
-        files['']= files[path.extension]
+      if (!allowed? || utilities.nameIsInArray(path.extension,allowed)) && files['']
         staticHandler(req,res,next,mimeWrapper)
       else
         next()
