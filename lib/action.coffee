@@ -87,7 +87,7 @@ exports = module.exports = action= (req,res,next)->
           else
             oneDone()
 
-  find_files pathobj.dirname, pathobj.base, (files)->
+  find_files pathobj.dirname, pathobj.basename, (files)->
     if files['/'] && meta._indexResourceName && 1 == Object.keys(files).length
       # A directory was found.  Scan it, looking for _index files
       find_files join(pathobj.dirname,pathobj.basename), meta._indexResourceName, (indexFiles)->
