@@ -2,10 +2,14 @@
 module.exports= ()->
   addSlashToDirectory= (req,res,next) ->
     try
-      url = req._.url
-      unless '/' == req._.path.extension
+      malifi = req._
+      url = malifi.url
+      if malifi.files['/'] && '/' != malifi.path.extension
         res.statusCode = 301;
-        newpath = url.raw+'/'
+        parsed= url.parsed
+        parsed.path+= '/'
+        parsed.pathname+= '/'
+        newpath = require('url').format(parsed)
         res.setHeader('Location', newpath);
         res.end('Redirecting to ' + newpath);
       else

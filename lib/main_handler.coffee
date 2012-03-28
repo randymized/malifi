@@ -13,6 +13,7 @@ parse = require('url').parse
 stripExtension= require('./strip_extension')
 loader= require('./loader')
 action= require('./action')
+find_files= require('./find_files')
 package = require('../package')
 extractHostAndPort= /([^:]+)(?::(.*))?/
 extractNameParts= /(?:((.*)\/([^/]*))\/$)|((.*)\/([^/]+?))(\.([^./]+))?$/
@@ -55,7 +56,7 @@ malifi= (root,options)->
     # to the malifi object of that name will also be added to req.
     meta= loader.meta_lookup(join(siteStack[0],pathname))
     basename= (pathparts[6] || '')+(pathparts[7] || '')
-    req.malifi=
+    req.malifi= malifi=
       path:
         if pathparts[1]
           # if decoded URL ==               # /zyx/abc/
@@ -81,6 +82,7 @@ malifi= (root,options)->
       meta: meta
       site_stack: siteStack
       main_handler: malifiMainHandler
+      find_files: find_files
 
     req[meta._malifi_alias]= req.malifi if meta._malifi_alias
 

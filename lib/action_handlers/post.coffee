@@ -8,7 +8,6 @@ module.exports= ()->
       files = req.malifi.files
       for ext in extensions
         if files[ext]
-          debugger
           return require(files[ext])(req,res,next)
       next()
     catch e

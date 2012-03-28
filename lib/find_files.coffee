@@ -11,7 +11,7 @@ exports = module.exports = find_files= (dirname, basename, cb)->
   findings= {}
   site_stack = this.site_stack.reverse()
   loops = site_stack.length
-  oneDone= ()->
+  oneDone= ()=>
     if loops == ++completed
       # all readdir results have been received and added to findings
       this.matching_files_by_site= findings
@@ -20,6 +20,7 @@ exports = module.exports = find_files= (dirname, basename, cb)->
         _.extend(candidates,findings[site])
       for ext,name of candidates
         candidates[ext]= name+'.'+ext if ext && '/' != ext
+      this.files= candidates
       cb(candidates)
   for site in site_stack
     do ()->

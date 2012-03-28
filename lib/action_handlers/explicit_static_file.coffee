@@ -10,8 +10,7 @@ module.exports= (allowedExtensions)->
       malifi = req.malifi
       path = malifi.path
       files = malifi.files
-      meta = malifi.meta
-      allowed = meta[allowedExtensions]
+      allowed = malifi.meta[allowedExtensions]
       if (!allowed? || utilities.nameIsInArray(path.extension,allowed)) && files['']
         staticHandler(req,res,next,mimeWrapper)
       else

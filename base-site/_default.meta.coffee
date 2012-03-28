@@ -90,7 +90,8 @@ module.exports=
   _actions:
     'GET':
       '/': [
-          require('../lib/action_handlers/serve_if_module')('_indexResourceName')
+          require('../lib/action_handlers/invoke_directory_default')('_indexResourceName')
+        , require('../lib/action_handlers/directory_index')('_directory_index_module')
         ]
       '': [
           require('../lib/action_handlers/add_slash_to_directory')()
@@ -102,6 +103,13 @@ module.exports=
         , require('../lib/action_handlers/explicit_static_file')('_allowed_static_extensions')
       ]
     'POST': require('../lib/action_handlers/post')()
+
+  # The module named here can be invoked to produce an index of a directory named
+  # in the URL.  Default processing of a url that ends with a slash is to first
+  # look for an `_indexResourceName` module within that directory, and if not
+  # present, then invoke this module, if specified.  If this attribute is false
+  # no directory index will be produced.
+  _directory_index_module: false  # require('../lib/serve_directory_listings')()
 
   # In many servers, if a URL is of a directory and a script of the right name,
   # such as index.whatever, exists, that script will be run rather than producing

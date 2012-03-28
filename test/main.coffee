@@ -108,29 +108,28 @@ describe 'malifi server', ->
     get('/sub',301, done)
   it "should (based on default actions) serve a directory's _index resouce.", (done) ->
     get('/sub/','This is the _index.\n', done)
-  if false
-    it 'deals with _sites module returning its own directory: going no further', (done) ->
-      get('/from_common','This should be hidden: it\'s in the common layer.', done)
-    it 'errs if hostname is unknown to _sites file', (done) ->
-      get('/unknown_site',500, done)
-    it 'accepts a POST', (done) ->
-      postdata= querystring.stringify
-        a: 'b'
-        x: 'y'
-      options =
-        host: 'localhost'
-        port: port
-        path: '/post'
-        method: 'POST'
-        headers:
-          'Content-Type': 'application/x-www-form-urlencoded',
-          'Content-Length': postdata.length
+  it 'deals with _sites module returning its own directory: going no further', (done) ->
+    get('/from_common','This should be hidden: it\'s in the common layer.', done)
+  it 'errs if hostname is unknown to _sites file', (done) ->
+    get('/unknown_site',500, done)
+  it 'accepts a POST', (done) ->
+    postdata= querystring.stringify
+      a: 'b'
+      x: 'y'
+    options =
+      host: 'localhost'
+      port: port
+      path: '/post'
+      method: 'POST'
+      headers:
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'Content-Length': postdata.length
 
-      req = http.request options, (res)->
-        getResponse(res,'{"a":"b","x":"y"}',200,done)
+    req = http.request options, (res)->
+      getResponse(res,'{"a":"b","x":"y"}',200,done)
 
-      # write data to request body
-      req.write postdata
-      req.end();
-    it "metadata may be included in the resource's main module", (done) ->
-      get('/sub/addmeta','foreground+', done)
+    # write data to request body
+    req.write postdata
+    req.end();
+  it "metadata may be included in the resource's main module", (done) ->
+    get('/sub/addmeta','foreground+', done)
