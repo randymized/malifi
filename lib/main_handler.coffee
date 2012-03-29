@@ -5,14 +5,11 @@
 ###
 
 path = require('path')
-connect = require('connect')
-forbidden = connect.utils.forbidden
 join = path.join
 normalize = path.normalize
+forbidden = require('connect').utils.forbidden
 parse = require('url').parse
-stripExtension= require('./strip_extension')
 loader= require('./loader')
-action= require('./action')
 find_files= require('./find_files')
 package = require('../package')
 extractHostAndPort= /([^:]+)(?::(.*))?/
