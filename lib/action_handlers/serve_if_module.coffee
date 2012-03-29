@@ -1,19 +1,14 @@
-hasAnExtension = require('../utilities').hasAnExtension
-
-extensions= ['.js','.coffee']
+extensions= ['js','coffee']
 
 # invoke the module at the given path if it is present
 module.exports= ()->
   justAModuleAction= (req,res,next) ->
     try
-      fullpath = req.malifi.path.full
-      hasAnExtension fullpath, extensions, (found)=>
-        if found
-          try
-            require(fullpath)(req,res,next)
-          catch e
-            next(e)
-        else
-          next()
+      files = req.malifi.files
+      for ext in extensions
+        if files[ext]
+          module = require(files[ext])
+          return module(req,res,next)
+      next()
     catch e
       next(e)
