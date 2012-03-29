@@ -1,5 +1,5 @@
 _ = require('underscore')._
-action_series = require('./action_series')
+select_actions_by_extension= require('./select_actions_by_extension')
 
 exports = module.exports = select_actions= (req,res,next)->
   malifi = req.malifi
@@ -9,8 +9,4 @@ exports = module.exports = select_actions= (req,res,next)->
   if _.isArray(extLookup) ||_.isFunction(extLookup)
     extLookup(req,res,next)
   else
-    pathobj= malifi.path
-    if pathobj.extension == ['/']
-      extLookup['/'](req,res,next)
-    else
-      (extLookup[pathobj.extension] ? extLookup['*'])(req,res,next)
+    select_actions_by_extension(extLookup)(req,res,next)
