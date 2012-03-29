@@ -109,6 +109,8 @@ Where there are resources with the same extension in different sites of the site
 
 * matching_files_by_site: an intermediate object added to malifi by the find_files method.  It contains all the files and directories that match the resource name for each site.  The find_files method returns an object that merges each site in this object into a single object that references the most specific file of each extension.  This object, then, exposes all matching files, even those overridden by a more specific one.
 
+* connect_handler: a link back to the handler that receives requests from Connect.  Used for reinserting requests, such as for rerouting and partials.
+
 ## Multiple site support
 
 Malifi supports multiple sites and the ability for sites to inherit resources.  One process can thus serve several domains and skinning is natively supported.  Even when only one domain without a separate skin layer is being served, that site inherits from Malifi's base site.

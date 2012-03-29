@@ -78,7 +78,7 @@ malifi= (root,options)->
       meta_lookup: loader.meta_lookup
       meta: meta
       site_stack: siteStack
-      main_handler: malifiConnectHandler
+      connect_handler: malifiConnectHandler
       find_files: find_files
 
     req[meta._malifi_alias]= req.malifi if meta._malifi_alias
