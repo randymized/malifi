@@ -1,3 +1,5 @@
+action_series= require('../lib/action_series')
+
 allowed_extensions= ['txt','pdf','html','htm','gif','jpg','jpeg','ico','tif','png','tiff','bmp']
 module.exports=
   # An object named 'malifi' will be added to req.  That object contains references
@@ -89,16 +91,16 @@ module.exports=
   # module first, providing the coupling expected by the template.
   _actions:
     'GET':
-      '/': [
+      '/': action_series [
           require('../lib/action_handlers/invoke_directory_default')('_indexResourceName')
         , require('../lib/action_handlers/directory_index')('_directory_index_module')
         ]
-      '': [
+      '': action_series [
           require('../lib/action_handlers/add_slash_to_directory')()
         , require('../lib/action_handlers/serve_if_module')()
         , require('../lib/action_handlers/implied_static_file')('_implied_static_extensions')
         ]
-      '*': [
+      '*': action_series [
           require('../lib/action_handlers/serve_if_module')()
         , require('../lib/action_handlers/explicit_static_file')('_allowed_static_extensions')
       ]

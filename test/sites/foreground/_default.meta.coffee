@@ -1,3 +1,5 @@
+action_series= require('../../../lib/action_series')
+
 # The actions herein do not necessarily demonstrate a best practice.
 # Normally the text could simply be placed in a text files and served as
 # statics.  They are here for the sake of testing, to readily test whether
@@ -7,7 +9,7 @@ exports= module.exports= (prev)=>
   test_string: 'foreground'
   _actions: do(prev)->
     prev._actions.GET.test=
-      [
+      action_series [
         # first action (yes, action handlers may be defined inline, as well
         # as in separate files).
         (req,res,next) ->
