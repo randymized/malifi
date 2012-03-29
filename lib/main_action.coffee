@@ -21,5 +21,6 @@ exports = module.exports = action= ()->
         unless utilities.nameIsInArray(urlExtension,meta._allowed_url_extensions)
           return next()
 
+    malifi.next_middleware_layer= next
     malifi.find_files pathobj.dirname, pathobj.basename, (files)->
       select_actions(req,res,next)

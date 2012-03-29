@@ -1,26 +1,12 @@
 _ = require('underscore')._
+action_series = require('./action_series')
 
 exports = module.exports = select_actions= (req,res,next)->
-  malifi= req.malifi
-  malifi.next_middleware_layer= next
 
-  traverseActionList = (silo,nextActionList)=>
-    return next() unless silo
-    if _.isFunction(silo)
-      silo= [silo]
-    i= 0
-    nextActionHandler= (err)=>
-      next(err) if err
-      try
-        actor= silo[i++]
-        if (actor)
-          actor(req,res,nextActionHandler)
-        else
-          next()
-      catch e
-        next(e)
-    nextActionHandler()
+  traverseActionList= (silo)->
+    action_series(silo)(req,res,next)
 
+  malifi = req.malifi
   extLookup= malifi.meta._actions[if req.method is 'HEAD' then 'GET' else req.method]
   return next() unless extLookup?
 
