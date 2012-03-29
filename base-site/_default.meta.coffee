@@ -1,4 +1,5 @@
 action_series= require('../lib/action_series')
+select_actions_by_extension= require('../lib/select_actions_by_extension')
 
 allowed_extensions= ['txt','pdf','html','htm','gif','jpg','jpeg','ico','tif','png','tiff','bmp']
 module.exports=
@@ -90,7 +91,7 @@ module.exports=
   # template is discovered, its handler will invoke any .js or .coffee
   # module first, providing the coupling expected by the template.
   _actions:
-    'GET':
+    'GET': select_actions_by_extension {
       '/': action_series [
           require('../lib/action_handlers/invoke_directory_default')('_indexResourceName')
         , require('../lib/action_handlers/directory_index')('_directory_index_module')
@@ -103,7 +104,8 @@ module.exports=
       '*': action_series [
           require('../lib/action_handlers/serve_if_module')()
         , require('../lib/action_handlers/explicit_static_file')('_allowed_static_extensions')
-      ]
+        ]
+      }
     'POST': require('../lib/action_handlers/post')()
 
   # The module named here can be invoked to produce an index of a directory named

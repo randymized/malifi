@@ -7,8 +7,9 @@
 #  '*': Wildcard for any request that includes an extension but where the
 #       extension does not match any of the attributes of the extension lookup
 #       argument.
+_= require('underscore')
 exports = module.exports = select_actions_by_extension= (extLookup)->
-  select_actions_by_extension_handler= (req,res,next)->
+  handler= select_actions_by_extension_handler= (req,res,next)->
     return next() unless extLookup?
 
     pathobj= req.malifi.path
@@ -21,3 +22,13 @@ exports = module.exports = select_actions_by_extension= (extLookup)->
       action(req,res,next)
     else
       next()
+
+  # Attachments to the handler to allow identification and creating copies
+  handler.__defineGetter__ 'args', ()->
+    _.clone(extLookup)
+  handler.filename= __filename
+  handler.extend= (editor)->
+    old_map = _.clone(extLookup)
+    select_actions_by_extension(_.extend(old_map, editor(old_map)))
+
+  handler

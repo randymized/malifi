@@ -8,39 +8,41 @@ action_series= require('../../../lib/action_series')
 exports= module.exports= (prev)=>
   test_string: 'foreground'
   _actions: do(prev)->
-    prev._actions.GET.test=
-      action_series [
-        # first action (yes, action handlers may be defined inline, as well
-        # as in separate files).
-        (req,res,next) ->
-          try
-            if req._.path.base == 'x'
-              res.setHeader('Content-Type','text/plain')
-              res.end('x test page')
-            else
-              next()
-          catch e
-            next(e)
-        ,(req,res,next) ->
-          # second action
-          try
-            if req._.path.base == 'y'
-              res.setHeader('Content-Type','text/plain')
-              res.end('y test page')
-            else
-              next()
-          catch e
-            next(e)
-        ,(req,res,next) ->
-          # third action
-          try
-            if req._.path.base == 'z'
-              res.setHeader('Content-Type','text/plain')
-              res.end('z test page')
-            else
-              next()
-          catch e
-            next(e)
-      ]
-    prev._actions
+    actions= prev._actions
+    actions.GET= actions.GET.extend (old_map)->
+      test:
+        action_series [
+          # first action (yes, action handlers may be defined inline, as well
+          # as in separate files).
+          (req,res,next) ->
+            try
+              if req._.path.base == 'x'
+                res.setHeader('Content-Type','text/plain')
+                res.end('x test page')
+              else
+                next()
+            catch e
+              next(e)
+          ,(req,res,next) ->
+            # second action
+            try
+              if req._.path.base == 'y'
+                res.setHeader('Content-Type','text/plain')
+                res.end('y test page')
+              else
+                next()
+            catch e
+              next(e)
+          ,(req,res,next) ->
+            # third action
+            try
+              if req._.path.base == 'z'
+                res.setHeader('Content-Type','text/plain')
+                res.end('z test page')
+              else
+                next()
+            catch e
+              next(e)
+        ]
+    return actions
 
