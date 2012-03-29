@@ -28,7 +28,7 @@ malifi= (root,options)->
   baseSiteStack= [normalize(root), normalize(join(__dirname,'../base-site'))]
   loader.init(baseSiteStack,options)
 
-  malifiMainHandler= (req, res, next)->
+  malifiConnectHandler= (req, res, next)->
     parsedurl= parse(req.url,true)
     pathname= decodeURIComponent(parsedurl.pathname)
     unless pathname.indexOf('\0')
@@ -78,7 +78,7 @@ malifi= (root,options)->
       meta_lookup: loader.meta_lookup
       meta: meta
       site_stack: siteStack
-      main_handler: malifiMainHandler
+      main_handler: malifiConnectHandler
       find_files: find_files
 
     req[meta._malifi_alias]= req.malifi if meta._malifi_alias
@@ -103,7 +103,7 @@ malifi= (root,options)->
 
     meta._main_action(req,res,next)
 
-  return malifiMainHandler
+  return malifiConnectHandler
 
 exports = module.exports = malifi
 

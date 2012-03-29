@@ -6,6 +6,6 @@ module.exports= reroute= (url,host)->
     newreq.url= url
     newreq.headers.host= host if host && _.isString(host)
     newreq.internal= true
-    req.malifi.main_handler(newreq,res,next)
+    req.malifi.main_handler(newreq,res,next)  # feed back in as if just received from Connect
 
 
