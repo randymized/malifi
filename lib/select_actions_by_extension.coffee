@@ -9,19 +9,22 @@
 #       argument.
 _= require('underscore')
 exports = module.exports = select_actions_by_extension= (extLookup)->
-  handler= select_actions_by_extension_handler= (req,res,next)->
-    return next() unless extLookup?
+  handler= select_actions_by_extension_handler=
+    if extLookup?
+      (req,res,next)->
+        pathobj= req.malifi.path
+        action= if pathobj.extension == ['/']
+          extLookup['/']
+        else
+          extLookup[pathobj.extension] ? extLookup['*']
 
-    pathobj= req.malifi.path
-    action= if pathobj.extension == ['/']
-      extLookup['/']
+        if action?
+          action(req,res,next)
+        else
+          next()
     else
-      extLookup[pathobj.extension] ? extLookup['*']
-
-    if action?
-      action(req,res,next)
-    else
-      next()
+      (req,res,next)->
+        next()
 
   # Attachments to the handler to allow identification and creating copies
   handler.__defineGetter__ 'args', ()->
