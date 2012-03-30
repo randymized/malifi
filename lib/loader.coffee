@@ -2,7 +2,6 @@ _ = require('underscore')._
 connect = require('connect')
 path = require('path')
 normalize = path.normalize
-utilities= require('./utilities')
 path = require('path')
 normalize = path.normalize
 fs = require('fs')

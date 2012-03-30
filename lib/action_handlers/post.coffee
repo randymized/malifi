@@ -1,6 +1,6 @@
 # default handling of POST requests
 malifiMod= require('../..')
-hasAnExtension = malifiMod.utilities.hasAnExtension
+hasAnExtension = malifiMod.has_an_extension
 extensions= ['post.js','post.coffee']
 
 module.exports= ()->
