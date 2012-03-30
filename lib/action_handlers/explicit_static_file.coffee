@@ -1,8 +1,5 @@
 fs = require('fs')
 malifiMod= require('../..')
-staticStreamer= malifiMod.static_streamer
-utilities= malifiMod.utilities
-mimeWrapper= malifiMod.mime_wrapper
 
 # if a static file is requested (including its extension), return it
 module.exports= (allowedExtensions)->
@@ -12,8 +9,8 @@ module.exports= (allowedExtensions)->
       path = malifi.path
       files = malifi.files
       allowed = malifi.meta[allowedExtensions]
-      if (!allowed? || utilities.nameIsInArray(path.extension,allowed)) && files['']
-        staticStreamer(req,res,next,mimeWrapper)
+      if (!allowed? || malifiMod.name_is_in_array(path.extension,allowed)) && files['']
+        malifiMod.static_streamer(req,res,next,malifiMod.mime_wrapper)
       else
         next()
     catch e

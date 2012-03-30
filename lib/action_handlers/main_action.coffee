@@ -1,5 +1,5 @@
-utilities= require('../utilities')
 forbidden = require('../forbidden')
+nameIsInArray= require('../name_is_in_array')
 
 exports = module.exports = action= (subaction)->
   main_action= handler= if subaction
@@ -15,7 +15,7 @@ exports = module.exports = action= (subaction)->
 
         urlExtension = pathobj.extension
         if urlExtension && meta.allowed_url_extensions_ && '/' != urlExtension
-          unless utilities.nameIsInArray(urlExtension,meta.allowed_url_extensions_)
+          unless nameIsInArray(urlExtension,meta.allowed_url_extensions_)
             return next()
 
       malifi.next_middleware_layer= next
