@@ -1,3 +1,4 @@
+main_action = require('../lib/main_action')
 action_series= require('../lib/action_series')
 select_actions_by_extension= require('../lib/select_actions_by_extension')
 select_actions_by_http_method= require('../lib/select_actions_by_http_method')
@@ -12,10 +13,38 @@ module.exports=
   # as req.malifi.meta or req._.meta
   _malifi_alias: '_'
 
-  # The module that is to be invoked whenever a request is received, after
-  # looking up the metadata and building the req.malifi object.  The default
-  # action module selects and iterates through sites and action silos.
-  _main_action: require('../lib/main_action')()
+  # The action to be performed when a request is received and after the metadata
+  # has been obtained and the req.malifi object created.
+  # The default action established here, invokes main_action to perform
+  # some sanity checks and to find files that may serve the request.
+  # It then passes the request to select_actions_by_http_method, which selects
+  # further action based upon HTTP method (GET,POST,etc).  A GET request
+  # passes through another selection (select_actions_by_extension) based upon
+  # whether the request includes an extension or ends with a slash.  The
+  # action_series action is also used in some cases to step the request
+  # through a series of handlers until one is found that handles the request.
+  # Although the _actions attribute is simply an action handler, that action
+  # handler as demonstrated here, may delegate to other action handlers,
+  # creating a complex pattern of possible responses based upon the request
+  # and the files available to serve that request.
+  _actions: main_action( select_actions_by_http_method {
+    'GET': select_actions_by_extension {
+      '/': action_series [
+          require('../lib/action_handlers/invoke_directory_default')('_indexResourceName')
+        , require('../lib/action_handlers/directory_index')('_directory_index_module')
+        ]
+      '': action_series [
+          require('../lib/action_handlers/add_slash_to_directory')()
+        , require('../lib/action_handlers/serve_if_module')()
+        , require('../lib/action_handlers/implied_static_file')('_implied_static_extensions')
+        ]
+      '*': action_series [
+          require('../lib/action_handlers/serve_if_module')()
+        , require('../lib/action_handlers/explicit_static_file')('_allowed_static_extensions')
+        ]
+      }
+    'POST': require('../lib/action_handlers/post')()
+  })
 
   # The module that will serve reroute requests.
   # Reroute is an internal redirect.  The request will be served as if it were
@@ -74,42 +103,6 @@ module.exports=
   # underline are only served if the subject of an internal redirect or serve
   # as partials.
   _forbiddenURLChars: /(\/[._])|(_\/)|_$/
-
-  # The default set of actions to be performed on an incoming request.
-  # First the request method: GET, POST, PUT, DELETE, etc is selected.
-  # Then the URL's extension.  If there is no extension, the key will be
-  # a blank string.  A '*' key will apply to any extensions without a
-  # more specific match.  A '/' key is a special case: it applies to
-  # cases where the URL matches a directory.  Directories will only be
-  # matched to a URL if a '/' key exists.
-  # Finally the tree of objects will lead to an array of actions.
-  # The actions are invoked in order.  Each may either handle the
-  # request by invoking res.end or next to pass on the request or
-  # req.malifi.next_middleware_layer to pass the request on to the next connect layer.
-  # Each request will thus move down the list until it finds a suitable handler.
-  # A typical ordering would have handlers for differnt types of templates
-  # first followed by a handler for just a .js or .coffee module.  If
-  # template is discovered, its handler will invoke any .js or .coffee
-  # module first, providing the coupling expected by the template.
-  _actions:
-    select_actions_by_http_method {
-      'GET': select_actions_by_extension {
-        '/': action_series [
-            require('../lib/action_handlers/invoke_directory_default')('_indexResourceName')
-          , require('../lib/action_handlers/directory_index')('_directory_index_module')
-          ]
-        '': action_series [
-            require('../lib/action_handlers/add_slash_to_directory')()
-          , require('../lib/action_handlers/serve_if_module')()
-          , require('../lib/action_handlers/implied_static_file')('_implied_static_extensions')
-          ]
-        '*': action_series [
-            require('../lib/action_handlers/serve_if_module')()
-          , require('../lib/action_handlers/explicit_static_file')('_allowed_static_extensions')
-          ]
-        }
-      'POST': require('../lib/action_handlers/post')()
-    }
 
   # The module named here can be invoked to produce an index of a directory named
   # in the URL.  Default processing of a url that ends with a slash is to first

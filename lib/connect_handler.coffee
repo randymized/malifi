@@ -101,7 +101,10 @@ malifi= (root,options)->
           else
             orignext()
 
-    meta._main_action(req,res,next)
+    if actions = meta._actions
+      actions(req,res,next)
+    else
+      next(new Error('meta._actions is not defined.'))
 
   return malifiConnectHandler
 
