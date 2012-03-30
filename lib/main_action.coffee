@@ -1,12 +1,8 @@
-_ = require('underscore')._
-path = require('path')
-join = path.join
 utilities= require('./utilities')
 forbidden = utilities.forbidden
-select_actions= require('./select_actions')
 
 exports = module.exports = action= ()->
-  (req,res,next)->
+  main_action= handler= (req,res,next)->
     malifi= req.malifi
     meta= malifi.meta
     pathobj= malifi.path
@@ -23,4 +19,7 @@ exports = module.exports = action= ()->
 
     malifi.next_middleware_layer= next
     malifi.find_files pathobj.dirname, pathobj.basename, (files)->
-      select_actions(req,res,next)
+      if handler = meta._actions
+        handler(req,res,next)
+      else
+        next()
