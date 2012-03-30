@@ -1,5 +1,5 @@
 utilities= require('../utilities')
-forbidden = utilities.forbidden
+forbidden = require('../forbidden')
 
 exports = module.exports = action= (subaction)->
   main_action= handler= if subaction

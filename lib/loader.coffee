@@ -3,7 +3,6 @@ connect = require('connect')
 path = require('path')
 normalize = path.normalize
 utilities= require('./utilities')
-isModuleSync= utilities.isModuleSync
 path = require('path')
 normalize = path.normalize
 fs = require('fs')
@@ -13,6 +12,21 @@ moduleSignature= /\.(js|coffee|json)$/
 skipThisFileSignature= /^\.|^_default\.meta\.(js|coffee|json)$/
 stripMetaExtension= /(.*)(?:\.meta\.(js|coffee|json))$/
 canDescendNoMore= /^[/.]?\/$/
+moduleExtensions= ['.js','.coffee','.json']
+
+
+isFileSync= (name)->
+  try
+    fs.statSync(name).isFile()
+  catch e
+    throw e unless e.code == 'ENOENT'
+    false
+
+# Would adding the proper extension to the given name find a file whose extension
+# suggested that it could be a module?
+isModuleSync= (name)->
+  return true for ext in moduleExtensions when isFileSync(name+ext)
+  false
 
 extend= (base,dominant)->
   return dominant unless base
