@@ -2,7 +2,7 @@ staticHandler= require('../static_handler')
 mimeWrapper= require('../mime_wrapper')
 hasAnExtension = require('../utilities').hasAnExtension
 
-# If adding one of the extensions in meta._implied_static_extensions to the end
+# If adding one of the extensions in meta.implied_static_extensions_ to the end
 # of the path finds a file, serve the contents of that file
 module.exports= (impliedExtensions)->
   implicitTextFileAction= (req,res,next) ->

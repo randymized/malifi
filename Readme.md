@@ -62,7 +62,7 @@ File and directory names that end with an underscore are also by default hidden,
 
 Malifi also, by default, enforces the convention that any file or directory name starting with a dot is hidden.
 
-These conventions are enforced by application of a regular expression defined as the _forbiddenURLChars property of the metadata.  As with any other metadata property, this may be overridden.
+These conventions are enforced by application of a regular expression defined as the forbiddenURLChars_ property of the metadata.  As with any other metadata property, this may be overridden.
 
 ## req.malifi (alias req._)
 
@@ -149,7 +149,7 @@ In this test environment, a request for `favicon.ico` will first be sent to the 
 
 The original idea of metadata was to specify and make available information about a page or resource such as its name (perhaps needed by another resource when creating breadcrumb navigation) or whether authorization is required to access the resource.  But it soon became apparent that it could hold much more information, including configuration information for Malifi itself.  Metadata can include just about any immutable value and, depending upon where it is defined, may pertain to the entire server, a site, a directory within a site or an individual file or resource.
 
-The metadata for any directory is specified in a `_default.meta.js` (or `_default.meta.coffee` or `_default.meta.json`) file.  Server-wide default metadata is defined in `<malifi directory>/base-site/_default.meta.coffee`.  A default value of all metadata recognized by Malifi is defined there and comments in that file describe each of those metadata properties.  Metadata properties whose name starts with an underscore are reserved for malifi and its extensions.
+The metadata for any directory is specified in a `_default.meta.js` (or `_default.meta.coffee` or `_default.meta.json`) file.  Server-wide default metadata is defined in `<malifi directory>/base-site/_default.meta.coffee`.  A default value of all metadata recognized by Malifi is defined there and comments in that file describe each of those metadata properties.  Metadata properties whose name ends with an underscore are reserved for malifi and its extensions.
 
 When Malifi is initialized, the root directory of a site to be served must be provided as the first parameter.  If an optional second parameter is provided, it will be merged with the base-site metadata so that any of the argument options override base-site metadata.  If there is a `_default.meta` module in common site's root directory (the directory provided as the first parameter), this will be merged with the result of the options merge to arrive at the server-wide metadata.
 
@@ -165,7 +165,7 @@ All metadata is preloaded in a single synchronous operation when the server is i
 
 ## Actions and action handlers
 
-When a request is received, it is sent to each site in the site stack until served.  Within each site, metadata is obtained for the requested path within the site and then that metadata is indexed by '_actions'.  That object is indexed by the requested HTTP method (HEAD is mapped to GET for this indexing operation), giving either the method object, an action handler function or an array of action handlers.
+When a request is received, it is sent to each site in the site stack until served.  Within each site, metadata is obtained for the requested path within the site and then that metadata is indexed by 'actions_'.  That object is indexed by the requested HTTP method (HEAD is mapped to GET for this indexing operation), giving either the method object, an action handler function or an array of action handlers.
 
 A method object is in turn indexed by either the request's extension or some other value according to the following rules:
 
@@ -196,9 +196,9 @@ Malifi supports internal redirection (rerouting) and partials.  Internal redirec
 
 Malifi also supports partials.  While rendering the requested resource, an internal request may be made for another resource to be inserted inside the request.  The hiding rules are also not enforced for partials.  The default Malifi implementation accumulates the result into a buffer and sends the buffer to a callback, but does not otherwise alter the result, such as by stripping HTML and BODY tags.
 
-Rerouting is achieved by sending the destination path and optionally a hostname to `req.malifi.meta._reroute()`.  This returns an object that reroutes to that resource.  Send req,res,and next to that reroute object to actually perform the reroute.
+Rerouting is achieved by sending the destination path and optionally a hostname to `req.malifi.meta.reroute_()`.  This returns an object that reroutes to that resource.  Send req,res,and next to that reroute object to actually perform the reroute.
 
-A partial is obtained sending the destination path and optionally a hostname to `req.malifi.meta._partial()`.  This returns an object that will fetch that resource and accumulate the result.  Send req,res,next and a callback to that partial-fetching object to actually fetch the partial.  A buffer containing the result will be sent to the callback when the partial has completed.  If there is an error, including a HTTP status code other than 200 it will be sent to `next()` and the callback will never be invoked.  Any headers sent by the partial will be ignored.
+A partial is obtained sending the destination path and optionally a hostname to `req.malifi.meta.partial_()`.  This returns an object that will fetch that resource and accumulate the result.  Send req,res,next and a callback to that partial-fetching object to actually fetch the partial.  A buffer containing the result will be sent to the callback when the partial has completed.  If there is an error, including a HTTP status code other than 200 it will be sent to `next()` and the callback will never be invoked.  Any headers sent by the partial will be ignored.
 
 The default action handlers will exteranlly redirect a URL that is of a directory but lacking a trailing slash to the same URL with a trailing slash.  If the URL includes a trailing slash, a resource named _index will be served (such as _index.js or _index.coffee).
 

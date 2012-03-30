@@ -7,11 +7,11 @@ allowed_extensions= ['txt','pdf','html','htm','gif','jpg','jpeg','ico','tif','pn
 module.exports=
   # An object named 'malifi' will be added to req.  That object contains references
   # to the current metadata, a method to look up other metadata, the site stack
-  # and decoded path, url and host strings.  If _malifi_alias is defined in the
+  # and decoded path, url and host strings.  If malifi_alias_ is defined in the
   # metadata, a second reference to the same object will be added to req using
   # that name.  Assuming the default of '_', the metadata can be accessed either
   # as req.malifi.meta or req._.meta
-  _malifi_alias: '_'
+  malifi_alias_: '_'
 
   # The action to be performed when a request is received and after the metadata
   # has been obtained and the req.malifi object created.
@@ -23,24 +23,24 @@ module.exports=
   # whether the request includes an extension or ends with a slash.  The
   # action_series action is also used in some cases to step the request
   # through a series of handlers until one is found that handles the request.
-  # Although the _actions attribute is simply an action handler, that action
+  # Although the actions_ attribute is simply an action handler, that action
   # handler as demonstrated here, may delegate to other action handlers,
   # creating a complex pattern of possible responses based upon the request
   # and the files available to serve that request.
-  _actions: main_action( select_actions_by_http_method {
+  actions_: main_action( select_actions_by_http_method {
     'GET': select_actions_by_extension {
       '/': action_series [
-          require('../lib/action_handlers/invoke_directory_default')('_indexResourceName')
-        , require('../lib/action_handlers/directory_index')('_directory_index_module')
+          require('../lib/action_handlers/invoke_directory_default')('indexResourceName_')
+        , require('../lib/action_handlers/directory_index')('directory_index_module_')
         ]
       '': action_series [
           require('../lib/action_handlers/add_slash_to_directory')()
         , require('../lib/action_handlers/serve_if_module')()
-        , require('../lib/action_handlers/implied_static_file')('_implied_static_extensions')
+        , require('../lib/action_handlers/implied_static_file')('implied_static_extensions_')
         ]
       '*': action_series [
           require('../lib/action_handlers/serve_if_module')()
-        , require('../lib/action_handlers/explicit_static_file')('_allowed_static_extensions')
+        , require('../lib/action_handlers/explicit_static_file')('allowed_static_extensions_')
         ]
       }
     'POST': require('../lib/action_handlers/post')()
@@ -49,33 +49,33 @@ module.exports=
   # The module that will serve reroute requests.
   # Reroute is an internal redirect.  The request will be served as if it were
   # for the new URL rather than the original one.  Rerouted requests may access
-  # pages that are otherwise hidden (see _forbiddenURLChars).
+  # pages that are otherwise hidden (see forbiddenURLChars_).
   # With rerouting, the entire page (or response) is served from the new
   # destination.  The partial module should be used instead if you want to
   # include content from one page inside another.
-  _reroute: require('../lib/reroute')
+  reroute_: require('../lib/reroute')
 
   # A "partial" allows the content from one page to be included within another.
   # A partial page may be served by a page that is otherwise hidden (see
-  # _forbiddenURLChars).
+  # forbiddenURLChars_).
   # The data output from the partial will be accumulated and made available to
   # the callback method provided.  The output data will be in the form of a
   # buffer and may need to be converted to a string via its toString() method.
-  _partial: require('../lib/partial')
+  partial_: require('../lib/partial')
 
-  # If _custom_404 is true, unserviced requests are not passed on to the next
+  # If custom_404_ is true, unserviced requests are not passed on to the next
   # level of middleware, but instead result in rerouting to a custom _404 page.
   # A default _404 page will be shown if one has not been defined for the site.
-  _custom_404: false
+  custom_404_: false
 
-  # If _custom_500 is true, next(err) will unserviced requests are not passed on to the next
+  # If custom_500_ is true, next(err) will unserviced requests are not passed on to the next
   # level of middleware, but instead result in rerouting to a custom _500 page.
   # A default _500 page will be shown if one has not been defined for the site.
-  _custom_500: false
+  custom_500_: false
 
   # Valid URLs may include the following extensions.
   # Any other extensions at the end of a URL will be disallowed.
-  _allowed_url_extensions: allowed_extensions
+  allowed_url_extensions_: allowed_extensions
 
   # Static files may be served if they have the following extensions and
   # either the URL includes the extension or the URL has no extension but
@@ -83,7 +83,7 @@ module.exports=
   # The lib/action_handlers/explicit_static_file handler provides a
   # reference implementation that serves explicitly specified files that are
   # on this list.
-  _allowed_static_extensions: allowed_extensions
+  allowed_static_extensions_: allowed_extensions
 
   # A URL that does not include an extension may be matched with a static
   # resource that has an extension included in this array.  For example,
@@ -92,7 +92,7 @@ module.exports=
   # The lib/action_handlers/implied_static_file handler provides a
   # reference implementation that serves explicitly specified files that are
   # on this list.
-  _implied_static_extensions: ['html','txt','htm']
+  implied_static_extensions_: ['html','txt','htm']
 
   # If defined and not null, any URLs matching this regular expression will be
   # rejected as forbidden.  The default rejects URLs where any element starts
@@ -102,21 +102,21 @@ module.exports=
   # malifi but not intended to be served and where names ending with an
   # underline are only served if the subject of an internal redirect or serve
   # as partials.
-  _forbiddenURLChars: /(\/[._])|(_\/)|_$/
+  forbiddenURLChars_: /(\/[._])|(_\/)|_$/
 
   # The module named here can be invoked to produce an index of a directory named
   # in the URL.  Default processing of a url that ends with a slash is to first
-  # look for an `_indexResourceName` module within that directory, and if not
+  # look for an `indexResourceName_` module within that directory, and if not
   # present, then invoke this module, if specified.  If this attribute is false
   # no directory index will be produced.
-  _directory_index_module: false  # require('../lib/serve_directory_listings')()
+  directory_index_module_: false  # require('../lib/serve_directory_listings')()
 
   # In many servers, if a URL is of a directory and a script of the right name,
   # such as index.whatever, exists, that script will be run rather than producing
   # a listing of the files in that directory.  Here is where you configure the
   # base name of that script.  This default means that a resource like _index.js,
   # _index.coffee or _index.txt would be served.
-  _indexResourceName: '_index'
+  indexResourceName_: '_index'
 
   # Specify a module that will handle any unhandled exceptions.  Best practice
   # is to exit the process as a result of an unhandled exception, but the handler
@@ -126,14 +126,14 @@ module.exports=
   # the action object and will thus have access to the same member variables
   # as an action handler.  The log method should also register a method
   # to catch unhandled exceptions if the method has not already been registered.
-  _unhandled_handler:
+  unhandled_handler_:
     require('../lib/unhandled_exception_handler')
 
   # Options for the _serve_directory_listings action.  These are the options
   # of Connect's directory middleware.
   # If not otherwise specified, a filter that hides any files matching
-  # _forbiddenURLChars will be applied.  This can be overridden by providing
+  # forbiddenURLChars_ will be applied.  This can be overridden by providing
   # an explicit filter.
-  _serve_directory_listings_options: {}
+  serve_directory_listings_options_: {}
 
   test_string: 'base'

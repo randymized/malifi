@@ -5,7 +5,7 @@ module.exports= (indexResourceName)->
     try
       malifi = req.malifi
       if malifi.files['/']
-        malifi.meta._reroute(path.join(malifi.path.relative,malifi.meta[indexResourceName]))(req,res,next)
+        malifi.meta.reroute_(path.join(malifi.path.relative,malifi.meta[indexResourceName]))(req,res,next)
       else
         next()
     catch e

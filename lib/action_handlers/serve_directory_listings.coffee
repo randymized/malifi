@@ -10,7 +10,7 @@ module.exports= (metaOptionsName)->
         meta= malifi.meta
         options= meta[metaOptionsName] ? {}
         options.filter ?= (file)->
-          !meta._forbiddenURLChars?.test('/'+file)
+          !meta.forbiddenURLChars_?.test('/'+file)
         req.url= '/'
         directory(dirname,options)(req,res,next)
       else

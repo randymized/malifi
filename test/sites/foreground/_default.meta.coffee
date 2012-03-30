@@ -7,8 +7,8 @@ action_series= require('../../../lib/action_series')
 
 exports= module.exports= (prev)=>
     test_string: 'foreground'
-    _actions:
-      prev._actions.extend (methodmap)->
+    actions_:
+      prev.actions_.extend (methodmap)->
         GET: methodmap.GET.extend (extmap)->
           test:
             action_series [

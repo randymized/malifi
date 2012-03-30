@@ -1,4 +1,4 @@
-# if meta._directory_index_module is specified, invoke it to produce a directory index
+# if meta.directory_index_module_ is specified, invoke it to produce a directory index
 _ = require('underscore')._
 module.exports= (directory_index_module_name)->
   directory_index= (req,res,next) ->

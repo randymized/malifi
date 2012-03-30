@@ -81,30 +81,30 @@ malifi= (root,options)->
       connect_handler: malifiConnectHandler
       find_files: find_files
 
-    req[meta._malifi_alias]= req.malifi if meta._malifi_alias
+    req[meta.malifi_alias_]= req.malifi if meta.malifi_alias_
 
-    if meta._custom_404 || meta._custom_500
+    if meta.custom_404_ || meta.custom_500_
       orignext= next
       next= (err)->
         nonext= (err)->   # this should never be called: _500 or _404 should not call next()
           throw "No _505 or _404 handler found or the handler punted."
         if err?
-          if meta._custom_500
+          if meta.custom_500_
             req.err= err
-            meta._reroute('/_500')(req,res,nonext)
+            meta.reroute_('/_500')(req,res,nonext)
           else
             orignext(err)
         else
-          if meta._custom_404
+          if meta.custom_404_
             req.notfound= req.malifi.url.decoded_path
-            meta._reroute('/_404')(req,res,nonext)
+            meta.reroute_('/_404')(req,res,nonext)
           else
             orignext()
 
-    if actions = meta._actions
+    if actions = meta.actions_
       actions(req,res,next)
     else
-      next(new Error('meta._actions is not defined.'))
+      next(new Error('meta.actions_ is not defined.'))
 
   return malifiConnectHandler
 

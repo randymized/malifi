@@ -1,5 +1,5 @@
 module.exports= (prev)->
-  _actions:
-    prev._actions.extend (methodmap)->
+  actions_:
+    prev.actions_.extend (methodmap)->
       GET: methodmap.GET.extend (extmap)->
-        '': require('../../../../lib/action_handlers/serve_directory_listings')('_serve_directory_listings_options')
+        '': require('../../../../lib/action_handlers/serve_directory_listings')('serve_directory_listings_options_')

@@ -7,15 +7,15 @@ exports = module.exports = action= (subaction)->
       malifi= req.malifi
       meta= malifi.meta
       pathobj= malifi.path
-      meta._unhandled_handler?.log?(req)
+      meta.unhandled_handler_?.log?(req)
 
       unless req.internal?  # internal requests and redirections may address resources that are hidden to the outside world
-        if meta._forbiddenURLChars?.test(malifi.url.decoded_path)
+        if meta.forbiddenURLChars_?.test(malifi.url.decoded_path)
           return forbidden(res)
 
         urlExtension = pathobj.extension
-        if urlExtension && meta._allowed_url_extensions && '/' != urlExtension
-          unless utilities.nameIsInArray(urlExtension,meta._allowed_url_extensions)
+        if urlExtension && meta.allowed_url_extensions_ && '/' != urlExtension
+          unless utilities.nameIsInArray(urlExtension,meta.allowed_url_extensions_)
             return next()
 
       malifi.next_middleware_layer= next
