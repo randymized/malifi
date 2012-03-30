@@ -1,2 +1,2 @@
 require('coffee-script');
-module.exports = require('./lib/connect_handler');
+module.exports = require('./lib/malifi');
