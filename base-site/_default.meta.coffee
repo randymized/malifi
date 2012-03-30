@@ -1,7 +1,8 @@
 action_series= require('../lib/action_series')
 select_actions_by_extension= require('../lib/select_actions_by_extension')
-
+select_actions_by_http_method= require('../lib/select_actions_by_http_method')
 allowed_extensions= ['txt','pdf','html','htm','gif','jpg','jpeg','ico','tif','png','tiff','bmp']
+
 module.exports=
   # An object named 'malifi' will be added to req.  That object contains references
   # to the current metadata, a method to look up other metadata, the site stack
@@ -91,22 +92,24 @@ module.exports=
   # template is discovered, its handler will invoke any .js or .coffee
   # module first, providing the coupling expected by the template.
   _actions:
-    'GET': select_actions_by_extension {
-      '/': action_series [
-          require('../lib/action_handlers/invoke_directory_default')('_indexResourceName')
-        , require('../lib/action_handlers/directory_index')('_directory_index_module')
-        ]
-      '': action_series [
-          require('../lib/action_handlers/add_slash_to_directory')()
-        , require('../lib/action_handlers/serve_if_module')()
-        , require('../lib/action_handlers/implied_static_file')('_implied_static_extensions')
-        ]
-      '*': action_series [
-          require('../lib/action_handlers/serve_if_module')()
-        , require('../lib/action_handlers/explicit_static_file')('_allowed_static_extensions')
-        ]
-      }
-    'POST': require('../lib/action_handlers/post')()
+    select_actions_by_http_method {
+      'GET': select_actions_by_extension {
+        '/': action_series [
+            require('../lib/action_handlers/invoke_directory_default')('_indexResourceName')
+          , require('../lib/action_handlers/directory_index')('_directory_index_module')
+          ]
+        '': action_series [
+            require('../lib/action_handlers/add_slash_to_directory')()
+          , require('../lib/action_handlers/serve_if_module')()
+          , require('../lib/action_handlers/implied_static_file')('_implied_static_extensions')
+          ]
+        '*': action_series [
+            require('../lib/action_handlers/serve_if_module')()
+          , require('../lib/action_handlers/explicit_static_file')('_allowed_static_extensions')
+          ]
+        }
+      'POST': require('../lib/action_handlers/post')()
+    }
 
   # The module named here can be invoked to produce an index of a directory named
   # in the URL.  Default processing of a url that ends with a slash is to first

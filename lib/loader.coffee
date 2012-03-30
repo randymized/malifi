@@ -14,30 +14,13 @@ skipThisFileSignature= /^\.|^_default\.meta\.(js|coffee|json)$/
 stripMetaExtension= /(.*)(?:\.meta\.(js|coffee|json))$/
 canDescendNoMore= /^[/.]?\/$/
 
-actionsCopier= (src)->
-  dest= {}
-  for key of src
-    if typeof src[key] == 'object'
-      if _.isArray(src[key])
-        dest[key]= src[key][0...src[key].length]
-      else
-        dest[key]= actionsCopier(src[key])
-    else
-      dest[key]= src[key]
-  return dest
-
-metacloner= (from)->
-  r= _.clone(from)
-  r._actions= actionsCopier(r._actions)
-  r
-
 extend= (base,dominant)->
   return dominant unless base
   # A meta file module may be a function or an object.  If its a function,
   # it will be invoked with the parent metadata as an argument and should return
   # a metadata object.  The meta file can thus create metadata that is
   # affected by the values in the parent metadata
-  dominant= dominant(metacloner(base)) if typeof dominant == "function"
+  dominant= dominant(_.clone(base)) if typeof dominant == "function"
   r= _.clone(base)
   for key,val of dominant
     if val?
