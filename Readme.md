@@ -1,4 +1,3 @@
-
 # malifi
 
 MAny LIttle FIles.
@@ -13,7 +12,7 @@ Basically the resources for any given request are served from many specifically 
 
 Some other key features of Malifi are:
 
-* Multiple site support: each domain served may have its own filesystem tree.
+* Multiple site (and layer) support: each domain served may have its own filesystem tree.
   Provision also exists for pages and resources that are common to one or more
   site, establishing an inheritance heirarchy for sites.  A skin may inherit from
   and override a site's default resources.
@@ -22,7 +21,7 @@ Some other key features of Malifi are:
   Subdirectories inherit the metadata of their parent directory.  A page
   inherits the metadata of its parent directory.  At each step, metadata
   may be overridden or redefined.  Malifi configuration is maintained in the
-  metadata, but it may be freely expanded.
+  metadata, but it may be freely expanded to include additional data.
 * Support for internal redirection and partials.
 
 ## Starting Malifi
@@ -44,15 +43,14 @@ A brief overview of how an incoming request is served introduces a number of top
 When a request is received, Malifi:
 
 * Parses the URL, extracting the file extension, if any, the base, name without extension and the site-relative path to files that might serve the request.
-* Using the hostname (and perhaps other properties of the request) determines which site is to serve the request.  The site lookup process also results in a list of directories to check (the site stack) if the main site directory does not serve the request.  Not only are multiple sites supported, but also a form of site inheritance through the site stack.  Joining the root directory of a site with the site-relative path results in a fully qualified path that may be joined with extensions to arrive at the name of files that might serve the request.
+* Using the hostname (and perhaps other properties of the request) determines which site is to serve the request.  The site lookup process also results in a prioritied list of directories (the site stack) in which files matching the request will be sought.  Not only are multiple sites supported, but also a form of site inheritance through the site stack.  For any given "site", the site stack goes from most general (the base site that is built into Malifi and common to all Malifi installations) to the most specific.
 * Metadata is obtained for the chosen site and path.  Metadata includes configuration information and may include any other data that remains the same from one request to another for a given URL.  The original purpose of metadata was to hold information like a resource's title or whether a user must be authenticated to access it, but it's turned out to be a much richer concept.  Metadata for a given request inherits from metadata from each of the directories in the path to the resource as well as all the sites in the site inheritance list.  All metadata is ultimately based upon the Malifi's default metadata.
-* A new object is created containing references to the metadata, the site stack and the parsed URL, path and host and added to the request.  This object can be accessed as `req.malifi`.  By default, an alias named `req._` is also added.  The underscore alias is defined in the default metadata and, like anything else in the metadata, may be disabled or changed for any site or any directory within a site.
+* A new object is created and added to the request object.  This new object will contain references to the metadata, the site stack and the parsed URL, path and host.  This object can be accessed as `req.malifi`.  By default, an alias named `req._` is also added.  The underscore alias is defined in the default metadata and, like anything else in the metadata, may be disabled or changed for any site or any directory within a site.
 * The main action is then called.  It selects and invokes actions that may serve the request.  The remainder of the steps described herein are performed by the default main action.
-* Files and directories whose names start with or end with an underscore or start with a dot are hidden.  A request for such a hidden resource will result in a "not found" condition.  By default, the request will be passed to the next Connect middleware, but if a custom 404 handler is enabled, a 404 Not Found response will be returned.
-* All files matching the request are found.  Matching files are those whose path relative to a site root directory matches the relative URL. If removing the extension from a file's name matches the URL it is also considered a matching file.  Matching files are found relative to every directory in the site stack.  The matching files are organized by site and by extension.  Any directories whose path matches the request are also found and indexed by a slash rather than an extension.
-* Matching files from each site that have the same extension are merged.  For any given extension (or no extension), the name of the file from the most specific site in the site stack is retained.  The result is a set of files that may serve the request with files from more specific sites overriding those from more general sites.
-* An action handler, or list of action handlers, is selected based upon the request method (GET, POST, etc), and optionally the extension, if any, of the URL.  Action handlers are structured the same as Connect middleware and may either serve the request or pass the request on to the next level.  But here, the "next level" means the next action in the list of action handlers.  If all the actions in the list pass on the request (or if there is a single action handler), the process is repeated for next site in the site stack.  Only when all actions in the selected action handlers of each site in the site stack passes on the request does Malifi pass on the request.  If a custom 404 handler is defined, it will be invoked.  Otherwise the request is passed to the next Connect middleware level.  The request can also be punted to the next Connect middleware level without going through (short circuiting) all actions of all sites in the site stack by calling req.malifi.next_middleware_layer().
-
+* Files and directories whose names start with or end with an underscore or start with a dot are hidden.  A request for such a hidden resource will result in a "not found" condition.  By default, when a request is not found, the request will be passed to the next Connect middleware, but if a custom 404 handler is enabled, a `404 Not Found` response will be returned.
+* All files matching the request are found.  Matching files are those whose name, minus extension, relative to a site root directory matches the relative URL. Matching files are found relative to every directory in the site stack.  The matching files are organized by site and by extension.  Any directories whose path matches the request are also found and indexed by a slash rather than an extension.
+* Matching files from different sites having the same extension are merged.  For any given extension (or no extension), the name of the file from the most specific site in the site stack is retained.  The result is a set of files that may serve the request, with files from more specific sites overriding those from more general sites.
+* An action handler is chosen and invoked to serve the request.  Action handlers may pass the request to another action handler based upon criteria like HTTP method, URL extension, or the extensions of files matching the request.  An action handler may also implement a cascade of other action handlers, passing the request from one handler to the next until one serves the request.  In the end, an action handler may serve a file that matches the request, invoke a module that matches the request, invoke a module and apply the results to a template that also matches the request, or pull together whatever other resources are need to serve the request.
 
 ## Naming conventions
 
@@ -104,12 +102,14 @@ Whenever a request is received by Malifi, it adds an property named malifi to th
 
 * matching_files_by_site: All files matching the request, organized by site.  This object contains one object for each path in the site stack that contains files matching the request.  The objects are keyed by the site root path.  Each of those objects are indexed by extension with each attribute being the file's fully qualified name.  A directory matching the URL will be indexed by a slash.  A file that matches the request without any extension will be indexed by an empty string.  This is the full list of files matching the request before being merged to a single object containing the most specific file of each extension.
 
-* find_files: a method of malifi.  Given a directory and the name of a resource, finds all files in the given directory of each site that matches resource_name.* or resource_name.  An object will be returned for which the attributes are named for the file's extension.  If the file exactly matches the resource name without any extension, the attribute name will be an empty string.  However, if the resource name exactly matches a directory's name, the attribute's name will be a slash.  Each attribute's value will be the file's fully-qualified name.
-Where there are resources with the same extension in different sites of the site stack, the result will include the most specific file for each extension.  The find_files method will also add malifi.matching_files_by_site (see below).
+* find_files: a method of malifi.  Given a directory and the name of a resource, finds all files in the given directory of each site that matches `resource_name.*` or `resource_name`.  An object will be returned that maps file extensions to file names. If a file's name exactly matches the resource name, the attribute name will be an empty string unless the matching name is that of a directory, in which case the name will be indexed by a slash. 
+Where there are resources with the same extension in different sites of the site stack, the result for each extension will include the file which from the most specific site containing a file with that extension in the site stack.  The find_files method will also add malifi.matching_files_by_site to `req.malifi`(see below).
 
-* matching_files_by_site: an intermediate object added to malifi by the find_files method.  It contains all the files and directories that match the resource name for each site.  The find_files method returns an object that merges each site in this object into a single object that references the most specific file of each extension.  This object, then, exposes all matching files, even those overridden by a more specific one.
+* matching_files_by_site: an intermediate object added to malifi by the `find_files` method.  It contains all the files and directories that match the resource name for each site.  The find_files method returns an object that merges each site in this object into a single object that references the most specific file of each extension.  This object references all files found, including those which were overridden by one of the same extension from a more specific one.
 
 * connect_handler: a link back to the handler that receives requests from Connect.  Used for reinserting requests, such as for rerouting and partials.
+
+* next_middleware_layer: the original `next` function that was  passed into Malifi when Malifi first started processing the request.  Some action handlers may send a different `next` function to action handlers it calls, such as one that calls a series of action handlers.  Calling this function will cause the request to be forwarded to the next middleware layer even if the normal path might be to pass a request on to the next action handler in a series.
 
 ## Multiple site support
 
@@ -124,18 +124,19 @@ The _sites.js module should export two things:
   a partially constructed `req.malifi` that contains only `host` and `url` properties
   and will also receive the usual `req,res,next` argument.  Most commonly, 
   lookup will map `this.host.name` (`@host.name` in CoffeeScript) to the
-  path serving that hostname and the req argument can be ignored.
+  path serving that hostname and the req argument can be ignored.  A skin might be
+  selected based upon user or session values.
 * paths: an array containing all the paths that might be returned by the lookup
   function.  That list is used to preload metadata and modules.  It must include
   all paths that could be returned by the lookup function.
 
 Any of the site root directories referenced by the _sites module may, in turn, also contain a _sites module, resulting in a branching tree of sites.  When processing a request, the orginal directory is checked first.  If it contains a _sites module, its lookup function will be called.  If the directory returned by the lookup function also contains a _sites module, its lookup function will also be called.  This continues until reaching a directory thatdoes not include a _sites module.
 
-Each directory that contains a _sites module is added to a stack of sites that are to be visited when looking for files to service a request.  This stack starts with the final, site-specific directory, goes back through each of the directories that contained a _sites module along the way and ends with the base site that is canned into Malifi at `<malifi directory>/base-site`.
+Each directory that contains a _sites module is added to a stack of sites that are to be visited when looking for files to service a request.  This stack starts with the final, site-specific directory, goes back through each of the directories that contained a _sites module along the way and ends with the base site that is canned into Malifi at `<malifi directory>/base-site`.  Since the base site is always in the site stack, there are always at least two site layers.
 
-If the lookup function returns its own directory, the result is the same, for that request, as if there were no _sites module in that diectory.  That directory will be at the top of the site stack.  It is an error for the lookup function not to return a directory name.
+If the lookup function returns its own directory or returns null or undefined, the result is the same, for that request, as if there were no _sites module in that diectory.  That directory will be at the top of the site stack.
 
-For example, when the tests are run, Malifi is initialized with `<malifi directory>/test/sites/common` as an argument.  `test/sites/common` includes a `_site.coffee` file.  When a request is received for localhost, the `lookup` method returns `<malifi directory>/test/sites/background`.  The background directory contains another `sites.coffee` file, which returns `<malifi directory>/test/sites/foreground` when when servicing a request for localhost.  The resultant site stack is:
+For example, when the tests are run, Malifi is initialized with `<malifi directory>/test/sites/common` as an argument.  `test/sites/common` includes a `_sites.coffee` file.  When a request is received for localhost, the `lookup` method returns `<malifi directory>/test/sites/background`.  The background directory contains another `_sites.coffee` file, which returns `<malifi directory>/test/sites/foreground` when when servicing a request for localhost.  The resultant site stack is:
 ```
 <malifi directory>/test/sites/foreground
 <malifi directory>/test/sites/background
@@ -143,7 +144,7 @@ For example, when the tests are run, Malifi is initialized with `<malifi directo
 <malifi directory>/base-site
 ```
 
-In this test environment, a request for `favicon.ico` will first be sent to the foreground site.  It is not serviced there, so it is next sent to the background site.  It then continues to the common site before finally being serviced by the base-site, where it is finally satisfied by `favicon.ico.coffee`.  Had it not been serviced by the base-site, the request would have been passed on to the next level of Connect middleware.
+In this test environment, the `foreground` site is considered most specific to the request and `base-site` most general (it is shared by all sites using the same version of Malifi).  When a request is received, each of these directories will be scanned for files matching the request.  If files with the same extension (a directory or a file exactly matching the request are special case 'extensions') are found, the one from the most specific site would override those from a less specific site.  For example, the base site includes a module, `favicon.ico.coffee` that will, by default, serve a request for `favicon.ico`.  If another file having the same name were found in the background site, it would override that default, serving an icon more specific to that site.  Another file with the same name in the foreground site would likewise override the one in the background site, perhaps producing an icon that is specific to a given skin.
 
 ## Metadata
 
@@ -163,24 +164,19 @@ If the metadata module is a .js or .coffee file, it may simply export an object 
 
 All metadata is preloaded in a single synchronous operation when the server is initialized.
 
-## Actions and action handlers
+## Action handlers
 
-When a request is received, it is sent to each site in the site stack until served.  Within each site, metadata is obtained for the requested path within the site and then that metadata is indexed by 'actions_'.  That object is indexed by the requested HTTP method (HEAD is mapped to GET for this indexing operation), giving either the method object, an action handler function or an array of action handlers.
+Action handlers are structured the same as Connect middleware.  They are a module that returns a method that takes the request and response objects as arguments as well as a `next` function.  If they may serve the request by sending messages to the response object.  If an error is encountered they may call the `next` function with an error object as an argument.  Or they might pass the request on to the next action handler by calling the `next` function with no argument.
 
-A method object is in turn indexed by either the request's extension or some other value according to the following rules:
+Action handlers may also call another action handler to service the request.  The default action handlers that come with Malifi switch a request to different handlers based upon the HTTP method, for example, and that handler might in turn switch the request to different handlers depending upon whether the request includes an extension and what the extension is.  Malifi also includes an `action_series` action handler that passes a request through a series of action handlers until one ends up serving the request.  In this case, `next` takes the request not to the next middleware layer but rather to the next action handler.
 
+There may be cases where a request is being served by one action handler in a series, but it determines that no other action handlers should handle the request.  Most commonly, this would be because it determined that no suitable file exists for serving the request.  In that case, instead of calling `head` the action handler can call the `req.malifi.next_middleware_layer` function.
+
+When a `GET` request is received, the default handler switches the request to different action handlers based upon the request's extension:
   * If the request maps to a directory in the filesystem the method object is indexed by `'/'`.  
   * If the request includes an extension, the method object will be indexed by that extension.
   * If the request includes an extension but there is no index of the method object matching that extension, the method object will be indexed by `'*'`. 
   * If the request does not include an extension, the method object is indexed by an empty string. 
-  
-The result of indexing the method object is either an action handler function or an array of action handlers.
-
-Action handlers have the same interface as Connect middleware.  They export an initialization function which returns a handler -- a function that accepts req, res and next arguments.  If the handler is able to serve the request, it sends a response to the `res` object.  If not, it calls `next()`.  If it encounters an error, it calls `next(err)`.  One additional response is allowed: the handler may call the `req.malifi.next_middleware_layer()` function, which will result in the request being immediately passed to the next Connect middleware layer, bypassing further actions in the the array of action handlers and bypassing any remaining sites.
-
-The `next()` function in this context sends the request to the next action in the action array, or if a single action handler is specified or all actions have been visited to the next site in the site stack.  If all sites have been visited without the request being served, the request is forwarded to the next middleware layer.  
-
-Typically an action will be looking for a file whose name matches `req.malifi.path.full_base` plus an extension, such as that of a module, as static asset or a template.  If that file exists it is served or it is called and the result served.  An action has considerable latitude in how it potentially responds to a request, and may depart from this pattern, such as performing more complex routing or redirecting the request, either internally or externally.  If the request method is other than GET or HEAD, note that the method will conventionally also be added to the expected file name as detailed in the HTTP method support section below.
 
 ## HTTP method support
 
@@ -188,7 +184,7 @@ If the HTTP method is something other than GET or HEAD, Malifi's convention is t
 
 Since this convention is implemented in action handlers, it can be changed by simply substituting different handlers in the metadata.
 
-Malifi does not parse request bodies.  For POST, PUT and other methods that include a request body to work, Connect's bodyParser or equivalent middleware must preceded Malifi.
+Malifi does not parse request bodies.  For POST, PUT and other methods that include a request body to work, Connect's bodyParser or equivalent middleware must preceded Malifi in the middleware chain.
 
 ## Internal redirection (rerouting) and partials
 
