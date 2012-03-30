@@ -22,8 +22,6 @@ createArrayRegexp= (arr)->
   arr.regexp ?= new RegExp('((' + a.join(')|(') + '))$')
 
 module.exports=
-  # is the given name that of a regular file?
-  isFile: isFile
   # does a file with one of the given extensions exist?
   hasAnExtension: hasAnExtension
 
