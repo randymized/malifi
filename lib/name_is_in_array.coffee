@@ -3,10 +3,7 @@
 # As an optimizing side-effect for further tests against the array, a regular
 # expression is attached to the array that will actually perform the test.
 ###
-
-RegExp.escape ?= (str) ->
-  specials = new RegExp("[.*+?|()\\[\\]{}\\\\]", "g"); # .*+?|()[]{}\
-  return str.replace(specials, "\\$&")
+require('./regexp_escape')
 
 createArrayRegexp= (arr)->
   a= (RegExp.escape(n) for n in arr)
