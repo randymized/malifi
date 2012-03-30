@@ -1,4 +1,4 @@
-utilities= require('./utilities')
+utilities= require('../utilities')
 forbidden = utilities.forbidden
 
 exports = module.exports = action= (subaction)->

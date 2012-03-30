@@ -1,5 +1,5 @@
 malifiMod= require('../..')
-staticHandler= malifiMod.static_handler
+staticStreamer= malifiMod.static_streamer
 mimeWrapper= malifiMod.mime_wrapper
 hasAnExtension = malifiMod.utilities.hasAnExtension
 
@@ -13,7 +13,7 @@ module.exports= (impliedExtensions)->
       for ext in malifi.meta[impliedExtensions]
         if files[ext]
           files['']= files[ext]
-          return staticHandler(req,res,next,mimeWrapper)
+          return staticStreamer(req,res,next,mimeWrapper)
       next()
     catch e
       next(e)

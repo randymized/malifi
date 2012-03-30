@@ -1,8 +1,8 @@
 malifiMod= require('..')
-main_action = malifiMod.main_action
-action_series = malifiMod.action_series
-select_actions_by_extension = malifiMod.select_actions_by_extension
-select_actions_by_http_method = malifiMod.select_actions_by_http_method
+main_action = malifiMod.action_handlers.main_action
+action_series = malifiMod.action_handlers.action_series
+select_actions_by_extension = malifiMod.action_handlers.select_actions_by_extension
+select_actions_by_http_method = malifiMod.action_handlers.select_actions_by_http_method
 allowed_extensions= ['txt','pdf','html','htm','gif','jpg','jpeg','ico','tif','png','tiff','bmp']
 
 module.exports=

@@ -1,6 +1,6 @@
 fs = require('fs')
 malifiMod= require('../..')
-staticHandler= malifiMod.static_handler
+staticStreamer= malifiMod.static_streamer
 utilities= malifiMod.utilities
 mimeWrapper= malifiMod.mime_wrapper
 
@@ -13,7 +13,7 @@ module.exports= (allowedExtensions)->
       files = malifi.files
       allowed = malifi.meta[allowedExtensions]
       if (!allowed? || utilities.nameIsInArray(path.extension,allowed)) && files['']
-        staticHandler(req,res,next,mimeWrapper)
+        staticStreamer(req,res,next,mimeWrapper)
       else
         next()
     catch e
