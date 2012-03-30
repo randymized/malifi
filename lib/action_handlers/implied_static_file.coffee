@@ -1,6 +1,7 @@
-staticHandler= require('../static_handler')
-mimeWrapper= require('../mime_wrapper')
-hasAnExtension = require('../utilities').hasAnExtension
+malifiMod= require('../..')
+staticHandler= malifiMod.static_handler
+mimeWrapper= malifiMod.mime_wrapper
+hasAnExtension = malifiMod.utilities.hasAnExtension
 
 # If adding one of the extensions in meta.implied_static_extensions_ to the end
 # of the path finds a file, serve the contents of that file

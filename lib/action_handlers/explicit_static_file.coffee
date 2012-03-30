@@ -1,7 +1,8 @@
 fs = require('fs')
-staticHandler= require('../static_handler')
-utilities= require('../utilities')
-mimeWrapper= require('../mime_wrapper')
+malifiMod= require('../..')
+staticHandler= malifiMod.static_handler
+utilities= malifiMod.utilities
+mimeWrapper= malifiMod.mime_wrapper
 
 # if a static file is requested (including its extension), return it
 module.exports= (allowedExtensions)->

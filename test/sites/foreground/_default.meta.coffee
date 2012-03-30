@@ -1,4 +1,5 @@
-action_series= require('../../../lib/action_series')
+malifiMod= require('../../..') # require('malifi')
+action_series= malifiMod.action_series
 
 # The actions herein do not necessarily demonstrate a best practice.
 # Normally the text could simply be placed in a text files and served as

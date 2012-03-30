@@ -4,6 +4,7 @@
  * MIT Licensed
 ###
 
+fs = require('fs')
 path = require('path')
 join = path.join
 normalize = path.normalize
@@ -111,3 +112,18 @@ malifi= (root,options)->
 exports = module.exports = malifi
 
 exports.version = package.version
+
+# export lib modules
+fs.readdirSync(__dirname).forEach (filename)->
+  if (/\.(js|coffee)$/.test(filename))
+    name = filename.substr(0, filename.lastIndexOf('.'))
+    exports.__defineGetter__ name, ()->
+      require('./' + name)
+
+# export action handlers
+exports.action_handlers= action_handlers= {}
+fs.readdirSync(__dirname+'/action_handlers').forEach (filename)->
+  if (/\.(js|coffee)$/.test(filename))
+    name = filename.substr(0, filename.lastIndexOf('.'))
+    action_handlers.__defineGetter__ name, ()->
+      require('./action_handlers/' + name)

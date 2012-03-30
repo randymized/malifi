@@ -1,7 +1,8 @@
-main_action = require('../lib/main_action')
-action_series= require('../lib/action_series')
-select_actions_by_extension= require('../lib/select_actions_by_extension')
-select_actions_by_http_method= require('../lib/select_actions_by_http_method')
+malifiMod= require('..')
+main_action = malifiMod.main_action
+action_series = malifiMod.action_series
+select_actions_by_extension = malifiMod.select_actions_by_extension
+select_actions_by_http_method = malifiMod.select_actions_by_http_method
 allowed_extensions= ['txt','pdf','html','htm','gif','jpg','jpeg','ico','tif','png','tiff','bmp']
 
 module.exports=
@@ -30,20 +31,20 @@ module.exports=
   actions_: main_action( select_actions_by_http_method {
     'GET': select_actions_by_extension {
       '/': action_series [
-          require('../lib/action_handlers/invoke_directory_default')('indexResourceName_')
-        , require('../lib/action_handlers/directory_index')('directory_index_module_')
+          malifiMod.action_handlers.invoke_directory_default('indexResourceName_')
+        , malifiMod.action_handlers.directory_index('directory_index_module_')
         ]
       '': action_series [
-          require('../lib/action_handlers/add_slash_to_directory')()
-        , require('../lib/action_handlers/serve_if_module')()
-        , require('../lib/action_handlers/implied_static_file')('implied_static_extensions_')
+          malifiMod.action_handlers.add_slash_to_directory()
+        , malifiMod.action_handlers.serve_if_module()
+        , malifiMod.action_handlers.implied_static_file('implied_static_extensions_')
         ]
       '*': action_series [
-          require('../lib/action_handlers/serve_if_module')()
-        , require('../lib/action_handlers/explicit_static_file')('allowed_static_extensions_')
+          malifiMod.action_handlers.serve_if_module()
+        , malifiMod.action_handlers.explicit_static_file('allowed_static_extensions_')
         ]
       }
-    'POST': require('../lib/action_handlers/post')()
+    'POST': malifiMod.action_handlers.post()
   })
 
   # The module that will serve reroute requests.
@@ -53,7 +54,7 @@ module.exports=
   # With rerouting, the entire page (or response) is served from the new
   # destination.  The partial module should be used instead if you want to
   # include content from one page inside another.
-  reroute_: require('../lib/reroute')
+  reroute_: malifiMod.reroute
 
   # A "partial" allows the content from one page to be included within another.
   # A partial page may be served by a page that is otherwise hidden (see
@@ -61,7 +62,7 @@ module.exports=
   # The data output from the partial will be accumulated and made available to
   # the callback method provided.  The output data will be in the form of a
   # buffer and may need to be converted to a string via its toString() method.
-  partial_: require('../lib/partial')
+  partial_: malifiMod.partial
 
   # If custom_404_ is true, unserviced requests are not passed on to the next
   # level of middleware, but instead result in rerouting to a custom _404 page.
@@ -109,7 +110,7 @@ module.exports=
   # look for an `indexResourceName_` module within that directory, and if not
   # present, then invoke this module, if specified.  If this attribute is false
   # no directory index will be produced.
-  directory_index_module_: false  # require('../lib/serve_directory_listings')()
+  directory_index_module_: false  # malifi.serve_directory_listings()
 
   # In many servers, if a URL is of a directory and a script of the right name,
   # such as index.whatever, exists, that script will be run rather than producing
@@ -127,7 +128,7 @@ module.exports=
   # as an action handler.  The log method should also register a method
   # to catch unhandled exceptions if the method has not already been registered.
   unhandled_handler_:
-    require('../lib/unhandled_exception_handler')
+    malifiMod.unhandled_exception_handler
 
   # Options for the _serve_directory_listings action.  These are the options
   # of Connect's directory middleware.
