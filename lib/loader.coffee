@@ -61,7 +61,7 @@ meta_lookup= (name,from)->
 load= (name,superMeta)->
   extend(superMeta, require(name), name)
 
-loadTree= (rootdir,superMeta) ->
+loadTree= (rootdir,superMeta,supersites) ->
   modules= []
   loadDir= (dirname,superMeta,visited) ->   #recursive
     defaultModName = path.join(dirname,'_default.meta')
@@ -91,32 +91,34 @@ loadTree= (rootdir,superMeta) ->
   visited[fs.lstatSync(rootdir).ino]= true
   cache[rootdir+'/']= superMeta  # this will be overridden if _default_meta found
   meta= loadDir(rootdir,superMeta,visited)
-  preload(modules,meta)
+  preload(modules,meta,supersites)
   return meta
 
 siteLookupRoot= null
 sites= {}
 sitesModuleSignature= /_sites$/
-preload= (modules,superMeta)->
+preload= (modules,superMeta,supersites)->
   for modname in modules
     itsMeta= meta_lookup(modname)
     m= require(modname)
     if m?.meta
       cache[modname]= extend(itsMeta,m.meta,modname)
     if sitesModuleSignature.test(modname)
-      sites[path.dirname(modname)]= m
-      siteLookupRoot ?= path.dirname(modname)
+      siteroot= path.dirname(modname)
+      siteLookupRoot ?= siteroot
+      sites[siteroot]= m
+      (xsupersites= supersites.slice(0)).push(siteroot)
       for sitepath in m.paths
-        loadTree(normalize(sitepath),superMeta)
+        loadTree(normalize(sitepath),superMeta,xsupersites)
 
 module.exports=
   init: (baseSiteStack,options={})->
     dirs = baseSiteStack  # note: the stack is maintained in reverse order
     userPath= dirs[0]
     defaultPath= dirs[1]
-    inter= loadTree(defaultPath,{})
+    inter= loadTree(defaultPath,{},[])
     inter= extend(inter,options,'(options)')
-    loadTree(userPath,inter)
+    loadTree(userPath,inter,[defaultPath])
   meta_lookup: meta_lookup
   site_lookup: (req,res,next)->
     stack= []
