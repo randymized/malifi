@@ -137,8 +137,6 @@ module.exports=
   # an explicit filter.
   serve_directory_listings_options_: {}
 
-  test_string: 'base'
-
   # If build_lineage_ is true, an array named lineage_ will be added to metadata
   # that details the path all metadata inherited by the current metadata.  This is
   # intended for testing and thus not enabled by default, although it may prove to have
