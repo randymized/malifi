@@ -61,7 +61,7 @@ meta_lookup= (name,from)->
 load= (name,superMeta)->
   extend(superMeta, require(name), name)
 
-loadTree= (dirname,superMeta) ->
+loadTree= (rootdir,superMeta) ->
   modules= []
   loadDir= (dirname,superMeta,visited) ->   #recursive
     defaultModName = path.join(dirname,'_default.meta')
@@ -88,9 +88,9 @@ loadTree= (dirname,superMeta) ->
               modules.unshift(stripped)
     return meta
   visited= {}
-  visited[fs.lstatSync(dirname).ino]= true
-  cache[dirname+'/']= superMeta  # this will be overridden if _default_meta found
-  meta= loadDir(dirname,superMeta,visited)
+  visited[fs.lstatSync(rootdir).ino]= true
+  cache[rootdir+'/']= superMeta  # this will be overridden if _default_meta found
+  meta= loadDir(rootdir,superMeta,visited)
   preload(modules,meta)
   return meta
 
