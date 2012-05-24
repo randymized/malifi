@@ -1,3 +1,5 @@
+_= require('underscore')
+path= require('path')
 connect= require('connect')
 assert = require('assert')
 malifi = require('..')
@@ -8,18 +10,23 @@ host = 'localhost'
 
 app= connect.createServer()
 app.use(connect.urlencoded())
-app.use(malifi(__dirname+'/sites/common'))
+app.use(malifi(__dirname+'/sites/common',{'build_lineage_':true}))
 app.listen(port)
 
 getResponse= (res,expected,statusCode,done)->
+  if _.isFunction(expected)
+    done= expected
   buf= ''
   res.statusCode.should.equal(statusCode)
   res.setEncoding('utf8')
   res.on 'data', (chunk)->
     buf += chunk
   res.on 'end', ()->
-    buf.should.equal(expected)
-    done()
+    if _.isFunction(expected)
+      expected(null,buf)
+    else
+      buf.should.equal(expected)
+      done()
   res.on 'error', (exception) ->
     done(exception)
 
@@ -54,6 +61,17 @@ describe 'malifi server', ->
     get('/sub/b.txt','this is the content of sub/b.txt', done)
   it 'should pick up correct site metadata', (done) ->
     get('/metaTestString','foreground:test', done)
+  it 'foreground resource\'s metadata\'s lineage should show the order of inheritance', (done) ->
+    get '/dumpMeta',(err,buf)->
+      if err
+        done(err)
+      else
+        lineage = JSON.parse(buf).lineage_
+        lineage[0].should.equal('(options)')
+        path.relative(__dirname,lineage[1]).should.equal('sites/common/_default.meta')
+        path.relative(__dirname,lineage[2]).should.equal('sites/background/_default.meta')
+        path.relative(__dirname,lineage[3]).should.equal('sites/foreground/_default.meta')
+        done()
   it 'metadata may be in a JSON file', (done) ->
     get('/sub/showmeta','b/show.test_string', done)
   it 'should be able to run a .js file', (done) ->

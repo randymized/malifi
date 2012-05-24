@@ -27,7 +27,7 @@ isModuleSync= (name)->
   return true for ext in moduleExtensions when isFileSync(name+ext)
   false
 
-extend= (base,dominant)->
+extend= (base,dominant,name)->
   return dominant unless base
   # A meta file module may be a function or an object.  If its a function,
   # it will be invoked with the parent metadata as an argument and should return
@@ -40,6 +40,8 @@ extend= (base,dominant)->
       r[key]=val
     else
       delete r[key]
+  if r['build_lineage_']
+    (r['lineage_']= ((base['lineage_']||[])).slice(0)).push(name)
   r
 
 cache= {}
@@ -55,8 +57,8 @@ meta_lookup= (name)->
     return c
   descend(name)
 
-load= (name,superMeta,cachename)->
-  extend(superMeta, require(name))
+load= (name,superMeta)->
+  extend(superMeta, require(name), name)
 
 loadTree= (dirname,superMeta) ->
   modules= []
@@ -99,7 +101,7 @@ preload= (modules,superMeta)->
     itsMeta= meta_lookup(modname)
     m= require(modname)
     if m?.meta
-      cache[modname]= extend(itsMeta,m.meta)
+      cache[modname]= extend(itsMeta,m.meta,modname)
     if sitesModuleSignature.test(modname)
       sites[path.dirname(modname)]= m
       siteLookupRoot ?= path.dirname(modname)
@@ -112,7 +114,7 @@ module.exports=
     userPath= dirs[0]
     defaultPath= dirs[1]
     inter= loadTree(defaultPath,{})
-    inter= extend(inter,options)
+    inter= extend(inter,options,'(options)')
     loadTree(userPath,inter)
   meta_lookup: meta_lookup
   site_lookup: (req,res,next)->

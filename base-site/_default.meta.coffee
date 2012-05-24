@@ -138,3 +138,15 @@ module.exports=
   serve_directory_listings_options_: {}
 
   test_string: 'base'
+
+  # If build_lineage_ is true, an array named lineage_ will be added to metadata
+  # that details the path all metadata inherited by the current metadata.  This is
+  # intended for testing and thus not enabled by default, although it may prove to have
+  # practical uses.
+  #
+  # Because the default is false, the lineage will never include this file.  If the
+  # options passed to the malifi constructor includes 'build_lineage_':true, the
+  # first object in the array will be the string '(options)', the last object will
+  # be the most specific metadata's module name with the name of other metadata modules
+  # contributing to the metadata listed in the order in which they contributed.
+  build_lineage_: false
