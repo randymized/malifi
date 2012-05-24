@@ -43,10 +43,10 @@ extend= (base,dominant,name)->
     (r['lineage_']= ((base['lineage_']||[])).slice(0)).push(name)
   r
 
-cache= {}
+metacache= {}
 
 meta_lookup= (name,from)->
-  from||= cache
+  from||= metacache
   descend= (name)->
     if from[name]
       return from[name]
@@ -66,7 +66,7 @@ loadTree= (rootdir,superMeta,supersites) ->
   loadDir= (dirname,superMeta,visited) ->   #recursive
     defaultModName = path.join(dirname,'_default.meta')
     meta= if isModuleSync(defaultModName)
-      cache[dirname+'/']= load(defaultModName,superMeta)
+      metacache[dirname+'/']= load(defaultModName,superMeta)
     else
       superMeta
     for filename in fs.readdirSync(dirname)
@@ -83,13 +83,13 @@ loadTree= (rootdir,superMeta,supersites) ->
           if moduleSignature.test(filename)
             stripped= stripExtension(filename)
             if metafileSignature.test(filename)
-              cache[filename.replace(stripMetaExtension,'$1')]= load(stripped,meta)
+              metacache[filename.replace(stripMetaExtension,'$1')]= load(stripped,meta)
             else
               modules.unshift(stripped)
     return meta
   visited= {}
   visited[fs.lstatSync(rootdir).ino]= true
-  cache[rootdir+'/']= superMeta  # this will be overridden if _default_meta found
+  metacache[rootdir+'/']= superMeta  # this will be overridden if _default_meta found
   meta= loadDir(rootdir,superMeta,visited)
   preload(modules,meta,supersites)
   return meta
@@ -102,7 +102,7 @@ preload= (modules,superMeta,supersites)->
     m= require(modname)
     if m?.meta
       itsMeta= meta_lookup(modname)
-      cache[modname]= extend(itsMeta,m.meta,modname)
+      metacache[modname]= extend(itsMeta,m.meta,modname)
     if sitesModuleSignature.test(modname)
       siteroot= path.dirname(modname)
       siteLookupRoot ?= siteroot
