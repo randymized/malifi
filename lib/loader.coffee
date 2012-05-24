@@ -45,15 +45,16 @@ extend= (base,dominant,name)->
 
 cache= {}
 
-meta_lookup= (name)->
+meta_lookup= (name,from)->
+  from||= cache
   descend= (name)->
-    if cache[name]
-      return cache[name]
+    if from[name]
+      return from[name]
     else
       lower= path.dirname(name)
       return {} if lower == name  # emergency shut-off: already at root directory
       return meta_lookup(lower+'/')
-  if c= cache[name+'/']  # the original file name is that of a directory and it has default metadata
+  if c= from[name+'/']  # the original file name is that of a directory and it has default metadata
     return c
   descend(name)
 
