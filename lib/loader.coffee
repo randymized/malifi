@@ -10,7 +10,6 @@ metafileSignature= /\.meta\.(js|coffee|json)$/
 moduleSignature= /\.(js|coffee|json)$/
 skipThisFileSignature= /^\.|^_default\.meta\.(js|coffee|json)$/
 stripMetaExtension= /(.*)(?:\.meta\.(js|coffee|json))$/
-canDescendNoMore= /^[/.]?\/$/
 moduleExtensions= ['.js','.coffee','.json']
 
 
@@ -51,8 +50,9 @@ meta_lookup= (name)->
     if cache[name]
       return cache[name]
     else
-      return {} if canDescendNoMore.test(name)  # emergency shut-off
-      return meta_lookup(path.dirname(name)+'/')
+      lower= path.dirname(name)
+      return {} if lower == name  # emergency shut-off: already at root directory
+      return meta_lookup(lower+'/')
   if c= cache[name+'/']  # the original file name is that of a directory and it has default metadata
     return c
   descend(name)
