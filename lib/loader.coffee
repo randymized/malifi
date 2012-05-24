@@ -99,9 +99,9 @@ sites= {}
 sitesModuleSignature= /_sites$/
 preload= (modules,superMeta,supersites)->
   for modname in modules
-    itsMeta= meta_lookup(modname)
     m= require(modname)
     if m?.meta
+      itsMeta= meta_lookup(modname)
       cache[modname]= extend(itsMeta,m.meta,modname)
     if sitesModuleSignature.test(modname)
       siteroot= path.dirname(modname)
