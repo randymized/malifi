@@ -71,6 +71,21 @@ module.exports=
         rawmetas[name.replace(stripDotMeta,'$1')]= raw
         extend(superMeta, raw, name)
 
+      preload= (modules,superMeta,supersites)->
+        for modname in modules
+          m= require(modname)
+          if m?.meta
+            rawmetas[modname]= m.meta
+            itsMeta= meta_lookup(modname)
+            metacache[modname]= extend(itsMeta,m.meta,modname)
+          if sitesModuleSignature.test(modname)
+            siteroot= path.dirname(modname)
+            siteLookupRoot ?= siteroot
+            sites[siteroot]= m
+            (xsupersites= supersites.slice(0)).push(siteroot)
+            for sitepath in m.paths
+              loadTree(normalize(sitepath),superMeta,xsupersites)
+
       modules= []
       loadDir= (dirname,superMeta,visited) ->   #recursive
         defaultModName = path.join(dirname,'_default.meta')
@@ -102,21 +117,6 @@ module.exports=
       meta= loadDir(rootdir,superMeta,visited)
       preload(modules,meta,supersites)
       return meta
-
-    preload= (modules,superMeta,supersites)->
-        for modname in modules
-          m= require(modname)
-          if m?.meta
-            rawmetas[modname]= m.meta
-            itsMeta= meta_lookup(modname)
-            metacache[modname]= extend(itsMeta,m.meta,modname)
-          if sitesModuleSignature.test(modname)
-            siteroot= path.dirname(modname)
-            siteLookupRoot ?= siteroot
-            sites[siteroot]= m
-            (xsupersites= supersites.slice(0)).push(siteroot)
-            for sitepath in m.paths
-              loadTree(normalize(sitepath),superMeta,xsupersites)
 
     dirs = baseSiteStack  # note: the stack is maintained in reverse order
     userPath= dirs[0]
