@@ -6,13 +6,7 @@ path = require('path')
 normalize = path.normalize
 fs = require('fs')
 stripExtension= require('./strip_extension')
-metafileSignature= /\.meta\.(js|coffee|json)$/
-moduleSignature= /\.(js|coffee|json)$/
-skipThisFileSignature= /^\.|^_default\.meta\.(js|coffee|json)$/
-stripMetaExtension= /(.*)(?:\.meta\.(js|coffee|json))$/
-stripDotMeta= /(.*?)(?:_default)?(?:\.meta)$/
 moduleExtensions= ['.js','.coffee','.json']
-
 
 isFileSync= (name)->
   try
@@ -26,23 +20,6 @@ isFileSync= (name)->
 isModuleSync= (name)->
   return true for ext in moduleExtensions when isFileSync(name+ext)
   false
-
-extend= (base,dominant,name)->
-  return dominant unless base
-  # A meta file module may be a function or an object.  If its a function,
-  # it will be invoked with the parent metadata as an argument and should return
-  # a metadata object.  The meta file can thus create metadata that is
-  # affected by the values in the parent metadata
-  dominant= dominant(_.clone(base)) if typeof dominant == "function"
-  r= _.clone(base)
-  for key,val of dominant
-    if val?
-      r[key]=val
-    else
-      delete r[key]
-  if r['build_lineage_']
-    (r['lineage_']= ((base['lineage_']||[])).slice(0)).push(name)
-  r
 
 metacache= {}
 
@@ -59,72 +36,97 @@ meta_lookup= (name,from)->
     return c
   descend(name)
 
-rawmetas= {}
-load= (name,superMeta)->
-  raw= require(name)
-  rawmetas[name.replace(stripDotMeta,'$1')]= raw
-  extend(superMeta, raw, name)
-
-loadTree= (rootdir,superMeta,supersites) ->
-  modules= []
-  loadDir= (dirname,superMeta,visited) ->   #recursive
-    defaultModName = path.join(dirname,'_default.meta')
-    meta= if isModuleSync(defaultModName)
-      metacache[dirname+'/']= load(defaultModName,superMeta)
-    else
-      superMeta
-    for filename in fs.readdirSync(dirname)
-      unless skipThisFileSignature.test(filename)
-        filename= path.join(dirname,filename)
-        stat = fs.lstatSync(filename)
-        if stat.isDirectory()
-          unless visited[stat.ino]  # do not follow circular symbolic link
-            newvisited= {}
-            newvisited[ino] = true for ino, val of visited
-            newvisited[stat.ino]= true
-            loadDir(filename,meta,newvisited)
-        else
-          if moduleSignature.test(filename)
-            stripped= stripExtension(filename)
-            if metafileSignature.test(filename)
-              metacache[filename.replace(stripMetaExtension,'$1')]= load(stripped,meta)
-            else
-              modules.unshift(stripped)
-    return meta
-  visited= {}
-  visited[fs.lstatSync(rootdir).ino]= true
-  metacache[rootdir+'/']= superMeta  # this will be overridden if _default_meta found
-  meta= loadDir(rootdir,superMeta,visited)
-  preload(modules,meta,supersites)
-  return meta
-
 siteLookupRoot= null
 sites= {}
-sitesModuleSignature= /_sites$/
-preload= (modules,superMeta,supersites)->
-  for modname in modules
-    m= require(modname)
-    if m?.meta
-      rawmetas[modname]= m.meta
-      itsMeta= meta_lookup(modname)
-      metacache[modname]= extend(itsMeta,m.meta,modname)
-    if sitesModuleSignature.test(modname)
-      siteroot= path.dirname(modname)
-      siteLookupRoot ?= siteroot
-      sites[siteroot]= m
-      (xsupersites= supersites.slice(0)).push(siteroot)
-      for sitepath in m.paths
-        loadTree(normalize(sitepath),superMeta,xsupersites)
-
 module.exports=
   init: (baseSiteStack,options={})->
+    metafileSignature= /\.meta\.(js|coffee|json)$/
+    moduleSignature= /\.(js|coffee|json)$/
+    skipThisFileSignature= /^\.|^_default\.meta\.(js|coffee|json)$/
+    stripMetaExtension= /(.*)(?:\.meta\.(js|coffee|json))$/
+    stripDotMeta= /(.*?)(?:_default)?(?:\.meta)$/
+    rawmetas= {}
+    sitesModuleSignature= /_sites$/
+
+    extend= (base,dominant,name)->
+      return dominant unless base
+      # A meta file module may be a function or an object.  If its a function,
+      # it will be invoked with the parent metadata as an argument and should return
+      # a metadata object.  The meta file can thus create metadata that is
+      # affected by the values in the parent metadata
+      dominant= dominant(_.clone(base)) if typeof dominant == "function"
+      r= _.clone(base)
+      for key,val of dominant
+        if val?
+          r[key]=val
+        else
+          delete r[key]
+      if r['build_lineage_']
+        (r['lineage_']= ((base['lineage_']||[])).slice(0)).push(name)
+      r
+
+    loadTree= (rootdir,superMeta,supersites) ->
+      load= (name,superMeta)->
+        raw= require(name)
+        rawmetas[name.replace(stripDotMeta,'$1')]= raw
+        extend(superMeta, raw, name)
+
+      modules= []
+      loadDir= (dirname,superMeta,visited) ->   #recursive
+        defaultModName = path.join(dirname,'_default.meta')
+        meta= if isModuleSync(defaultModName)
+          metacache[dirname+'/']= load(defaultModName,superMeta)
+        else
+          superMeta
+        for filename in fs.readdirSync(dirname)
+          unless skipThisFileSignature.test(filename)
+            filename= path.join(dirname,filename)
+            stat = fs.lstatSync(filename)
+            if stat.isDirectory()
+              unless visited[stat.ino]  # do not follow circular symbolic link
+                newvisited= {}
+                newvisited[ino] = true for ino, val of visited
+                newvisited[stat.ino]= true
+                loadDir(filename,meta,newvisited)
+            else
+              if moduleSignature.test(filename)
+                stripped= stripExtension(filename)
+                if metafileSignature.test(filename)
+                  metacache[filename.replace(stripMetaExtension,'$1')]= load(stripped,meta)
+                else
+                  modules.unshift(stripped)
+        return meta
+      visited= {}
+      visited[fs.lstatSync(rootdir).ino]= true
+      metacache[rootdir+'/']= superMeta  # this will be overridden if _default_meta found
+      meta= loadDir(rootdir,superMeta,visited)
+      preload(modules,meta,supersites)
+      return meta
+
+    preload= (modules,superMeta,supersites)->
+        for modname in modules
+          m= require(modname)
+          if m?.meta
+            rawmetas[modname]= m.meta
+            itsMeta= meta_lookup(modname)
+            metacache[modname]= extend(itsMeta,m.meta,modname)
+          if sitesModuleSignature.test(modname)
+            siteroot= path.dirname(modname)
+            siteLookupRoot ?= siteroot
+            sites[siteroot]= m
+            (xsupersites= supersites.slice(0)).push(siteroot)
+            for sitepath in m.paths
+              loadTree(normalize(sitepath),superMeta,xsupersites)
+
     dirs = baseSiteStack  # note: the stack is maintained in reverse order
     userPath= dirs[0]
     defaultPath= dirs[1]
     inter= loadTree(defaultPath,{},[])
     inter= extend(inter,options,'(options)')
     loadTree(userPath,inter,[defaultPath])
+
   meta_lookup: meta_lookup
+
   site_lookup: (req,res,next)->
     stack= []
     siteLookup= (sitename)=>
