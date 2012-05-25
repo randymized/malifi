@@ -67,39 +67,39 @@ module.exports=
 
     loadTree= (rootdir,superMeta,supersites) ->
       load= (name,superMeta)->
-        raw= require(name)
+        fullname= path.join(rootdir,name)
+        raw= require(fullname)
         rawmetas[name.replace(stripDotMeta,'$1')]= raw
-        extend(superMeta, raw, name)
+        extend(superMeta, raw, fullname)
 
       modules= []
       loadDir= (dirname,superMeta,visited) ->   #recursive
-        defaultModName = path.join(dirname,'_default.meta')
-        meta= if isModuleSync(defaultModName)
-          metacache[dirname+'/']= load(defaultModName,superMeta)
+        fulldirname= path.join(rootdir,dirname)
+        meta= if isModuleSync(path.join(fulldirname,'_default.meta'))
+          metacache[fulldirname+'/']= load(path.join(dirname,'_default.meta'),superMeta)
         else
           superMeta
-        for filename in fs.readdirSync(dirname)
+        for filename in fs.readdirSync(fulldirname)
           unless skipThisFileSignature.test(filename)
-            filename= path.join(dirname,filename)
-            stat = fs.lstatSync(filename)
+            fullname= path.join(fulldirname,filename)
+            stat = fs.lstatSync(fullname)
             if stat.isDirectory()
               unless visited[stat.ino]  # do not follow circular symbolic link
                 newvisited= {}
                 newvisited[ino] = true for ino, val of visited
                 newvisited[stat.ino]= true
-                loadDir(filename,meta,newvisited)
+                loadDir(path.join(dirname,filename),meta,newvisited)
             else
               if moduleSignature.test(filename)
-                stripped= stripExtension(filename)
                 if metafileSignature.test(filename)
-                  metacache[filename.replace(stripMetaExtension,'$1')]= load(stripped,meta)
+                  metacache[fullname.replace(stripMetaExtension,'$1')]= load(path.join(dirname,stripExtension(filename)),meta)
                 else
-                  modules.unshift(stripped)
+                  modules.unshift(stripExtension(fullname))
         return meta
       visited= {}
       visited[fs.lstatSync(rootdir).ino]= true
       metacache[rootdir+'/']= superMeta  # this will be overridden if _default_meta found
-      meta= loadDir(rootdir,superMeta,visited)
+      meta= loadDir('',superMeta,visited)
       for modname in modules
         m= require(modname)
         if m?.meta
