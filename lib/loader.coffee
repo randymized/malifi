@@ -66,10 +66,11 @@ module.exports=
       r
 
     loadTree= (rootdir,superMeta,supersites) ->
+      rawmetas[rootdir]= {}
       load= (name,superMeta)->
         fullname= path.join(rootdir,name)
         raw= require(fullname)
-        rawmetas[name.replace(stripDotMeta,'$1')]= raw
+        rawmetas[rootdir][name.replace(stripDotMeta,'$1')]= raw
         extend(superMeta, raw, fullname)
 
       modules= []
@@ -82,32 +83,34 @@ module.exports=
         for filename in fs.readdirSync(fulldirname)
           unless skipThisFileSignature.test(filename)
             fullname= path.join(fulldirname,filename)
+            partialname= path.join(dirname,filename)
             stat = fs.lstatSync(fullname)
             if stat.isDirectory()
               unless visited[stat.ino]  # do not follow circular symbolic link
                 newvisited= {}
                 newvisited[ino] = true for ino, val of visited
                 newvisited[stat.ino]= true
-                loadDir(path.join(dirname,filename),meta,newvisited)
+                loadDir(partialname,meta,newvisited)
             else
               if moduleSignature.test(filename)
                 if metafileSignature.test(filename)
                   metacache[fullname.replace(stripMetaExtension,'$1')]= load(path.join(dirname,stripExtension(filename)),meta)
                 else
-                  modules.unshift(stripExtension(fullname))
+                  modules.unshift(stripExtension(partialname))
         return meta
       visited= {}
       visited[fs.lstatSync(rootdir).ino]= true
       metacache[rootdir+'/']= superMeta  # this will be overridden if _default_meta found
       meta= loadDir('',superMeta,visited)
       for modname in modules
-        m= require(modname)
+        fullmodname= path.join(rootdir,modname)
+        m= require(fullmodname)
         if m?.meta
-          rawmetas[modname]= m.meta
-          itsMeta= meta_lookup(modname)
-          metacache[modname]= extend(itsMeta,m.meta,modname)
+          rawmetas[rootdir][modname]= m.meta
+          itsMeta= meta_lookup(fullmodname)
+          metacache[fullmodname]= extend(itsMeta,m.meta,fullmodname)
         if sitesModuleSignature.test(modname)
-          siteroot= path.dirname(modname)
+          siteroot= path.dirname(fullmodname)
           siteLookupRoot ?= siteroot
           sites[siteroot]= m
           (xsupersites= supersites.slice(0)).push(siteroot)
