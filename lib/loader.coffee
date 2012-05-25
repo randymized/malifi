@@ -10,6 +10,7 @@ metafileSignature= /\.meta\.(js|coffee|json)$/
 moduleSignature= /\.(js|coffee|json)$/
 skipThisFileSignature= /^\.|^_default\.meta\.(js|coffee|json)$/
 stripMetaExtension= /(.*)(?:\.meta\.(js|coffee|json))$/
+stripDotMeta= /(.*?)(?:_default)?(?:\.meta)$/
 moduleExtensions= ['.js','.coffee','.json']
 
 
@@ -58,8 +59,11 @@ meta_lookup= (name,from)->
     return c
   descend(name)
 
+rawmetas= {}
 load= (name,superMeta)->
-  extend(superMeta, require(name), name)
+  raw= require(name)
+  rawmetas[name.replace(stripDotMeta,'$1')]= raw
+  extend(superMeta, raw, name)
 
 loadTree= (rootdir,superMeta,supersites) ->
   modules= []
@@ -101,6 +105,7 @@ preload= (modules,superMeta,supersites)->
   for modname in modules
     m= require(modname)
     if m?.meta
+      rawmetas[modname]= m.meta
       itsMeta= meta_lookup(modname)
       metacache[modname]= extend(itsMeta,m.meta,modname)
     if sitesModuleSignature.test(modname)
