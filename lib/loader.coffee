@@ -45,7 +45,9 @@ module.exports=
     skipThisFileSignature= /^\.|^_default\.meta\.(js|coffee|json)$/
     stripDotMeta= /(.*?)(?:_default)?(?:\.meta)$/
     rawmetas= {}
+    attribmetas= {}
     sitesModuleSignature= /_sites$/
+    metatyper= /(^_default.meta$)|(?:(.*\/)_default.meta$)|(?:(.*)\.meta)/
 
     extend= (base,dominant,name)->
       if base
@@ -68,6 +70,7 @@ module.exports=
 
     loadTree= (rootdir, supersites) ->
       myrawmetas= rawmetas[rootdir]= {}
+      myattribmetas= attribmetas[rootdir]= {}
       modules= []
       loadDir= (dirname, visited) ->   #recursive
         fulldirname= path.join(rootdir,dirname)
@@ -85,10 +88,16 @@ module.exports=
             if moduleSignature.test(filename)
               modname= stripExtension(partialname)
               m= require(fullname)
-              if metafileSignature.test(filename)
-                myrawmetas[modname.replace(stripDotMeta,'$1')||'/']= m
-              else if m?.meta
-                myrawmetas[modname]= m.meta
+              metatype= modname.match(metatyper)
+              if metatype
+                if metatype[1]      # _default.meta           => /
+                  myrawmetas['/']= m
+                else if metatype[2] # something/_default.meta => something/
+                  myrawmetas[metatype[2]]= m
+                else                # anything[/]else.meta    => anything[/]else
+                  myrawmetas[metatype[3]]= m
+              else if m?.meta       # non-meta module that includes a meta attribute
+                myattribmetas[modname]= m.meta
               else if sitesModuleSignature.test(modname)
                 siteroot= path.dirname(fullname)
                 siteLookupRoot ?= siteroot
@@ -107,11 +116,13 @@ module.exports=
           meta= extend(meta,rawmetas[sitename]['/'],sitename+'/')
       metacache[rootdir+'/']= meta
 
-      (metanames= _.keys(myrawmetas)).sort
+      metanames= _.without(_.union(_.keys(myrawmetas),_.keys(myattribmetas)),'/')
       for metaname in metanames
-        unless '/' == metaname
-          fullmetaname= path.join(rootdir,metaname)
+        fullmetaname= path.join(rootdir,metaname)
+        if myrawmetas[metaname]
           metacache[fullmetaname]= extend(meta_lookup(fullmetaname),myrawmetas[metaname],fullmetaname)
+        if myattribmetas[metaname]
+          metacache[fullmetaname]= extend(meta_lookup(fullmetaname),myattribmetas[metaname],fullmetaname+':')
 
     dirs = baseSiteStack  # note: the stack is maintained in reverse order
     userPath= dirs[0]

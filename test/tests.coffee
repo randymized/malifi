@@ -67,10 +67,13 @@ describe 'malifi server', ->
         done(err)
       else
         lineage = JSON.parse(buf).lineage_
-        lineage[0].should.equal('(options)')
-        path.relative(__dirname,lineage[1]).should.equal('sites/common/_default.meta')
-        path.relative(__dirname,lineage[2]).should.equal('sites/background/_default.meta')
-        path.relative(__dirname,lineage[3]).should.equal('sites/foreground/_default.meta')
+        ltest= (index,expected) ->
+          lineage[index].substr(-1).should.equal('/')   #path.relative strips trailing '/'.  Test that they are acually there
+          path.relative(__dirname,lineage[index]).should.equal(expected)
+        ltest(0,'../base-site')
+        ltest(1,'sites/common')
+        ltest(2,'sites/background')
+        ltest(3,'sites/foreground')
         lineage.length.should.equal(4);
         done()
   it 'metadata may be in a JSON file', (done) ->
