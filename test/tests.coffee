@@ -71,6 +71,7 @@ describe 'malifi server', ->
         path.relative(__dirname,lineage[1]).should.equal('sites/common/_default.meta')
         path.relative(__dirname,lineage[2]).should.equal('sites/background/_default.meta')
         path.relative(__dirname,lineage[3]).should.equal('sites/foreground/_default.meta')
+        lineage.length.should.equal(4);
         done()
   it 'metadata may be in a JSON file', (done) ->
     get('/sub/showmeta','b/show.test_string', done)
