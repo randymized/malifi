@@ -27,6 +27,7 @@ meta_lookup= (name,from)->
     if from[name]
       return from[name]
     else
+      name= path.normalize(name)    #remove any trailing slash
       lower= path.dirname(name)
       return {} if lower == name  # emergency shut-off: already at root directory
       return meta_lookup(lower+'/')
