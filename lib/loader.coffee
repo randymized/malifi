@@ -2,8 +2,6 @@ _ = require('underscore')._
 connect = require('connect')
 path = require('path')
 normalize = path.normalize
-path = require('path')
-normalize = path.normalize
 fs = require('fs')
 stripExtension= require('./strip_extension')
 moduleExtensions= ['.js','.coffee','.json']
@@ -65,10 +63,11 @@ module.exports=
       else
         r= _.clone(dominant)
       if r['build_lineage_']
-        (r['lineage_']= ((base['lineage_']||[])).slice(0)).push(name)
+        r['lineage_']= (base['lineage_']||[]).concat([name])
       r
 
-    loadTree= (rootdir, supersites) ->
+    loadTree= (siteStack) ->
+      rootdir= _.last(siteStack)
       myrawmetas= rawmetas[rootdir]= {}
       myattribmetas= attribmetas[rootdir]= {}
       modules= []
@@ -102,16 +101,14 @@ module.exports=
                 siteroot= path.dirname(fullname)
                 siteLookupRoot ?= siteroot
                 sites[siteroot]= m
-                (xsupersites= supersites.slice(0)).push(siteroot)
                 for sitepath in m.paths
-                  loadTree(normalize(sitepath), xsupersites)
+                  loadTree(siteStack.concat([normalize(sitepath)]))
 
       visited= {}
       visited[fs.lstatSync(rootdir).ino]= true
       loadDir('', visited)
       meta= {}
-      supersites.push(rootdir)
-      for sitename in supersites
+      for sitename in siteStack
         if rawmetas[sitename]
           meta= extend(meta,rawmetas[sitename]['/'],sitename+'/')
       metacache[rootdir+'/']= meta
@@ -127,9 +124,9 @@ module.exports=
     dirs = baseSiteStack  # note: the stack is maintained in reverse order
     userPath= dirs[0]
     defaultPath= dirs[1]
-    loadTree(defaultPath, [])
+    loadTree([defaultPath])
     rawmetas[defaultPath]['/']= extend(rawmetas[defaultPath]['/'],options,'(options)')
-    loadTree(userPath, [defaultPath])
+    loadTree([defaultPath,userPath])
 
   meta_lookup: meta_lookup
 
