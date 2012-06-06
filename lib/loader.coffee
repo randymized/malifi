@@ -6,6 +6,18 @@ fs = require('fs')
 stripExtension= require('./strip_extension')
 moduleExtensions= ['.js','.coffee','.json']
 
+calcSiteKey= (siteStack,reverse=false)->
+  if reverse
+    siteStack= siteStack.slice(0)
+    siteStack= siteStack.reverse()
+  siteStack.join('\1')
+
+# make sure the separators in a file name sort before any other chars
+fileNameCompare= (a,b)->
+  a= a.replace('/','\1','g')
+  b= b.replace('/','\1','g')
+  return (b < a) - (a < b)
+
 isFileSync= (name)->
   try
     fs.statSync(name).isFile()
@@ -67,7 +79,9 @@ module.exports=
         r['lineage_']= (base['lineage_']||[]).concat([name])
       r
 
+    siteStacks= []
     loadTree= (siteStack) ->
+      siteStacks.push(siteStack)
       rootdir= _.last(siteStack)
       myrawmetas= rawmetas[rootdir]= {}
       myattribmetas= attribmetas[rootdir]= {}
@@ -108,19 +122,6 @@ module.exports=
       visited= {}
       visited[fs.lstatSync(rootdir).ino]= true
       loadDir('', visited)
-      meta= {}
-      for sitename in siteStack
-        if rawmetas[sitename]
-          meta= extend(meta,rawmetas[sitename]['/'],sitename+'/')
-      metacache[rootdir+'/']= meta
-
-      metanames= _.without(_.union(_.keys(myrawmetas),_.keys(myattribmetas)),'/')
-      for metaname in metanames
-        fullmetaname= path.join(rootdir,metaname)
-        if myrawmetas[metaname]
-          metacache[fullmetaname]= extend(meta_lookup(fullmetaname),myrawmetas[metaname],fullmetaname)
-        if myattribmetas[metaname]
-          metacache[fullmetaname]= extend(meta_lookup(fullmetaname),myattribmetas[metaname],fullmetaname+':')
 
     dirs = baseSiteStack  # note: the stack is maintained in reverse order
     userPath= dirs[0]
@@ -128,6 +129,23 @@ module.exports=
     loadTree([defaultPath])
     rawmetas[defaultPath]['/']= extend(rawmetas[defaultPath]['/'],options,'(options)')
     loadTree([defaultPath,userPath])
+
+    for siteStack in siteStacks
+      rootdir= _.last(siteStack)
+      sitekey= calcSiteKey(siteStack,true)
+      meta= {}
+      metanames= []
+      for sitename in siteStack
+        metanames= _.union(metanames,_.keys(rawmetas[sitename]),_.keys(attribmetas[sitename]))
+      for metaname in _.uniq(metanames).sort(fileNameCompare)
+        fullmetaname= path.join(rootdir,metaname)
+        meta= meta_lookup(fullmetaname)
+        for sitename in siteStack
+          if rawmetas[sitename] && rawmetas[sitename][metaname]
+            meta= extend(meta,rawmetas[sitename][metaname],path.join(sitename,metaname))
+          if attribmetas[sitename] && attribmetas[sitename][metaname]
+            meta= extend(meta,attribmetas[sitename][metaname],path.join(sitename,metaname+':'))
+        metacache[fullmetaname]= meta
 
   meta_lookup: meta_lookup
 

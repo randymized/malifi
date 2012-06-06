@@ -130,7 +130,7 @@ The _sites.js module should export two things:
   function.  That list is used to preload metadata and modules.  It must include
   all paths that could be returned by the lookup function.
 
-Any of the site root directories referenced by the _sites module may, in turn, also contain a _sites module, resulting in a branching tree of sites.  When processing a request, the orginal directory is checked first.  If it contains a _sites module, its lookup function will be called.  If the directory returned by the lookup function also contains a _sites module, its lookup function will also be called.  This continues until reaching a directory thatdoes not include a _sites module.
+Any of the site root directories referenced by the _sites module may, in turn, also contain a _sites module, resulting in a branching tree of sites.  When processing a request, the orginal directory is checked first.  If it contains a _sites module, its lookup function will be called.  If the directory returned by the lookup function also contains a _sites module, its lookup function will also be called.  This continues until reaching a directory that does not include a _sites module.
 
 Each directory that contains a _sites module is added to a stack of sites that are to be visited when looking for files to service a request.  This stack starts with the final, site-specific directory, goes back through each of the directories that contained a _sites module along the way and ends with the base site that is canned into Malifi at `<malifi directory>/base-site`.  Since the base site is always in the site stack, there are always at least two site layers.
 
