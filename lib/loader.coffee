@@ -105,12 +105,12 @@ module.exports=
               if metatype
                 if metatype[1]      # _default.meta           => /
                   myrawmetas['/']= m
-                else if metatype[2] # something/_default.meta => something/
-                  myrawmetas[metatype[2]]= m
-                else                # anything[/]else.meta    => anything[/]else
-                  myrawmetas[metatype[3]]= m
+                else if metatype[2] # something/_default.meta => /something/
+                  myrawmetas['/'+metatype[2]]= m
+                else                # anything[/]else.meta    => /anything[/]else
+                  myrawmetas['/'+metatype[3]]= m
               else if m?.meta       # non-meta module that includes a meta attribute
-                myattribmetas[modname]= m.meta
+                myattribmetas['/'+modname]= m.meta
               else if sitesModuleSignature.test(modname)
                 siteroot= path.dirname(fullname)
                 siteLookupRoot ?= siteroot
@@ -137,15 +137,13 @@ module.exports=
       metanames= []
       for sitename in siteStack
         metanames= _.union(metanames,_.keys(rawmetas[sitename]),_.keys(attribmetas[sitename]))
-      for rawname in _.uniq(metanames).sort(fileNameCompare)
-        metaname= '/'+rawname
-        metaname= '/' if '//' == metaname
+      for metaname in _.uniq(metanames).sort(fileNameCompare)
         meta= meta_lookup(metaname,siteKey)
         for sitename in siteStack
-          if rawmetas[sitename] && rawmetas[sitename][rawname]
-            meta= extend(meta,rawmetas[sitename][rawname],path.join(sitename,rawname))
-          if attribmetas[sitename] && attribmetas[sitename][rawname]
-            meta= extend(meta,attribmetas[sitename][rawname],path.join(sitename,rawname+':'))
+          if rawmetas[sitename] && rawmetas[sitename][metaname]
+            meta= extend(meta,rawmetas[sitename][metaname],path.join(sitename,metaname))
+          if attribmetas[sitename] && attribmetas[sitename][metaname]
+            meta= extend(meta,attribmetas[sitename][metaname],path.join(sitename,metaname+':'))
         metacache[siteKey][metaname]= meta
 
   meta_lookup: meta_lookup
