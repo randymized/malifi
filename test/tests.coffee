@@ -155,3 +155,21 @@ describe 'malifi server', ->
     req.end();
   it "metadata may be included in the resource's main module", (done) ->
     get('/sub/addmeta','foreground+', done)
+  it "metadata can be inherited vertically", (done) ->
+    get '/inherit/a',(err,buf)->
+      if err
+        done(err)
+      else
+        meta= JSON.parse(buf)
+        meta.test_string.should.equal 'foreground+!'
+        lineage= meta.lineage_
+        ltest= (index,expected) ->
+          path.relative(__dirname,lineage[index]).should.equal(expected)
+        ltest(0,'../base-site')
+        ltest(1,'sites/common')
+        ltest(2,'sites/background')
+        ltest(3,'sites/foreground')
+        ltest(4,'sites/background/inherit/a:')
+        ltest(5,'sites/foreground/inherit/a')
+        lineage.length.should.equal(6);
+        done()
