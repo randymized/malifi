@@ -96,9 +96,7 @@ Whenever a request is received by Malifi, it adds an property named malifi to th
 
 * meta: the metadata for the requested resource.
 
-* meta_lookup:  A function that will return the metadata for any fully-qualified path.  The `meta` and property was obtained using this function.  A request for a directory's metadata should include a trailing slash.
-
-* site_stack: A list of fully-qualified names of the root directories of all sites that are to be included when attempting to fulfill a request.  The first directory is that most specific to the request and the request will be served from files located in that directory if possible.  The final directory in the list will always be `<malifi>/base-site`, the system default site.  The site stack will always include at least two properties.
+* site_stack: A list of fully-qualified names of the root directories of all sites that are to be included when attempting to fulfill a request.  The first directory is that most specific to the request and the request will be served from files located in that directory if possible.  The final directory in the list will always be `<malifi>/base-site`, the system default site.  The site stack will always name at least two directories.
 
 * matching_files_by_site: All files matching the request, organized by site.  This object contains one object for each path in the site stack that contains files matching the request.  The objects are keyed by the site root path.  Each of those objects are indexed by extension with each attribute being the file's fully qualified name.  A directory matching the URL will be indexed by a slash.  A file that matches the request without any extension will be indexed by an empty string.  This is the full list of files matching the request before being merged to a single object containing the most specific file of each extension.
 

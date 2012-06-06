@@ -6,11 +6,11 @@ fs = require('fs')
 stripExtension= require('./strip_extension')
 moduleExtensions= ['.js','.coffee','.json']
 
-calcSiteKey= (siteStack,reverse=false)->
+calc_site_key= (siteStack,reverse=false)->
   if reverse
     siteStack= siteStack.slice(0)
     siteStack= siteStack.reverse()
-  siteStack.join('\1')
+  siteStack.join(':')
 
 # make sure the separators in a file name sort before any other chars
 fileNameCompare= (a,b)->
@@ -33,19 +33,18 @@ isModuleSync= (name)->
 
 metacache= {}
 
-meta_lookup= (name,from)->
-  from||= metacache
+meta_lookup= (resourcePath,siteKey)->
+  return {} unless (from= metacache[siteKey])
   descend= (name)->
     if from[name]
       return from[name]
     else
       name= path.normalize(name)    #remove any trailing slash
       lower= path.dirname(name)
-      return {} if lower == name  # emergency shut-off: already at root directory
-      return meta_lookup(lower+'/')
-  if c= from[name+'/']  # the original file name is that of a directory and it has default metadata
-    return c
-  descend(name)
+      return from['/'] || {} if '.' == lower || '/' == lower
+      return meta_lookup(lower+'/',siteKey)
+  return c if c= from[resourcePath+'/']  # the original file name is that of a directory and it has default metadata
+  descend(resourcePath)
 
 siteLookupRoot= null
 sites= {}
@@ -131,23 +130,26 @@ module.exports=
     loadTree([defaultPath,userPath])
 
     for siteStack in siteStacks
+      siteKey= calc_site_key(siteStack,true)
+      metacache[siteKey]= {}
       rootdir= _.last(siteStack)
-      sitekey= calcSiteKey(siteStack,true)
       meta= {}
       metanames= []
       for sitename in siteStack
         metanames= _.union(metanames,_.keys(rawmetas[sitename]),_.keys(attribmetas[sitename]))
-      for metaname in _.uniq(metanames).sort(fileNameCompare)
-        fullmetaname= path.join(rootdir,metaname)
-        meta= meta_lookup(fullmetaname)
+      for rawname in _.uniq(metanames).sort(fileNameCompare)
+        metaname= '/'+rawname
+        metaname= '/' if '//' == metaname
+        meta= meta_lookup(metaname,siteKey)
         for sitename in siteStack
-          if rawmetas[sitename] && rawmetas[sitename][metaname]
-            meta= extend(meta,rawmetas[sitename][metaname],path.join(sitename,metaname))
-          if attribmetas[sitename] && attribmetas[sitename][metaname]
-            meta= extend(meta,attribmetas[sitename][metaname],path.join(sitename,metaname+':'))
-        metacache[fullmetaname]= meta
+          if rawmetas[sitename] && rawmetas[sitename][rawname]
+            meta= extend(meta,rawmetas[sitename][rawname],path.join(sitename,rawname))
+          if attribmetas[sitename] && attribmetas[sitename][rawname]
+            meta= extend(meta,attribmetas[sitename][rawname],path.join(sitename,rawname+':'))
+        metacache[siteKey][metaname]= meta
 
   meta_lookup: meta_lookup
+  calc_site_key: calc_site_key
 
   site_lookup: (req,res,next)->
     stack= []
