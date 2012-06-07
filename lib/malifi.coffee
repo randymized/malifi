@@ -13,9 +13,11 @@ parse = require('url').parse
 loader= require('./loader')
 find_files= require('./find_files')
 package = require('../package')
-dummy_router= require('./action_handlers/dummy_router')('')
 extractHostAndPort= /([^:]+)(?::(.*))?/
 extractNameParts= /(?:((.*)\/([^/]*))\/$)|((.*)\/([^/]+?))(\.([^./]+))?$/
+
+dummy_router= (req,res,next)->
+  return next()
 
 class ParseHost
   constructor: (req)->
@@ -105,7 +107,7 @@ malifi= (root,options)->
 
     meta.unhandled_handler_?.log?(req)
 
-    (meta.rerouter_ || dummy_router) req,res,(err)->
+    (meta.preempting_router_ || dummy_router) req,res,(err)->
       return next(err) if err
       if actions = meta.actions_
         actions(req,res,next)

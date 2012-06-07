@@ -55,7 +55,7 @@ module.exports=
   # If the router rewrites the URL to a hidden resource, it must set req.internal
   # to a true value.
   # The router may also serve the resource directly.
-  rerouter_: malifiMod.action_handlers.dummy_router('')
+  preempting_router_: malifiMod.action_handlers.dummy_router('')
 
   # The module that will serve reroute requests.
   # Reroute is an internal redirect.  The request will be served as if it were
