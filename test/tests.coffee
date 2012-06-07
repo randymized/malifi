@@ -175,3 +175,11 @@ describe 'malifi server', ->
         done()
   it "meta.path_ should reflect where metadata was actually found.", (done) ->
     get('/sub/x/y/z/showpath','/sub/x/', done)
+  it "Can use the regex router to parse variables in a URL.", (done) ->
+    get('/date/12/21/2012','month:12,day:21,year:2012', done)
+  it "The regex router ignores any query string.", (done) ->
+    get('/date/12/21/2012?x=y','month:12,day:21,year:2012', done)
+  it "The regex router punts if the URL does not match the regular expression.", (done) ->
+    get('/date/12/21',404, done)
+  it "if the URL does not match the regular expression, but there is a specific resource, that resource is served.", (done) ->
+    get('/date/today','yes, today\n', done)
