@@ -181,5 +181,11 @@ describe 'malifi server', ->
     get('/date/12/21/2012?x=y','month:12,day:21,year:2012', done)
   it "The regex router punts if the URL does not match the regular expression.", (done) ->
     get('/date/12/21',404, done)
+  it "The regex router punts if the URL does not match the regular expression.", (done) ->
+    get('/date/12/x/2012',404, done)
   it "if the URL does not match the regular expression, but there is a specific resource, that resource is served.", (done) ->
     get('/date/today','yes, today\n', done)
+  it "Can implement a virtual directory using the virtual_directory preempting router.", (done) ->
+    get('/virtual/12/xx/2012','["12","xx","2012"]', done)
+  it "Confirm that the resource that is redirected to from the virtual directory cannot be accessed directly, as it is hidden.", (done) ->
+    get('/virtual_',403, done)

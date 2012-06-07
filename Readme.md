@@ -209,6 +209,12 @@ Since a preempting router is defined in metadata, preemptive routing can be limi
 
 Assuming that the router calls `next` if it does not match the request, an unmatched request will fall through to the default filesystem-based router.  This would allow a directory to include both virtual resources and concrete ones.  In the test foreground site, for example, there is a `date` directory that will parse a string in the form `/date/mm/dd/yyyy` into its component parts.  But the `date` directory also includes a `today.txt` resource which will be served when the URL is `/date/today` even though `today` is not recognized by the regular expression.
 
+Malifi includes two simple preempting routers.  The `virtual_directory_router` turns any directory into a virtual directory.  All URL elements beyond the directory will be placed into an array stored at `request.args` and the request will then be rerouted to the URL in the `redirect_to`
+argument.  A directory can be turned into a virtual directory by setting the `preempting_router_` attribute to the `virtual_directory_router` in the directory's `_default.meta` module and including the URL to which requests are to be redirected in the argument.  The `regex_router` similarly
+turns any directory into a virtual directory, but takes two arguements, a regular expression and the destination URL.  Requests are only handled if they match the regular expression and the regular expression allows greater control over what is captured from the URL and placed in `request.args`.
+
+Additional routers may be defined.  Separate projects that define more sophisticated ones are welcomed.
+
 ## Template Support
 
 Malifi does not favor any given template system.  In fact, to avoid dependencies on template systems that you do not intend to use, it does not support any templates out of the box.  Template system interfaces will be supported as separate projects and may come from multiple contributors.
