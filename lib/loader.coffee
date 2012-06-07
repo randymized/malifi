@@ -33,18 +33,21 @@ isModuleSync= (name)->
 
 metacache= {}
 
-meta_lookup= (resourcePath,siteKey)->
-  return {} unless (from= metacache[siteKey])
-  descend= (name)->
+meta_lookup= (resourcePath,siteKey,setMetaPath)->
+  mark= (meta,path)->
+    meta.path_= path if setMetaPath
+    return meta
+  return mark({},'/') unless (from= metacache[siteKey])
+  inner= (name)->
     if from[name]
-      return from[name]
+      return mark(from[name],name)
     else
       name= path.normalize(name)    #remove any trailing slash
       lower= path.dirname(name)
-      return from['/'] || {} if '.' == lower || '/' == lower
-      return meta_lookup(lower+'/',siteKey)
-  return c if c= from[resourcePath+'/']  # the original file name is that of a directory and it has default metadata
-  descend(resourcePath)
+      return mark(from['/'],'/') || {} if '.' == lower || '/' == lower
+      return inner(lower+'/')
+  return mark(c,resourcePath+'/') if c= from[resourcePath+'/']  # the original file name is that of a directory and it has default metadata
+  inner(resourcePath)
 
 siteLookupRoot= null
 sites= {}

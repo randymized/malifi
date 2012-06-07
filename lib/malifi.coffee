@@ -52,7 +52,7 @@ malifi= (root,options)->
     # some decoded path, url and host information.
     # If malifi.alias is defined in the metadata (default is "_"), a reference
     # to the malifi object of that name will also be added to req.
-    meta= loader.meta_lookup(pathname,loader.calc_site_key(siteStack))
+    meta= loader.meta_lookup(pathname,loader.calc_site_key(siteStack),true)
     basename= (pathparts[6] || '')+(pathparts[7] || '')
     req.malifi= malifi=
       path:

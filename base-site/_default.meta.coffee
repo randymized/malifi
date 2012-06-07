@@ -148,3 +148,10 @@ module.exports=
   # be the most specific metadata's module name with the name of other metadata modules
   # contributing to the metadata listed in the order in which they contributed.
   build_lineage_: false
+
+  # path_ will be filled in with the site-relative path to the file containing the
+  # most specific metadata for the requested resource.  If there is no .meta file
+  # for the requested resource, nor is there a meta attribute in any module serving
+  # that resource, the path will be trimmed back, one directory at a time until
+  # metadata is found.  This _path attribute reflects where metadata was actually found.
+  path_: false

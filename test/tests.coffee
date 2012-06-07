@@ -173,3 +173,5 @@ describe 'malifi server', ->
         ltest(5,'sites/foreground/inherit/a')
         lineage.length.should.equal(6);
         done()
+  it "meta.path_ should reflect where metadata was actually found.", (done) ->
+    get('/sub/x/y/z/showpath','/sub/x/', done)
