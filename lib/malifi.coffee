@@ -13,6 +13,7 @@ parse = require('url').parse
 loader= require('./loader')
 find_files= require('./find_files')
 package = require('../package')
+dummy_router= require('./action_handlers/dummy_router')('')
 extractHostAndPort= /([^:]+)(?::(.*))?/
 extractNameParts= /(?:((.*)\/([^/]*))\/$)|((.*)\/([^/]+?))(\.([^./]+))?$/
 
@@ -80,6 +81,7 @@ malifi= (root,options)->
       site_stack: siteStack
       connect_handler: malifiConnectHandler
       find_files: find_files
+      next_middleware_layer: next
 
     req[meta.malifi_alias_]= req.malifi if meta.malifi_alias_
 
@@ -101,10 +103,14 @@ malifi= (root,options)->
           else
             orignext()
 
-    if actions = meta.actions_
-      actions(req,res,next)
-    else
-      next(new Error('meta.actions_ is not defined.'))
+    meta.unhandled_handler_?.log?(req)
+
+    (meta.rerouter_ || dummy_router) req,res,(err)->
+      return next(err) if err
+      if actions = meta.actions_
+        actions(req,res,next)
+      else
+        next(new Error('meta.actions_ is not defined.'))
 
   return malifiConnectHandler
 

@@ -47,6 +47,16 @@ module.exports=
     'POST': malifiMod.action_handlers.post()
   })
 
+  # A handler that will receive all requests and which may preempt Malifi's native
+  # routing.  Most commonly, this router would handle URLs that include variable
+  # elements, processing the URL against a set of regular expressions or similar
+  # patterns to see if the URL is recognized, and if so, storing the variables in
+  # the request before rewriting the URL to a resource that will handle the request.
+  # If the router rewrites the URL to a hidden resource, it must set req.internal
+  # to a true value.
+  # The router may also serve the resource directly.
+  rerouter_: malifiMod.action_handlers.dummy_router('')
+
   # The module that will serve reroute requests.
   # Reroute is an internal redirect.  The request will be served as if it were
   # for the new URL rather than the original one.  Rerouted requests may access
@@ -123,10 +133,11 @@ module.exports=
   # is to exit the process as a result of an unhandled exception, but the handler
   # may log some clues to help identify the problem.  It might also notify
   # someone about the problem.
-  # The module should export a 'log' method.  The log method will be bound to
-  # the action object and will thus have access to the same member variables
-  # as an action handler.  The log method should also register a method
-  # to catch unhandled exceptions if the method has not already been registered.
+  # The module should export a 'log' method.  It will be called whenever a request
+  # is received with the request as an argument.  It may save various pieces of data
+  # from the request that may aid diagnosis of the problem.  The log method should also
+  # register a method to catch unhandled exceptions if the method has not already been
+  # registered.
   unhandled_handler_:
     malifiMod.unhandled_exception_handler
 
