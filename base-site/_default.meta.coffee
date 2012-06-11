@@ -28,24 +28,30 @@ module.exports=
   # handler as demonstrated here, may delegate to other action handlers,
   # creating a complex pattern of possible responses based upon the request
   # and the files available to serve that request.
-  actions_: main_action( select_actions_by_http_method {
-    'GET': select_actions_by_extension {
-      '/': action_series [
-          malifiMod.action_handlers.invoke_directory_default('indexResourceName_')
-        , malifiMod.action_handlers.directory_index('directory_index_module_')
-        ]
-      '': action_series [
-          malifiMod.action_handlers.add_slash_to_directory()
-        , malifiMod.action_handlers.serve_if_module()
-        , malifiMod.action_handlers.implied_static_file('implied_static_extensions_')
-        ]
-      '*': action_series [
-          malifiMod.action_handlers.serve_if_module()
-        , malifiMod.action_handlers.explicit_static_file('allowed_static_extensions_')
-        ]
-      }
-    'POST': malifiMod.action_handlers.post()
-  })
+  actions_: main_action('http_action_')
+  http_action_: select_actions_by_http_method('http_action_map_')
+  http_action_map_:
+    'GET': 'get_action_'
+    'POST': 'post_action_'
+  get_action_: select_actions_by_extension('get_action_map_')
+  get_action_map_:
+    '/': 'get_directory_action_'
+    '':  'get_named_resource_action_'
+    '*': 'get_extensioned_resource_action_'
+  get_directory_action_: action_series [
+      malifiMod.action_handlers.invoke_directory_default('indexResourceName_')
+    , malifiMod.action_handlers.directory_index('directory_index_module_')
+  ]
+  get_named_resource_action_: action_series [
+      malifiMod.action_handlers.add_slash_to_directory()
+    , malifiMod.action_handlers.serve_if_module()
+    , malifiMod.action_handlers.implied_static_file('implied_static_extensions_')
+  ]
+  get_extensioned_resource_action_: action_series [
+      malifiMod.action_handlers.serve_if_module()
+    , malifiMod.action_handlers.explicit_static_file('allowed_static_extensions_')
+  ]
+  post_action_: malifiMod.action_handlers.post()
 
   # A handler that will receive all requests and which may preempt Malifi's native
   # routing.  Most commonly, this router would handle URLs that include variable

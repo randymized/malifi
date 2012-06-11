@@ -7,21 +7,10 @@
 # redirect_to argument with the regular expression captures in req.args.  The URL may
 # (and probably should be) to a hidden resource.
 exports = module.exports = action= (regex,redirect_to)->
-  regex_router= handler= (req,res,next)->
+  regex_router= (req,res,next)->
     malifi= req._
     meta= malifi.meta
     a= regex.exec(malifi.url.parsed.pathname.substr(meta.path_.length))
     return next() unless a
     req.args= a.slice(1)
     meta.reroute_(redirect_to)(req,res,next)
-
-
-  # Attachments to the handler to allow identification and creating copies
-  handler.__defineGetter__ 'args', ()->
-    meta_key: meta_key
-    redirect_to: redirect_to
-  handler.filename= __filename
-  handler.extend= (editor)->
-    action(subaction.extend(editor))
-
-  handler

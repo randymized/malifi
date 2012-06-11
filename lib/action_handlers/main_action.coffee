@@ -2,7 +2,8 @@ forbidden = require('../forbidden')
 nameIsInArray= require('../name_is_in_array')
 
 exports = module.exports = action= (subaction)->
-  main_action= handler= if subaction
+  main_action= if subaction
+    subaction= require('../actionOrMetaString')(subaction)
     (req,res,next)->
       malifi= req.malifi
       meta= malifi.meta
@@ -22,13 +23,3 @@ exports = module.exports = action= (subaction)->
   else
     (req,res,next)->
       next()
-
-
-  # Attachments to the handler to allow identification and creating copies
-  handler.__defineGetter__ 'args', ()->
-    _.clone(extLookup)
-  handler.filename= __filename
-  handler.extend= (editor)->
-    action(subaction.extend(editor))
-
-  handler

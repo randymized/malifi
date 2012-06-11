@@ -4,25 +4,20 @@
 # of that method is received.
 # HEAD requests are routed to the GET handler unless one is specifically provided.
 _= require('underscore')
+actionOrMetaString= require('../actionOrMetaString')
+
 exports = module.exports = select_actions_by_http_method= (map)->
-  handler= select_actions_by_http_method_handler=
+  select_actions_by_http_method_handler=
     if map
-      m= _.clone(map)
-      m['HEAD']= m['GET'] unless m['HEAD']?
       (req,res,next)->
-        if (action= m[req.method])
-          action(req,res,next)
+        map= req.malifi.meta[map] if _.isString(map)
+        method= req.method
+        if (action= map[method])
+          actionOrMetaString(action)(req,res,next)
+        else if ('HEAD' == action && (action= map['GET']))
+          actionOrMetaString(action)(req,res,next)
         else
           next()
     else
       (req,res,next) ->
         next()
-
-  # Attachments to the handler to allow identification and creating copies
-  handler.__defineGetter__ 'args', ()->
-    _.clone(map)
-  handler.filename= __filename
-  handler.extend= (editor)->
-    old_map = _.clone(map)
-    select_actions_by_http_method(_.extend(old_map, editor(old_map)))
-  handler
