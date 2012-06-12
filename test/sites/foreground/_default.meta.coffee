@@ -9,7 +9,6 @@ action_series= malifiMod.action_handlers.action_series
 exports= module.exports= (prev)=>
     test_string: 'foreground'
     get_action_map_: _.extend(
-      {},
       prev.get_action_map_,
       test:
         action_series [

@@ -4,7 +4,6 @@ malifiMod= require('../../..') # require('malifi')
 module.exports= (prev)->
   test_string: 'common'
   get_action_map_: _.extend(
-    {},
     prev.get_action_map_,
     test: malifiMod.action_handlers.serve_if_module()
   )

@@ -62,13 +62,33 @@ module.exports=
     sitesModuleSignature= /_sites$/
     metatyper= /(^_default.meta$)|(?:(.*\/)_default.meta$)|(?:(.*)\.meta)/
 
+    # Two-layer object clone.  A shallow copy of the original object is made, except that for any properties that
+    # are an array or an object, the clone's property will be a shallow clone of the original's property.
+    doubleclone= (orig)->
+      r= {}
+      for key,val of orig
+        if val?
+          if _.isFunction(val)
+            r[key]=val
+          else if _.isArray(val)
+            r[key]=val.slice(0)
+          else if _.isRegExp(val)
+            r[key]=val
+          else if _.isObject(val)
+            r[key]=_.clone(val)
+          else
+            r[key]=val
+        else
+          delete r[key]
+      return r
+
     extend= (base,dominant,name)->
       if base
         # A meta file module may be a function or an object.  If its a function,
         # it will be invoked with the parent metadata as an argument and should return
         # a metadata object.  The meta file can thus create metadata that is
         # affected by the values in the parent metadata
-        dominant= dominant(_.clone(base)) if typeof dominant == "function"
+        dominant= dominant(doubleclone(base)) if typeof dominant == "function"
         r= _.clone(base)
         for key,val of dominant
           if val?
