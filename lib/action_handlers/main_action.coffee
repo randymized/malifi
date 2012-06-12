@@ -18,6 +18,7 @@ exports = module.exports = action= (subaction)->
           unless nameIsInArray(urlExtension,meta.allowed_url_extensions_)
             return next()
 
+      # find_files populates malifi.files and malifi.matching_files_by_site
       malifi.find_files pathobj.dirname, pathobj.basename, (files)->
         subaction(req,res,next)
   else

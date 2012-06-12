@@ -1,6 +1,6 @@
 ###!
  * malifi
- * Copyright(c) 2011 Randy McLaughlin <8b629a9884@snkmail.com>
+ * Copyright(c) 2012 Randy McLaughlin <8b629a9884@snkmail.com>
  * MIT Licensed
 ###
 

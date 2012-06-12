@@ -3,7 +3,8 @@ fs = require('fs')
 path = require('path')
 join = path.join
 
-# find_files expects to be executed as a method of malifi
+# find_files expects to be executed as a method of malifi.
+# Populates malifi.files and matching_files_by_site.
 exports = module.exports = find_files= (dirname, basename, cb)->
   dirname= '' if '/' == dirname
   re= new RegExp("^#{basename}(?:\\.(.+))?$")
