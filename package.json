@@ -12,7 +12,7 @@
       , "buffertools": "1.0.x"
     }
   , "devDependencies": {
-        "should": "0.5.x"
+        "should": "0.6.x"
       , "mocha": "0.12.x"
     }
   , "main": "index"
