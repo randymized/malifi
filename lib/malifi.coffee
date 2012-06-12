@@ -12,7 +12,7 @@ forbidden = require('./forbidden')
 parse = require('url').parse
 loader= require('./loader')
 find_files= require('./find_files')
-package = require('../package')
+pkg = require('../package')
 extractHostAndPort= /([^:]+)(?::(.*))?/
 extractNameParts= /(?:((.*)\/([^/]*))\/$)|((.*)\/([^/]+?))(\.([^./]+))?$/
 
@@ -118,7 +118,7 @@ malifi= (root,options)->
 
 exports = module.exports = malifi
 
-exports.version = package.version
+exports.version = pkg.version
 
 # export lib modules
 fs.readdirSync(__dirname).forEach (filename)->
