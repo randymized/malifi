@@ -29,7 +29,7 @@ malifi= (root,options)->
   unless root?
     throw new Error('malifi site root path required')
   options?= {}
-  baseSiteStack= [normalize(root), normalize(join(__dirname,'../base-site'))]
+  baseSiteStack= [path.resolve(root), normalize(join(__dirname,'../base-site'))]
   loader.init(baseSiteStack,options)
 
   malifiConnectHandler= (req, res, next)->
