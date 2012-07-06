@@ -15,54 +15,14 @@ fs = require('fs')
 connect = require('connect')
 utils = connect.utils
 mime = require('mime')
+send = require('send')
 
 exports= module.exports= staticHandler= (req,res,next,mimeWrapper)->
-  fullpath= req.malifi.files['']
-  mimeWrapper fullpath, (err, type) =>
-    if (err)
-      return if 'ENOENT' == err.code then next() else next(err)
-    else
-      fs.stat fullpath, (err, stat) =>
-        # header fields
-        unless res.getHeader('Date')
-          res.setHeader('Date', new Date().toUTCString())
-        #todo: unless res.getHeader('Cache-Control') res.setHeader('Cache-Control', 'public, max-age=' + (maxAge / 1000))
-        unless res.getHeader('Last-Modified')
-          res.setHeader('Last-Modified', stat.mtime.toUTCString())
-        unless res.getHeader('ETag')
-          res.setHeader('ETag', utils.etag(stat))
-        unless res.getHeader('content-type')
-          charset = mime.charsets.lookup(type)
-          res.setHeader('Content-Type', type + (if charset then " charset=#{charset}" else ''))
-        res.setHeader('Accept-Ranges', 'bytes')
-
-        # conditional GET support
-        if utils.conditionalGET(req)
-          unless utils.modified(req, res)
-            req.emit('static')
-            return utils.notModified(res)
-
-        opts = {}
-        chunkSize = stat.size
-
-        if ranges = req.headers.range
-          if ranges = utils.parseRange(stat.size, ranges)
-            #valid
-            # (connect)TODO: stream options
-            # (connect)TODO: multiple support
-            opts.start = ranges[0].start
-            opts.end = ranges[0].end
-            chunkSize = opts.end - opts.start + 1
-            res.statusCode = 206
-            res.setHeader('Content-Range', "bytes #{opts.start}-#{opts.end}/#{stat.size}")
-
-        res.setHeader('Content-Length', chunkSize)
-
-        # transfer
-        if 'HEAD' == req.method
-          return res.end()
-
-        # stream
-        stream = fs.createReadStream(fullpath, opts)
-        req.emit('static', stream)
-        stream.pipe(res)
+  res.socket= {} unless res.socket  # kludge related to the one on the next line.  res.socket is not otherwise set when processing a partial
+  res.socket.parser= {incoming: req} unless res.socket.parser  #TODO: Send code says "wtf?" to getting req from res.socket.parser.incoming.  I echo the sentiment.  This is a kludge to make that kludge work if parser is not set (which in testing it is not)
+  s=send(req.malifi.files[''])
+  .maxage(req.malifi.meta.max_age_ || 0)
+  .index(false)
+  .on('error', next)
+  .on('directory', next)
+  .pipe(res)
