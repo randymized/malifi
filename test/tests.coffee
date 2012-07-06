@@ -23,7 +23,7 @@ getResponse= (res,expected,statusCode,done)->
     buf += chunk
   res.on 'end', ()->
     if _.isFunction(expected)
-      expected(null,buf)
+      expected(null,buf,res)
     else
       buf.should.equal(expected)
       done()
@@ -189,3 +189,19 @@ describe 'malifi server', ->
     get('/virtual/12/xx/2012','["12","xx","2012"]', done)
   it "Confirm that the resource that is redirected to from the virtual directory cannot be accessed directly, as it is hidden.", (done) ->
     get('/virtual_',403, done)
+  it 'should set cache max_age when serving a static resource with meta.max_age_ set', (done) ->
+    get '/perpetual/note',(err,buf,res)->
+      if err
+        done(err)
+      else
+        buf.should.equal("I am forever!\n")
+        res.headers['cache-control'].should.equal('public, max-age=31536000')
+        done()
+  it 'should set cache max_age to the proper value according to meta.max_age_', (done) ->
+    get '/daily/note',(err,buf,res)->
+      if err
+        done(err)
+      else
+        buf.should.equal("This might change daily!\n")
+        res.headers['cache-control'].should.equal('public, max-age=86400')
+        done()

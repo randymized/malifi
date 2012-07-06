@@ -172,3 +172,10 @@ module.exports=
   # that resource, the path will be trimmed back, one directory at a time until
   # metadata is found.  This _path attribute reflects where metadata was actually found.
   path_: false
+
+  # Set the Cache-Control max-age value in milliseconds.  This assumes that the action handler that actually delivers
+  # the file or other resource refers to this attribute.  The static_streamer action handler, which is the default
+  # action that serves static files, does use this attribute.  The default is zero, but can be set to a larger
+  # value for applicable directories or for individual resources.  If set to Infinity, Static_streamer will set the
+  # Cache-Control max-age to one year.
+  max_age_: 0
