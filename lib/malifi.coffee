@@ -11,19 +11,13 @@ normalize = path.normalize
 forbidden = require('./forbidden')
 parse = require('url').parse
 loader= require('./loader')
+ParseHost= require('./parse_host')
 find_files= require('./find_files')
 pkg = require('../package')
-extractHostAndPort= /([^:]+)(?::(.*))?/
 extractNameParts= /(?:((.*)\/([^/]*))\/$)|((.*)\/([^/]+?))(\.([^./]+))?$/
 
 dummy_router= (req,res,next)->
   return next()
-
-class ParseHost
-  constructor: (req)->
-    matches = req.headers.host.match(extractHostAndPort);
-    @name= matches[1]
-    @port= matches[2]
 
 malifi= (root,options)->
   unless root?
