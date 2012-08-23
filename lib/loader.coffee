@@ -14,8 +14,8 @@ calc_site_key= (siteStack,reverse=false)->
 
 # make sure the separators in a file name sort before any other chars
 fileNameCompare= (a,b)->
-  a= a.replace('/','\x1','g')
-  b= b.replace('/','\x1','g')
+  a= a.replace('/','\x01','g')
+  b= b.replace('/','\x01','g')
   return (b < a) - (a < b)
 
 isFileSync= (name)->
