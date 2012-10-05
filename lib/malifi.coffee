@@ -108,7 +108,10 @@ malifi= (root,options)->
       else
         next(new Error('meta.actions_ is not defined.'))
 
-  return malifiConnectHandler
+  return if options.hook_main_connect_handler_
+    options.hook_main_connect_handler_(malifiConnectHandler)
+  else
+    malifiConnectHandler
 
 exports = module.exports = malifi
 
