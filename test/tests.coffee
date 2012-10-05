@@ -10,7 +10,15 @@ host = 'localhost'
 
 app= connect.createServer()
 app.use(connect.urlencoded())
-app.use(malifi(__dirname+'/sites/common',{'build_lineage_':true}))
+app.use(malifi(__dirname+'/sites/common',
+  {
+    'build_lineage_':true
+  , 'hook_main_connect_handler_': (handler)->
+      return (req,res,next)->
+        req._inserted= 'inserted by main handler hook'
+        return handler(req,res,next)
+  }
+))
 app.listen(port)
 
 getResponse= (res,expected,statusCode,done)->
@@ -205,3 +213,5 @@ describe 'malifi server', ->
         buf.should.equal("This might change daily!\n")
         res.headers['cache-control'].should.equal('public, max-age=86400')
         done()
+  it 'allows interception of requests immediately after being received from Connect', (done) ->
+    get '/dumpInserted','inserted by main handler hook', done

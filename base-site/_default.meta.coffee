@@ -14,6 +14,18 @@ module.exports=
   # as req.malifi.meta or req._.meta
   malifi_alias_: '_'
 
+  # Hook every request received from Connect before it is handled by Malifi.
+  # This is a special attribute that is only effective if set in the options object,
+  # the optional second argument to the malifi function that is passed to the connect
+  # app.use method.  It is ignored if set anywhere else.
+  #
+  # If set in the options argument, this attribute's value should be a function that
+  # receives one argument.  This function should return a function that will be called
+  # immediately when Malifi receives a request from Connect. This hook function ultimately
+  # should either call the function that is received as an argument or the `next`
+  # function received as an argument.
+  hook_main_connect_handler_: null
+
   # The action to be performed when a request is received and after the metadata
   # has been obtained and the req.malifi object created.
   # The default action established here, invokes main_action to perform
