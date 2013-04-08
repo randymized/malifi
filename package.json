@@ -5,11 +5,11 @@
   , "keywords": []
   , "author": "Randy McLaughlin <8b629a9884@snkmail.com>"
   , "dependencies": {
-        "connect": "2.3.x"
+        "connect": "2.7.x"
       , "mime": "1.2.x"
-      , "coffee-script": "1.3.x"
-      , "underscore": "1.3.x"
-      , "buffertools": "1.0.x"
+      , "coffee-script": "1.6.x"
+      , "underscore": "1.4.x"
+      , "buffertools": "1.1.x"
       , "send": "0.0.1"
 }
   , "devDependencies": {
