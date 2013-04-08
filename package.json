@@ -10,7 +10,7 @@
       , "coffee-script": "1.6.x"
       , "underscore": "1.4.x"
       , "buffertools": "1.1.x"
-      , "send": "0.0.1"
+      , "send": "0.1.0"
 }
   , "devDependencies": {
         "should": "0.6.x"
