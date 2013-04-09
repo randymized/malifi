@@ -1,14 +1,15 @@
 _= require('underscore')
 fs= require('fs')
 
-module.exports= renderer= (req,res,context,next)->
+module.exports= renderer= (req,res,mime_type,context,next)->
     malifi= req._
     map= malifi.meta.template_map_
     files= malifi.files
-    specs= _.find map, (candidate)->
+    type_list= map[mime_type]
+    specs= _.find type_list, (candidate)->
       files[candidate[0]]
     if specs
-      [extension,mimetype,renderer]= specs
+      [extension,renderer]= specs
       compilation_done= (err,compiled)->
         if err
           next(err)
@@ -17,7 +18,7 @@ module.exports= renderer= (req,res,context,next)->
             if err
               next(err)
             else
-              res.setHeader('Content-Type',mimetype)
+              res.setHeader('Content-Type',mime_type)
               res.end(result)
       if renderer.compile_file
         renderer.compile_file(req, res, files[extension], compilation_done)

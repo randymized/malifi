@@ -78,8 +78,8 @@ malifi= (root,options)->
       connect_handler: malifiConnectHandler
       find_files: find_files
       next_middleware_layer: next
-      render: (context)->
-        meta.renderer_(req,res,context,next)
+      render: (mime_type,context)->
+        meta.renderer_(req,res,mime_type,context,next)
 
     req[meta.malifi_alias_]= req.malifi if meta.malifi_alias_
 

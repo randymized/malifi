@@ -84,13 +84,16 @@ module.exports=
   # engine is to be used.
   renderer_: malifiMod.renderer
 
-  # Maps extensions of template files to a rendering function.  The default renderer
-  # expects an array of arrays that provides a prioritized list of extensions and
-  # the renderer to be used.  Like any other metadata, this map can vary for different
-  # parts of a site, allowing flexibility in template engine selection.
-  template_map_: [
-    ['html', 'text/html', malifiMod.underscore_renderer]
-  ]
+  # Maps extensions of template files to a rendering function according to desired
+  # mime type.  The default renderer expects an object that is indexed by mime type.
+  # Each mime type references an array of arrays that provides a prioritized list of
+  # extensions and the renderer to be used.
+  # Like any other metadata, this map can vary for different parts of a site,
+  # allowing flexibility in template engine selection.
+  template_map_:
+    'text/html': [
+      ['html', malifiMod.underscore_renderer]
+    ]
 
   # The module that will serve reroute requests.
   # Reroute is an internal redirect.  The request will be served as if it were
