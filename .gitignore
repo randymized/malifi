@@ -3,4 +3,3 @@ node_modules
 my
 *.sock
 *.idea
-/*.sublime-*

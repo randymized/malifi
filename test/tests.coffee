@@ -215,3 +215,11 @@ describe 'malifi server', ->
         done()
   it 'allows interception of requests immediately after being received from Connect', (done) ->
     get '/dumpInserted','inserted by main handler hook', done
+  it 'should render a template with the default underscore template function', (done) ->
+    get '/use_template',(err,buf,res)->
+      if err
+        done(err)
+      else
+        buf.should.equal('<body>xyz</body>')
+        res.headers['content-type'].should.equal('text/html')
+        done()

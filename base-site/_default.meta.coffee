@@ -75,6 +75,23 @@ module.exports=
   # The router may also serve the resource directly.
   preempting_router_: malifiMod.action_handlers.dummy_router('')
 
+  # This will be assigned to malifi.render.  It should be a function that renders
+  # the current page's template. The function will be passed a context object,
+  # which will be passed on to the template engine's rendering function.
+  # A second argument may optionally provide the template, but normally the template
+  # will be read from one of the files in malifi.files.
+  # The renderer determines which file provides the template and which template
+  # engine is to be used.
+  renderer_: malifiMod.renderer
+
+  # Maps extensions of template files to a rendering function.  The default renderer
+  # expects an array of arrays that provides a prioritized list of extensions and
+  # the renderer to be used.  Like any other metadata, this map can vary for different
+  # parts of a site, allowing flexibility in template engine selection.
+  template_map_: [
+    ['html', 'text/html', malifiMod.underscore_renderer]
+  ]
+
   # The module that will serve reroute requests.
   # Reroute is an internal redirect.  The request will be served as if it were
   # for the new URL rather than the original one.  Rerouted requests may access
