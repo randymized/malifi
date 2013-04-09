@@ -223,3 +223,11 @@ describe 'malifi server', ->
         buf.should.equal('<body>xyz</body>')
         res.headers['content-type'].should.equal('text/html')
         done()
+  it 'should render a template using abbreviated mime type', (done) ->
+    get '/use_template2',(err,buf,res)->
+      if err
+        done(err)
+      else
+        buf.should.equal('<body>xyz</body>')
+        res.headers['content-type'].should.equal('text/html')
+        done()

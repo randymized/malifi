@@ -3,9 +3,18 @@ fs= require('fs')
 
 module.exports= renderer= (req,res,mime_type,context,next)->
     malifi= req._
-    map= malifi.meta.template_map_
+    meta= malifi.meta
+    map= meta.template_map_
     files= malifi.files
     type_list= map[mime_type]
+    unless type_list
+      # perhaps an abbreviation was used for the mime type, e.g. 'html' for 'text/html'
+      orig_mime_type= mime_type
+      mime_type= meta.mime_type_abbreviations_[mime_type]
+      type_list= map[mime_type]
+    unless type_list
+      return next(new Error("Unexpected mime type (#{orig_mime_type}) was requested."))
+
     specs= _.find type_list, (candidate)->
       files[candidate[0]]
     if specs

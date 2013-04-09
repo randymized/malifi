@@ -95,6 +95,12 @@ module.exports=
       ['html', malifiMod.underscore_renderer]
     ]
 
+  # Mime type abreviations.  Allows one to request the html template by passing 'html'
+  # to req.malifi.render instead of 'text/html'.
+  mime_type_abbreviations_:
+    html: 'text/html'
+    css: 'text/css'
+
   # The module that will serve reroute requests.
   # Reroute is an internal redirect.  The request will be served as if it were
   # for the new URL rather than the original one.  Rerouted requests may access
