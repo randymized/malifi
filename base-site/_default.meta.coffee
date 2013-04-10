@@ -76,18 +76,19 @@ module.exports=
   preempting_router_: malifiMod.action_handlers.dummy_router('')
 
   # This will be assigned to malifi.render.  It should be a function that renders
-  # the current page's template. The function will be passed a context object,
-  # which will be passed on to the template engine's rendering function.
-  # A second argument may optionally provide the template, but normally the template
-  # will be read from one of the files in malifi.files.
-  # The renderer determines which file provides the template and which template
-  # engine is to be used.
+  # the current page's template, typically by selecting and delegating to a
+  # specific template engine's rendering function. In addion to the usual req, res
+  # and next arguments, the function will be passed a mime type and a context
+  # object.
+  # Given the mime type requested, the renderer is responsible for selecting the
+  # template from the members of malifi.files and may select template engine based
+  # upon file extension or other criteria.
   renderer_: malifiMod.renderer
 
   # Maps extensions of template files to a rendering function according to desired
   # mime type.  The default renderer expects an object that is indexed by mime type.
   # Each mime type references an array of arrays that provides a prioritized list of
-  # extensions and the renderer to be used.
+  # extensions and the engine-specific renderer to be used.
   # Like any other metadata, this map can vary for different parts of a site,
   # allowing flexibility in template engine selection.
   template_map_:

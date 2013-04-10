@@ -56,7 +56,7 @@ Whenever a request is received by Malifi, it adds an property named malifi to th
 * host: parses `req.headers.host` into separate properties:
   * name (hostname without any port number)
   * port
-  
+
 * url: `req.url`, parsed and decoded:
   * raw: alias of `req.url`
   * parsed: the result of running `req.url` through Node's `url.parse` function with query string parsing enabled, including:
@@ -102,10 +102,10 @@ The _sites.js module should export two things:
 * lookup: a function that for any given request will return the path that will
   serve as a root for that request.  Lookup is invoked so that `this` refers to
   a partially constructed `req.malifi` that contains only `host` and `url` properties
-  and will also receive the usual `req,res,next` set of arguments.  Most commonly, 
+  and will also receive the usual `req,res,next` set of arguments.  Most commonly,
   lookup will map `this.host.name` (`@host.name` in CoffeeScript) to the
-  path serving that hostname and return that path.  In that common case `lookup` 
-  would not need to reference the `req` argument.  A skin might instead select 
+  path serving that hostname and return that path.  In that common case `lookup`
+  would not need to reference the `req` argument.  A skin might instead select
   a site and return its path based upon user or session values.
 * paths: an array containing all the paths that might be returned by the lookup
   function.  That list is used to preload metadata and modules.  It must include
@@ -158,10 +158,10 @@ Action handlers may also call another action handler to service the request.  Ma
 There may be cases where a request is being served by one action handler in a series, but it determines that no other action handlers should handle the request.  Most commonly, this would be because it determined that no suitable file exists for serving the request.  In that case, instead of calling `next` the action handler can call the `req.malifi.next_middleware_layer` function.
 
 When a `GET` request is received, the default set of handlers delegates the request to different action handlers based upon the request's extension via a map defined at `meta.get_action_map_`:
-  * If the request maps to a directory in filesystem `get_action_map_` is indexed by `'/'`.  
+  * If the request maps to a directory in filesystem `get_action_map_` is indexed by `'/'`.
   * If the request includes an extension, `get_action_map_` will be indexed by that extension.
-  * If the request includes an extension but `get_action_map_` does not include a matching index, the method object will be indexed by `'*'`. 
-  * If the request does not include an extension, the method object is indexed by an empty string. 
+  * If the request includes an extension but `get_action_map_` does not include a matching index, the method object will be indexed by `'*'`.
+  * If the request does not include an extension, the method object is indexed by an empty string.
 Whatever the index, the value is either another action handler or the name of a metadata attribute that references an action handler.  In some cases, that action handler delegates to a series of additional action handlers.
 
 ## HTTP method support
@@ -174,7 +174,7 @@ Malifi does not parse request bodies.  For POST, PUT and other methods that incl
 
 ## Internal redirection (rerouting) and partials
 
-Malifi supports internal redirection (rerouting) and partials.  Internal redirection works much like ordinary redirection but does so silently without any message exchange with the client.  A request for `/foo` ends up served by the `/bar` resource.  This might occur, for example, if the response to a given URL varies depending upon whether the user is logged in.  Internal redirects bypass the hiding rules, so that in the example above a request for `/a` might be rerouted to `/a_logged_` if the user is logged in (because of the trailing underscore, a request for `/a_logged_` would normally be rejected as not found).  
+Malifi supports internal redirection (rerouting) and partials.  Internal redirection works much like ordinary redirection but does so silently without any message exchange with the client.  A request for `/foo` ends up served by the `/bar` resource.  This might occur, for example, if the response to a given URL varies depending upon whether the user is logged in.  Internal redirects bypass the hiding rules, so that in the example above a request for `/a` might be rerouted to `/a_logged_` if the user is logged in (because of the trailing underscore, a request for `/a_logged_` would normally be rejected as not found).
 
 Malifi also supports partials.  While rendering the requested resource, an internal request may be made for another resource to be inserted inside the request.  The hiding rules are also not enforced for partials.  The default Malifi implementation accumulates the result into a buffer and sends the buffer to a callback, but does not otherwise alter the result, such as by stripping HTML and BODY tags.
 
@@ -192,16 +192,21 @@ Since a preempting router is defined in metadata, preemptive routing can be limi
 
 Assuming that the router calls `next` if it does not match the request, an unmatched request will fall through to the default filesystem-based router.  This would allow a directory to include both virtual resources and concrete ones.  In the test foreground site, for example, there is a `date` directory that will parse a string in the form `/date/mm/dd/yyyy` into its component parts.  But the `date` directory also includes a `today.txt` resource which will be served when the URL is `/date/today` even though `today` is not recognized by the regular expression.
 
-Malifi includes two simple preempting routers.  The `virtual_directory_router` turns any directory into a virtual directory.  All URL elements beyond the directory will be placed into an array stored at `request.args` and the request will then be rerouted to the URL in the `redirect_to` argument.  A directory can be turned into a virtual directory by setting the `preempting_router_` attribute to the `virtual_directory_router` in the directory's `_default.meta` module and including the URL to which requests are to be redirected in the argument.  
+Malifi includes two simple preempting routers.  The `virtual_directory_router` turns any directory into a virtual directory.  All URL elements beyond the directory will be placed into an array stored at `request.args` and the request will then be rerouted to the URL in the `redirect_to` argument.  A directory can be turned into a virtual directory by setting the `preempting_router_` attribute to the `virtual_directory_router` in the directory's `_default.meta` module and including the URL to which requests are to be redirected in the argument.
 The `regex_router` similarly turns any directory into a virtual directory, but takes two arguements, a regular expression and the destination URL.  Requests are only handled if they match the regular expression and the regular expression allows greater control over what is captured from the URL and placed in `request.args`.
 
 Additional routers may be defined.  The community is invited to contribute more sophisticated, creative or specialized ones.
 
 ## Template Support
 
-Malifi does not favor any given template system.  In fact, to avoid dependencies on template systems that you do not intend to use, it does not support any templates out of the box.  Template system interfaces will be supported as separate projects.  The community is invited to contribute handlers for different templates as well.
+A design goal of Malifi is to not favor any specific template system, but rather to provide a platform that can work with multiple template engines, including the ability to use multiple template systems in a given site.Because of a preexisting dependency upon `Underscore`, a reference implementation of templating using the Underscore engine is included, but it is intended that supplemental projects will provide adapters to a number of different engines.  Implementing adapters as separate projects avoids dependencies on engines that are otherwise not required for a given application. The community is invited to contribute additonal adapters.
 
-## License 
+To use a template, a page's `.js` or `.coffee` module first creates a context object and populates it with data and perhaps functions needed by the template.  It then calls `req.malifi.render` with the requested MIME type and context object.  The render function passes the request to the metadata `renderer_` function.  By default, this is the renderer defined in `lib/renderer.coffee`.  That renderer uses the metadata `template_map_` to select a template engine-specific adapter for the requested MIME type, and the set of files matching the request's URL.
+
+Because the template map is defined in metadata, it can vary from one part of a site to another and the template to be used can even be specified from one page to another.  If templates used with different template engines have different file extensions, engines may be selected based upon extension.
+
+
+## License
 
 (The MIT License)
 
