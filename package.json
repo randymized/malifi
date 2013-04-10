@@ -1,21 +1,23 @@
 {
-    "name": "malifi"
-  , "version": "0.2.1"
-  , "description": "MAny LIttle FIles. A Connect layer where requests are routed to files in a directory whose structure reflects that of the URL. Malifi organizes all files that support a given page, such as code, template, css and supporting javascript together."
-  , "keywords": []
-  , "author": "Randy McLaughlin <8b629a9884@snkmail.com>"
-  , "dependencies": {
-        "connect": "2.7.x"
-      , "mime": "1.2.x"
-      , "coffee-script": "1.6.x"
-      , "underscore": "1.4.x"
-      , "buffertools": "1.1.x"
-      , "send": "0.1.0"
-}
-  , "devDependencies": {
-        "should": "0.6.x"
-      , "mocha": "1.6.x"
-    }
-  , "main": "index"
-  , "engines": { "node": ">= 0.6.0" }
+  "name": "malifi",
+  "version": "0.3.0",
+  "description": "MAny LIttle FIles. A Connect layer where requests are routed to files in a directory whose structure reflects that of the URL. Malifi organizes all files that support a given page, such as code, template, css and supporting javascript together.",
+  "keywords": [],
+  "author": "Randy McLaughlin <8b629a9884@snkmail.com>",
+  "dependencies": {
+    "connect": "2.7.x",
+    "mime": "1.2.x",
+    "coffee-script": "1.6.x",
+    "underscore": "1.4.x",
+    "buffertools": "1.1.x",
+    "send": "0.1.0"
+  },
+  "devDependencies": {
+    "should": "0.6.x",
+    "mocha": "1.6.x"
+  },
+  "main": "index",
+  "engines": {
+    "node": ">= 0.6.0"
+  }
 }
