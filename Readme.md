@@ -203,6 +203,11 @@ A design goal of Malifi is to not favor any specific template system, but rather
 
 To use a template, a page's `.js` or `.coffee` module first creates a context object and populates it with data and perhaps functions needed by the template.  It then calls `req.malifi.render` with the requested MIME type and context object.  The render function passes the request to the metadata `renderer_` function.  By default, this is the renderer defined in `lib/renderer.coffee`.  That renderer uses the metadata `template_map_` to select a template engine-specific adapter for the requested MIME type, and the set of files matching the request's URL.
 
+A template engine-specific adapter is an object that has either a `compile_file(req,res,filename,when_compiled)` or a `compile_string(req,res,template,when_compiled)` function.  If the compile_file function exists, it will be called with the name of the template file, otherwise Malifi will read the template file's content and pass it to the `compile_string` function.  If the targeted template engine does not include a compilation phase.  The compilation functions may simply retain the file name or template string and return a `when_compiled` function that uses the retained name or string.
+
+When `compile_string` or `compile_file` is complete, it must invoke the `when_compiled(err,compiled)` callback function.  Unless there is an error, the `compiled` argument must be an object that includes a
+`render(context,when_rendered)` function that should render the compiled template using the given context and then call the `when_rendered(err,result)` callback function with the rendered result.
+
 Because the template map is defined in metadata, it can vary from one part of a site to another and the template to be used can even be specified from one page to another.  If templates used with different template engines have different file extensions, engines may be selected based upon extension.
 
 
