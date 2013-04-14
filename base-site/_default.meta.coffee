@@ -102,6 +102,9 @@ module.exports=
     html: 'text/html'
     css: 'text/css'
 
+  # If true, compiled templates will be cached.
+  cache_templates_: process.env.NODE_ENV == 'production'
+
   # The module that will serve reroute requests.
   # Reroute is an internal redirect.  The request will be served as if it were
   # for the new URL rather than the original one.  Rerouted requests may access

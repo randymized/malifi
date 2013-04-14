@@ -1,6 +1,8 @@
 _= require('underscore')
 fs= require('fs')
 
+template_cache = {}
+
 module.exports= renderer= (req,res,mime_type,context,next)->
     malifi= req._
     meta= malifi.meta
@@ -19,7 +21,7 @@ module.exports= renderer= (req,res,mime_type,context,next)->
       files[candidate[0]]
     if specs
       [extension,renderer]= specs
-      compilation_done= (err,compiled)->
+      render_template= (err,compiled)->
         if err
           next(err)
         else
@@ -29,13 +31,24 @@ module.exports= renderer= (req,res,mime_type,context,next)->
             else
               res.setHeader('Content-Type',mime_type)
               res.end(result)
-      if renderer.compile_file
-        renderer.compile_file(req, res, files[extension], compilation_done)
+      filename = files[extension]
+      compilation_done= (err,compiled)->
+        if err
+          next(err)
+        else
+          template_cache[filename]= compiled if meta.cache_templates_
+          render_template(err,compiled)
+
+      if template_cache[filename]
+        render_template(null, template_cache[filename])
       else
-        fs.readFile files[extension], 'utf8', (err, template)->
-          if (err)
-            next(err)
-          else
-            renderer.compile_string(req, res, template, compilation_done)
+        if renderer.compile_file
+          renderer.compile_file(req, res, filename, compilation_done)
+        else
+          fs.readFile filename, 'utf8', (err, template)->
+            if (err)
+              next(err)
+            else
+              renderer.compile_string(req, res, template, compilation_done)
     else
       next(new Error("No template was found"))
