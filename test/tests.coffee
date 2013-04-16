@@ -43,8 +43,8 @@ get= (url, expected, statusCode, done)->
     done= statusCode
     statusCode=200
   options =
-    host: host,
-    port: port,
+    host: host
+    port: port
     path: url
   req= http.get options, (res)->
     if typeof expected is 'number'
@@ -231,3 +231,12 @@ describe 'malifi server', ->
         buf.should.equal('<body>xyz</body>')
         res.headers['content-type'].should.equal('text/html')
         done()
+  it 'should render a bare template (one without a corresponding module)', (done) ->
+    options =
+      host: host
+      port: port
+      path: '/bare_template'
+      headers:
+        accept: 'text/html'      # for this to work, text/html must be explicitly accepted
+    req= http.get options, (res)->
+        getResponse(res,'Hello there!',200,done)

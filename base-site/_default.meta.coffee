@@ -58,6 +58,7 @@ module.exports=
       malifiMod.action_handlers.add_slash_to_directory()
     , malifiMod.action_handlers.serve_if_module()
     , malifiMod.action_handlers.implied_static_file('implied_static_extensions_')
+    , malifiMod.action_handlers.serve_bare_templates()
   ]
   get_extensioned_resource_action_: action_series [
       malifiMod.action_handlers.serve_if_module()

@@ -8,6 +8,11 @@ action_series= malifiMod.action_handlers.action_series
 # the first, middle and last of the actions in an array of actions will fire.
 exports= module.exports= (prev)=>
     test_string: 'foreground'
+    template_map_:
+      'text/html': [
+        ['html', malifiMod.underscore_renderer]
+        ['us', malifiMod.underscore_renderer]
+      ]
     get_action_map_: _.extend(
       prev.get_action_map_,
       test:
