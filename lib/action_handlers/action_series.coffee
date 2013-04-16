@@ -12,7 +12,7 @@ exports = module.exports = action_series= (silo)->
       silo= [silo]
     i= 0
     nextActionHandler= (err)=>
-      next(err) if err
+      return next(err) if err
       try
         actor= silo[i++]
         if (actor)
