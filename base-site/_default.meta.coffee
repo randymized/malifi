@@ -97,6 +97,9 @@ module.exports=
       ['html', malifiMod.underscore_renderer]
     ]
 
+  # Of the MIME types in template_map_, which should be considered the default?
+  template_map_default_MIME_type_: 'text/html'
+
   # Mime type abreviations.  Allows one to request the html template by passing 'html'
   # to req.malifi.render instead of 'text/html'.
   mime_type_abbreviations_:
