@@ -132,6 +132,8 @@ describe 'malifi server', ->
     get('/reroute','Cannot GET //example.com/nothing', 404, done)
   it 'should be able to redirect to another site, and show a page from it, pulling the page\'s name from the query string', (done) ->
     get('/reroute?what=something','Isn\'t this something?\n', done)
+  it 'should make the path of the rerouting resource available to the one rerouted to ', (done) ->
+    get('/reroute?what=show_from','Came from /reroute', done)
   it 'should produce a listing of the content of a directory, if enabled.', (done) ->
     get('/exposed','aPDF.pdf\nmore.txt\nsome.txt\n', done)
   it 'should (based on default actions) redirect if url is of a directory but is without a trailing slash.', (done) ->
