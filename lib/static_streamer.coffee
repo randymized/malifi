@@ -17,7 +17,7 @@ utils = connect.utils
 mime = require('mime')
 send = require('send')
 
-exports= module.exports= staticHandler= (req,res,next,mimeWrapper)->
+exports= module.exports= staticHandler= (req,res,next)->
   res.socket= {} unless res.socket  # kludge related to the one on the next line.  res.socket is not otherwise set when processing a partial
   res.socket.parser= {incoming: req} unless res.socket.parser  #TODO: Send code says "wtf?" to getting req from res.socket.parser.incoming.  I echo the sentiment.  This is a kludge to make that kludge work if parser is not set (which in testing it is not)
   s=send(req,req.malifi.files[''])

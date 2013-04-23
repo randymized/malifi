@@ -6,5 +6,4 @@ module.exports= mimeWrapper= (path,cb)->
     if err
       cb(err)
     else
-      type = mime.lookup(path)
       cb(null,mime.lookup(path))
