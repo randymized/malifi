@@ -220,6 +220,7 @@ If the `compiled` argument above incldues a `layout_path` attribute, the templat
 
 Typically, the layout will consist of a javascript module that builds a context object, given `req.layout_context.body` and `req.layout_context.context` and renders an associated template file.  The module may also refer to `req.from_req` to access the original request object, including its `malifi` and `meta` objects.
 
+The [Malifi](https://github.com/randymized/malifi) wiki includes [a layout template example](https://github.com/randymized/malifi/wiki/Layout-template-example).
 
 ## License
 
