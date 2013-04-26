@@ -1,7 +1,8 @@
 _= require('underscore')
 fs= require('fs')
 
-template_cache = {}
+template_cache= {}
+layout_rerouters= {}  #cache of layout rerouters by hostname:url
 
 module.exports= renderer= (req,res,mime_type,context,next)->
     malifi= req._
@@ -29,8 +30,16 @@ module.exports= renderer= (req,res,mime_type,context,next)->
             if err
               next(err)
             else
-              res.setHeader('Content-Type',mime_type)
-              res.end(result)
+              if compiled.layout_path
+                req.layout_context=
+                  body: result
+                  context: context
+                rerouter_id= "#{malifi.host.name}:#{compiled.layout_path}"
+                layout_rerouters[rerouter_id] ||= meta.reroute_(compiled.layout_path)
+                return layout_rerouters[rerouter_id](req,res,next)
+              else
+                res.setHeader('Content-Type',mime_type)
+                res.end(result)
       filename = files[extension]
       compilation_done= (err,compiled)->
         if err

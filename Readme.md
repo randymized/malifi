@@ -210,6 +210,16 @@ When `compile_string` or `compile_file` is complete, it must invoke the `when_co
 
 Because the template map is defined in metadata, it can vary from one part of a site to another and the template to be used can even be specified from one page to another.  If templates used with different template engines have different file extensions, engines may be selected based upon extension.
 
+### Layout Templates
+
+A template engine-specific adapter may include support for wrapping its output in a layout. The layout may be rendered by a different template engine, or indeed by Javascript code.
+
+Since some layout engines include their own layout support, layouts are defined per template engine.  A markdown engine, for example, may produce an HTML fragment that needs to be wrapped in html and body tags whereas a Jade template on the same site might extend a base Jade template.  In this case, the layout used with markdown output might be a Jade template that extends the same base template used by Jade templates.
+
+If the `compiled` argument above incldues a `layout_path` attribute, the template result will be placed in `req.layout_context.body` and the request will be redirected to the path given by the `layout_path` attribute.  `req.layout_context.context` will also be set to the template's context object.
+
+Typically, the layout will consist of a javascript module that builds a context object, given `req.layout_context.body` and `req.layout_context.context` and renders an associated template file.  The module may also refer to `req.from_req` to access the original request object, including its `malifi` and `meta` objects.
+
 
 ## License
 
