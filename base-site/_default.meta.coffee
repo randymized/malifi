@@ -51,18 +51,18 @@ module.exports=
     '':  'get_named_resource_action_'
     '*': 'get_extensioned_resource_action_'
   get_directory_action_: action_series [
-      malifiMod.action_handlers.invoke_directory_default('indexResourceName_')
-    , malifiMod.action_handlers.directory_index('directory_index_module_')
+    malifiMod.action_handlers.invoke_directory_default('indexResourceName_')
+    malifiMod.action_handlers.directory_index('directory_index_module_')
   ]
   get_named_resource_action_: action_series [
-      malifiMod.action_handlers.add_slash_to_directory()
-    , malifiMod.action_handlers.serve_if_module()
-    , malifiMod.action_handlers.implied_static_file('implied_static_extensions_')
-    , malifiMod.action_handlers.serve_bare_templates()
+    malifiMod.action_handlers.add_slash_to_directory()
+    malifiMod.action_handlers.serve_if_module()
+    malifiMod.action_handlers.implied_static_file('implied_static_extensions_')
+    malifiMod.action_handlers.serve_bare_templates()
   ]
   get_extensioned_resource_action_: action_series [
-      malifiMod.action_handlers.serve_if_module()
-    , malifiMod.action_handlers.explicit_static_file('allowed_static_extensions_')
+    malifiMod.action_handlers.explicit_static_file('allowed_static_extensions_')
+    malifiMod.action_handlers.serve_if_module()
   ]
   post_action_: malifiMod.action_handlers.post()
 
