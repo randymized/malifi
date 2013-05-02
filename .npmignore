@@ -6,3 +6,4 @@ examples
 *.sock
 .idea
 subprojects
+*.log

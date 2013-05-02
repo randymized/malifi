@@ -4,3 +4,4 @@ my
 subprojects
 *.sock
 *.idea
+*.log
