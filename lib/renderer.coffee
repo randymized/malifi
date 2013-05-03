@@ -26,6 +26,8 @@ module.exports= renderer= (req,res,mime_type,context,next)->
         if err
           next(err)
         else
+          if !context? && _.isFunction(meta.default_context_fn_)
+            context= meta.default_context_fn_(req)
           compiled.render context, (err,result)->
             if err
               next(err)

@@ -222,6 +222,12 @@ Typically, the layout will consist of a javascript module that builds a context 
 
 The [Malifi](https://github.com/randymized/malifi) wiki includes [a layout template example](https://github.com/randymized/malifi/wiki/Layout-template-example).
 
+### Bare templates
+
+A template without a corresponding code module is called a bare template.  Fundamentally a bare template is like a static HTML file except that it is rendered on demand and may involve translation from the template syntax to the output format, such as HTML.
+
+It is also possible to define a default context function by assigning a function to `default_context_fn_` in the metadata.  That function will be called and the object it returns will be used as context when any template is rendered without a context (with a null context object).  A default context function might populate the context with values taken from the URL, the request object, metadata, the session object or some other available information.
+
 ## License
 
 (The MIT License)

@@ -242,3 +242,12 @@ describe 'malifi server', ->
         accept: 'text/html'      # for this to work, text/html must be explicitly accepted
     req= http.get options, (res)->
         getResponse(res,'Hello there!',200,done)
+  it 'should render a bare template using the default context', (done) ->
+    options =
+      host: host
+      port: port
+      path: '/autotitled/to_be_titled'
+      headers:
+        accept: 'text/html'      # for this to work, text/html must be explicitly accepted
+    req= http.get options, (res)->
+        getResponse(res,'Hello to_be_titled!',200,done)

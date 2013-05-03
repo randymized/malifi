@@ -86,6 +86,14 @@ module.exports=
   # upon file extension or other criteria.
   renderer_: malifiMod.renderer
 
+  # Specify a function that will return the default template rendering context.
+  # In the default renderer, the default context will be used if a null context is
+  # provided, such as in the case of a bare template (one without an accompanying
+  # module).  A typical function might do things like populate the page title from
+  # metadata or URL or create breadcrumb data from the resource's path.
+  default_context_fn_: (req)->
+    return {}
+
   # Maps extensions of template files to a rendering function according to desired
   # mime type.  The default renderer expects an object that is indexed by mime type.
   # Each mime type references an array of arrays that provides a prioritized list of
