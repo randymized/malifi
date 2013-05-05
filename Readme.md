@@ -49,6 +49,12 @@ Malifi also, by default, enforces the convention that any file or directory name
 
 These conventions are enforced by application of a regular expression defined as the forbiddenURLChars_ property of the metadata.  As with any other metadata property, this may be overridden.
 
+The following reserved file names are defined at this time:
+- _default: default metadata or resource for a directory.  Similar to the common convention of serving index.html when a URL refers to a directory.  The default metadata applies to all resources in that and directory and its subdirectories.
+- _root: exports the absolute path to the project root or other directory from which any and all required files can be addressed.
+- _sites: _sites.js (or _sites.coffee) is an optional file that directs requests to the next site layer.
+- _helpers: additional supporting code for the modules of a site or a subdirectory.
+
 ## req.malifi (alias req._)
 
 Whenever a request is received by Malifi, it adds an property named malifi to the request object.  By default, a second reference is added identified by the underscore character.  The req.malifi object includes the following properties, and possibly more:

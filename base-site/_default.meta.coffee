@@ -1,4 +1,4 @@
-malifiMod= require('..')
+malifiMod= require(require('./_root'))
 main_action = malifiMod.action_handlers.main_action
 action_series = malifiMod.action_handlers.action_series
 select_actions_by_extension = malifiMod.action_handlers.select_actions_by_extension

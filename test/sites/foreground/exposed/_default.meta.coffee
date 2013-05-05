@@ -1,5 +1,5 @@
 _= require('underscore')
-malifiMod= require('../../../..') # require('malifi')
+malifiMod= require(require('../_root'))
 action_series = malifiMod.action_handlers.action_series
 module.exports= (prev)->
   get_named_resource_action_: action_series [

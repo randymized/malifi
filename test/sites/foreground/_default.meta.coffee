@@ -1,5 +1,5 @@
 _= require('underscore')
-malifiMod= require('../../..') # require('malifi')
+malifiMod= require(require('./_root'))
 action_series= malifiMod.action_handlers.action_series
 
 # The actions herein do not necessarily demonstrate a best practice.

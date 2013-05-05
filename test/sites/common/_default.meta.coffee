@@ -1,5 +1,5 @@
 _= require('underscore')
-malifiMod= require('../../..') # require('malifi')
+malifiMod= require(require('./_root'))
 
 module.exports= (prev)->
   test_string: 'common'
