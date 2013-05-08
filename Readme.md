@@ -52,6 +52,7 @@ These conventions are enforced by application of a regular expression defined as
 The following reserved file names are defined at this time:
 - _default: default metadata or resource for a directory.  Similar to the common convention of serving index.html when a URL refers to a directory.  The default metadata applies to all resources in that and directory and its subdirectories.
 - _root: exports the absolute path to the project root or other directory from which any and all required files can be addressed.
+- _siteroot: exports the path to the site's root directory, allowing relative addressing to the site's files, especially helpers.  Defining a _siteroot module in a subdirectory allows any module within a subdirectory to locate the root without each module having to count out the proper number of `../` segments.
 - _sites: _sites.js (or _sites.coffee) is an optional file that directs requests to the next site layer.
 - _helpers: additional supporting code for the modules of a site or a subdirectory.
 

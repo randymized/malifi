@@ -48,8 +48,10 @@ get= (url, expected, statusCode, done)->
     path: url
   req= http.get options, (res)->
     if typeof expected is 'number'
-      res.statusCode.should.equal(expected)
-      done()
+      res.on 'data', ()->
+      res.on 'end', ()->
+        res.statusCode.should.equal(expected)
+        done()
     else
       getResponse(res,expected,statusCode,done)
 

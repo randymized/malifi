@@ -9,7 +9,7 @@
     "url": "https://github.com/randymized/malifi.git"
   },
   "dependencies": {
-    "connect": "2.7.x",
+    "connect": "~2.7.9",
     "mime": "1.2.x",
     "coffee-script": "1.6.x",
     "underscore": "1.4.x",
@@ -19,7 +19,7 @@
   },
   "devDependencies": {
     "should": "0.6.x",
-    "mocha": "1.6.x"
+    "mocha": "~1.9.x"
   },
   "main": "index",
   "engines": {
