@@ -3,6 +3,7 @@ connect = require('connect')
 path = require('path')
 normalize = path.normalize
 fs = require('fs')
+existsSync = `(fs.existsSync) ? fs.existsSync : path.existsSync` # node 0.8 moved to fs
 stripExtension= require('./strip_extension')
 moduleExtensions= ['.js','.coffee','.json']
 
@@ -19,11 +20,7 @@ fileNameCompare= (a,b)->
   return (b < a) - (a < b)
 
 isFileSync= (name)->
-  try
-    fs.statSync(name).isFile()
-  catch e
-    throw e unless e.code == 'ENOENT'
-    false
+  existsSync(name) && fs.statSync(name).isFile()
 
 # Would adding the proper extension to the given name find a file whose extension
 # suggested that it could be a module?
