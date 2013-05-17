@@ -189,17 +189,9 @@ module.exports=
   # _index.coffee or _index.txt would be served.
   indexResourceName_: '_index'
 
-  # Specify a module that will handle any unhandled exceptions.  Best practice
-  # is to exit the process as a result of an unhandled exception, but the handler
-  # may log some clues to help identify the problem.  It might also notify
-  # someone about the problem.
-  # The module should export a 'log' method.  It will be called whenever a request
-  # is received with the request as an argument.  It may save various pieces of data
-  # from the request that may aid diagnosis of the problem.  The log method should also
-  # register a method to catch unhandled exceptions if the method has not already been
-  # registered.
-  unhandled_handler_:
-    malifiMod.unhandled_exception_handler
+  # Specify a module that will handle any unhandled exceptions.
+  # Deprecated.  Use Node Domains and error handling middleware instead.
+  unhandled_handler_: null
 
   # Options for the _serve_directory_listings action.  These are the options
   # of Connect's directory middleware.

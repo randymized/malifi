@@ -1,3 +1,4 @@
+# Deprecated.  Use Node Domains and error handling middleware instead.
 recent= []
 limit= 10
 enabled= false
