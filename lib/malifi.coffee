@@ -110,10 +110,22 @@ malifi= (root,options)->
       else
         next(new Error('meta.actions_ is not defined.'))
 
-  return if options.hook_main_connect_handler_
+  toReturn= if options.hook_main_connect_handler_
     options.hook_main_connect_handler_(malifiConnectHandler)
   else
     malifiConnectHandler
+
+  # Special provision for serving /favicon.ico:
+  # This connect (or express) middleware may be placed early
+  # in the middleware stack before things like logging and
+  # session management
+  toReturn.favicon= (req,res,next)->
+    if '/favicon.ico' == req.url
+      malifiConnectHandler(req,res,next)
+    else
+      next()
+
+  return toReturn
 
 exports = module.exports = malifi
 

@@ -8,9 +8,7 @@ querystring = require('querystring')
 port= 8889
 host = 'localhost'
 
-app= connect.createServer()
-app.use(connect.urlencoded())
-app.use(malifi(__dirname+'/sites/common',
+malifi_middleware= malifi(__dirname+'/sites/common',
   {
     'build_lineage_':true
   , 'hook_main_connect_handler_': (handler)->
@@ -18,7 +16,12 @@ app.use(malifi(__dirname+'/sites/common',
         req._inserted= 'inserted by main handler hook'
         return handler(req,res,next)
   }
-))
+)
+
+app= connect.createServer()
+app.use(malifi_middleware.favicon)
+app.use(connect.urlencoded())
+app.use(malifi_middleware)
 app.listen(port)
 
 getResponse= (res,expected,statusCode,done)->
