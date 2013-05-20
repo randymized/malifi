@@ -1,3 +1,5 @@
+_= require 'underscore'
+
 background= __dirname+'/../background'
 example= __dirname+'/../example.com'
 map=
@@ -9,4 +11,4 @@ map=
 exports= module.exports=
   lookup: ()->
       return map[@host.name]
-  paths: [background,example]
+  paths: _.uniq(_.values(map))
