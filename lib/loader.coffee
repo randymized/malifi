@@ -136,7 +136,8 @@ module.exports=
                 siteLookupRoot ?= siteroot
                 sites[siteroot]= m
                 for sitepath in m.paths
-                  loadTree(siteStack.concat([normalize(sitepath)]))
+                  unless fulldirname == normalize(sitepath)
+                    loadTree(siteStack.concat([normalize(sitepath)]))
 
       visited= {}
       visited[fs.lstatSync(rootdir).ino]= true
