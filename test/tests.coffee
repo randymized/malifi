@@ -20,7 +20,6 @@ malifi_middleware= malifi(__dirname+'/sites/common',
 
 app= connect.createServer()
 app.use(malifi_middleware.favicon)
-app.use(connect.urlencoded())
 app.use(malifi_middleware)
 app.listen(port)
 

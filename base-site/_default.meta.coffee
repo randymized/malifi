@@ -66,6 +66,12 @@ module.exports=
   ]
   post_action_: malifiMod.action_handlers.post()
 
+  # If middleware is defined here, the default action handler for POST requests
+  # (malifiMod.action_handlers.post) will pass every POST request through this
+  # middleware before invoking the resource-specific module.
+  # This would be a good place to insert Connect's bodyParser or similar middleware.
+  post_middleware_: null
+
   # A handler that will receive all requests and which may preempt Malifi's native
   # routing.  Most commonly, this router would handle URLs that include variable
   # elements, processing the URL against a set of regular expressions or similar

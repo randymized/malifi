@@ -1,3 +1,4 @@
+connect= require('connect')
 _= require('underscore')
 malifiMod= require(require('./_root'))
 
@@ -8,3 +9,4 @@ module.exports= (prev)->
     test: malifiMod.action_handlers.serve_if_module()
   )
   allowed_url_extensions_: prev.allowed_url_extensions_.concat('test')
+  post_middleware_: connect.urlencoded()
