@@ -1,6 +1,6 @@
 {
   "name": "malifi",
-  "version": "0.9.0",
+  "version": "0.10.0",
   "description": "MAny LIttle FIles. A Connect layer where requests are routed to files in a directory whose structure reflects that of the URL. Malifi organizes all files that support a given page, such as code, template, css and supporting javascript together.",
   "keywords": [],
   "author": "Randy McLaughlin <8b629a9884@snkmail.com>",
