@@ -135,6 +135,7 @@ module.exports=
                 siteroot= path.dirname(fullname)
                 siteLookupRoot ?= siteroot
                 sites[siteroot]= m
+                m.wantsSiteStack?(siteStack)
                 for sitepath in m.paths
                   unless fulldirname == normalize(sitepath)
                     loadTree(siteStack.concat([normalize(sitepath)]))

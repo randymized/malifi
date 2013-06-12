@@ -255,3 +255,5 @@ describe 'malifi server', ->
         accept: 'text/html'      # for this to work, text/html must be explicitly accepted
     req= http.get options, (res)->
         getResponse(res,'Hello to_be_titled!',200,done)
+  it 'should report the site stack to _sites module', ->
+    require(__dirname+'/sites/common/_sites').getPrevSite().should.equal('base-site')
