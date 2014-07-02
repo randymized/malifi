@@ -13,7 +13,7 @@
     "mime": "1.2.x",
     "coffee-script": "1.6.x",
     "underscore": "1.4.x",
-    "buffertools": "1.1.x",
+    "buffertools": "^2.1.2",
     "send": "0.1.0",
     "http-accept": "~0.1.1-3"
   },
