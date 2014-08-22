@@ -3,7 +3,7 @@ main_action = malifiMod.action_handlers.main_action
 action_series = malifiMod.action_handlers.action_series
 select_actions_by_extension = malifiMod.action_handlers.select_actions_by_extension
 select_actions_by_http_method = malifiMod.action_handlers.select_actions_by_http_method
-allowed_extensions= ['txt','pdf','html','htm','gif','jpg','jpeg','ico','png','tif','tiff','bmp','svg','webp','webm','mp4']
+allowed_extensions= ['txt','pdf','html','htm','gif','jpg','jpeg','ico','png','tif','tiff','bmp','svg','webp','webm','mp4','mp3','flac','wav']
 
 module.exports=
   # An object named 'malifi' will be added to req.  That object contains references
