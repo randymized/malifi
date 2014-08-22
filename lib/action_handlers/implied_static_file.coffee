@@ -25,6 +25,8 @@ module.exports= (impliedExtensions)->
         # The order of the file extensions in implied_static_extensions_
         # determines which will be returned from getBestMatch() if
         # the user-agent has no preference.
+        if mime_list.length < 1
+          return next()
         best_mime= req.accept.types.getBestMatch(mime_list)
         if mime_map[best_mime]
           files['']= mime_map[best_mime].file
