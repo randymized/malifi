@@ -3,7 +3,7 @@ main_action = malifiMod.action_handlers.main_action
 action_series = malifiMod.action_handlers.action_series
 select_actions_by_extension = malifiMod.action_handlers.select_actions_by_extension
 select_actions_by_http_method = malifiMod.action_handlers.select_actions_by_http_method
-allowed_extensions= ['txt','pdf','html','htm','gif','jpg','jpeg','ico','tif','png','tiff','bmp']
+allowed_extensions= ['txt','pdf','html','htm','gif','jpg','jpeg','ico','png','tif','tiff','bmp','svg','webp','webm','mp4']
 
 module.exports=
   # An object named 'malifi' will be added to req.  That object contains references
@@ -169,7 +169,7 @@ module.exports=
   # The lib/action_handlers/implied_static_file handler provides a
   # reference implementation that serves explicitly specified files that are
   # on this list.
-  implied_static_extensions_: ['html','txt','htm']
+  implied_static_extensions_: allowed_extensions
 
   # If defined and not null, any URLs matching this regular expression will be
   # rejected as forbidden.  The default rejects URLs where any element starts
